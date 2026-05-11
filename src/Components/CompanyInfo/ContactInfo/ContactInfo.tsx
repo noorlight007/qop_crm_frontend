@@ -5,7 +5,7 @@ const ContactInfo: React.FC = () => {
   return (
     <Card>
       <CardHeader className="d-flex justify-content-between align-items-center">
-        <h3 className="card-title">Contact Info</h3>
+        <h4 className="card-title">Contact Info</h4>
         <Button color="primary" size="sm">
           <Edit size={14} className="me-1" />
           Edit

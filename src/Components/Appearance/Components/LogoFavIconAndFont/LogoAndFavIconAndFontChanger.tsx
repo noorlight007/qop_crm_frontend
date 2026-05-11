@@ -3,6 +3,7 @@ import {
   useGetAppranceQuery,
   useUpdateAppearanceMutation,
 } from "@/Redux/Reducers/Appearance/AppearanceApi";
+import { FontOption } from "@/Types/Appearance/AppearanceTypes";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -39,12 +40,6 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
   const [logoError, setLogoError] = useState<string | null>(null);
   const [faviconError, setFaviconError] = useState<string | null>(null);
   const [fontError, setFontError] = useState<string | null>(null);
-
-  type FontOption = {
-    value: string;
-    label: string;
-    cssFamily: string;
-  };
 
   // Must stay in sync with backend AppearanceFontFamilyType (enum values)
   const fontOptions: FontOption[] = [
@@ -131,7 +126,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
       if (typeof value === "string") return [value];
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
       if (typeof value === "object") {
         try {
@@ -229,13 +224,13 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
               resolve(false);
             };
             img.src = objectUrl;
-          }
+          },
         );
 
         if (!canValidateDimensions && isPng) {
           // PNG should be loadable; if not, treat as an error
           toast.error(
-            "Failed to validate favicon image dimensions. Please ensure it's 48x48 px."
+            "Failed to validate favicon image dimensions. Please ensure it's 48x48 px.",
           );
           return;
         }
@@ -250,7 +245,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         }
         // Other errors fallthrough with a generic message
         toast.error(
-          "Failed to validate favicon image. Please ensure it's a valid image (48x48 px, PNG or ICO)."
+          "Failed to validate favicon image. Please ensure it's a valid image (48x48 px, PNG or ICO).",
         );
         return;
       }
@@ -460,7 +455,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   disabled={isUpdatingFont}
                   style={{
                     fontFamily: fontOptions.find(
-                      (f) => f.value === selectedFont
+                      (f) => f.value === selectedFont,
                     )?.cssFamily,
                   }}
                 >
@@ -565,8 +560,8 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   {logoFile
                     ? logoFile.name
                     : appearanceData?.logo
-                    ? appearanceData.logo.split("/").pop()
-                    : "No file chosen"}
+                      ? appearanceData.logo.split("/").pop()
+                      : "No file chosen"}
                 </span>
               </div>
               <small className="text-muted">
@@ -663,8 +658,8 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   {faviconFile
                     ? faviconFile.name
                     : appearanceData?.fav_icon
-                    ? appearanceData.fav_icon.split("/").pop()
-                    : "No file chosen"}
+                      ? appearanceData.fav_icon.split("/").pop()
+                      : "No file chosen"}
                 </span>
               </div>
               <small className="text-muted">
