@@ -4,12 +4,21 @@ export const CompanyInfoApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCompanyInfo: builder.query({
       query: () => ({
-        url: "/api/company-info",
+        url: "/director/company-profile/",
         method: "GET",
       }),
+      providesTags: ["CompanyInfo"],
     }),
-    
+    updateCompanyInfo: builder.mutation({
+      query: (payload) => ({
+        url: "/director/company-profile/",
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["CompanyInfo"],
+    }),
   }),
 });
 
-export const { useGetCompanyInfoQuery } = CompanyInfoApi;
+export const { useGetCompanyInfoQuery, useUpdateCompanyInfoMutation } =
+  CompanyInfoApi;

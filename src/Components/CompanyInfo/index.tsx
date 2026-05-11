@@ -1,3 +1,4 @@
+import { useGetCompanyInfoQuery } from "@/Redux/Reducers/CompanyInfo/CompanyInfoApi";
 import { Col, Row } from "reactstrap";
 import Breadcrumbs from "../Common/Breadcrumbs/Breadcrumbs";
 import About from "./About/About";
@@ -5,6 +6,9 @@ import Address from "./Address/Address";
 import ContactInfo from "./ContactInfo/ContactInfo";
 
 const CompanyInfoContainer: React.FC = () => {
+  const { data: companyInfoData, isLoading } =
+    useGetCompanyInfoQuery(undefined);
+
   return (
     <>
       <Breadcrumbs
@@ -17,7 +21,7 @@ const CompanyInfoContainer: React.FC = () => {
           <About />
         </Col>
         <Col md="12">
-          <ContactInfo />
+          <ContactInfo companyInfo={companyInfoData} isLoading={isLoading} />
         </Col>
         <Col md="12">
           <Address />

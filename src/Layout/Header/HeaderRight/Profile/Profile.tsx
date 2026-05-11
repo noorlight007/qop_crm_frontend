@@ -89,6 +89,7 @@ const Profile = () => {
                     Appearance
                   </Link>
                 </li>
+
                 <li className="d-flex gap-2" style={{ cursor: "pointer" }}>
                   <Link href="/company-info" className="d-flex gap-2">
                     <TbBuilding />
