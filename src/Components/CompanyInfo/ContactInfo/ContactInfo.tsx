@@ -11,6 +11,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
 }) => {
   const [isUpdateContactInfoModalOpen, setIsUpdateContactInfoModalOpen] =
     useState(false);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   return (
     <Card>
@@ -35,9 +36,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
             <Col md="4">
               <div>
                 <h6 className="mb-1 fw-semibold">Company Name</h6>
-                <p className="mb-0 text-muted">
-                  {companyInfo.name || "-"}
-                </p>
+                <p className="mb-0 text-muted">{companyInfo.name || "-"}</p>
               </div>
             </Col>
             <Col md="4">
@@ -108,7 +107,14 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
                     src={companyInfo.license_image}
                     alt="License"
                     className="img-fluid rounded"
-                    style={{ maxHeight: 220, objectFit: "contain" }}
+                    style={{
+                      maxHeight: 100,
+                      objectFit: "contain",
+                      cursor: "zoom-in",
+                    }}
+                    onClick={() =>
+                      setFullscreenImage(companyInfo.license_image!)
+                    }
                   />
                 ) : (
                   <p className="mb-0 text-muted">No license image available.</p>
@@ -127,6 +133,53 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
         toggle={() => setIsUpdateContactInfoModalOpen(false)}
         companyInfo={companyInfo}
       />
+
+      {fullscreenImage && (
+        <div
+          onClick={() => setFullscreenImage(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1050,
+            backgroundColor: "rgba(0,0,0,0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "zoom-out",
+          }}
+        >
+          <button
+            onClick={() => setFullscreenImage(null)}
+            style={{
+              position: "absolute",
+              top: 16,
+              right: 20,
+              background: "none",
+              border: "none",
+              color: "#fff",
+              fontSize: 32,
+              lineHeight: 1,
+              cursor: "pointer",
+              zIndex: 1060,
+            }}
+            aria-label="Close"
+          >
+            &times;
+          </button>
+          <img
+            src={fullscreenImage}
+            alt="License full screen"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              objectFit: "contain",
+              borderRadius: 8,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+            }}
+          />
+        </div>
+      )}
     </Card>
   );
 };
