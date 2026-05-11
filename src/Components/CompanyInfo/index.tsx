@@ -24,7 +24,7 @@ const CompanyInfoContainer: React.FC = () => {
           <ContactInfo companyInfo={companyInfoData} isLoading={isLoading} />
         </Col>
         <Col md="12">
-          <Address />
+          <Address companyInfo={companyInfoData} isLoading={isLoading} />
         </Col>
       </Row>
     </>

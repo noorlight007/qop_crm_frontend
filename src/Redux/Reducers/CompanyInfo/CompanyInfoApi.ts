@@ -10,7 +10,7 @@ export const CompanyInfoApi = baseApi.injectEndpoints({
       providesTags: ["CompanyInfo"],
     }),
     updateCompanyInfo: builder.mutation({
-      query: (payload) => ({
+      query: ({ payload }) => ({
         url: "/director/company-profile/",
         method: "PATCH",
         body: payload,

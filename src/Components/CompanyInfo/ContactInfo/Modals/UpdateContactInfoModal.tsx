@@ -17,6 +17,79 @@ import {
   Spinner,
 } from "reactstrap";
 
+const getErrorMessage = (err: any) => {
+  if (!err) return "Failed to update contact info.";
+  if (typeof err === "string") return err;
+  if (typeof err?.data === "string") return err.data;
+
+  const collectMessages = (value: any): string[] => {
+    if (value == null) return [];
+    if (typeof value === "string") return [value];
+    if (Array.isArray(value))
+      return value.flatMap((item) => collectMessages(item));
+    if (typeof value === "object") {
+      return Object.values(value).flatMap((item) => collectMessages(item));
+    }
+    return [String(value)];
+  };
+
+  if (err?.data) {
+    const dataMessages = collectMessages(err.data);
+    if (dataMessages.length) return dataMessages.join(", ");
+  }
+
+  if (err?.error) return String(err.error);
+  if (err?.message) return String(err.message);
+
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return "Failed to update contact info.";
+  }
+};
+
+const parseApiErrors = (errorData: any): Record<string, string[]> => {
+  if (!errorData || typeof errorData !== "object") return {};
+
+  const result: Record<string, string[]> = {};
+
+  const addError = (key: string, value: any) => {
+    if (value == null) return;
+    if (typeof value === "string") {
+      result[key] = [value];
+      return;
+    }
+    if (Array.isArray(value)) {
+      result[key] = value.map((item) =>
+        typeof item === "string" ? item : JSON.stringify(item),
+      );
+      return;
+    }
+    if (typeof value === "object") {
+      const nested = Object.values(value)
+        .flatMap((item) =>
+          Array.isArray(item)
+            ? item.map((nestedItem) =>
+                typeof nestedItem === "string"
+                  ? nestedItem
+                  : JSON.stringify(nestedItem),
+              )
+            : typeof item === "string"
+              ? [item]
+              : [JSON.stringify(item)],
+        )
+        .filter(Boolean);
+      if (nested.length) {
+        result[key] = nested;
+      }
+    }
+  };
+
+  Object.entries(errorData).forEach(([key, value]) => addError(key, value));
+
+  return result;
+};
+
 const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
   isOpen,
   toggle,
@@ -33,6 +106,7 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
   });
   const [licenseImageFile, setLicenseImageFile] = useState<File | null>(null);
   const [licenseImagePreview, setLicenseImagePreview] = useState("");
+  const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
 
   const [updateCompanyInfo, { isLoading: isUpdating }] =
     useUpdateCompanyInfoMutation();
@@ -81,6 +155,7 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setApiErrors({});
 
     try {
       const payload = licenseImageFile ? new FormData() : { ...formData };
@@ -99,16 +174,25 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
         payload.append("license_no", formData.license_no);
       }
 
-      await updateCompanyInfo(payload).unwrap();
+      await updateCompanyInfo({ payload }).unwrap();
       toast.success("Contact information updated successfully.");
       toggle();
     } catch (error: any) {
-      const message =
-        error?.data?.message ||
-        error?.message ||
-        "Failed to update contact info.";
+      const message = getErrorMessage(error);
       toast.error(message);
+      setApiErrors(parseApiErrors(error?.data?.errors ?? error?.data));
       console.error("UpdateContactInfoModal error:", error);
+      try {
+        console.error(
+          "UpdateContactInfoModal error details:",
+          JSON.stringify(error, null, 2),
+        );
+      } catch {
+        console.error(
+          "UpdateContactInfoModal error details could not be stringified",
+          error,
+        );
+      }
     }
   };
 
@@ -131,6 +215,11 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
                   onChange={handleChange}
                   placeholder="Enter company email"
                 />
+                {apiErrors.email ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.email.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -146,6 +235,11 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
                   onChange={handleChange}
                   placeholder="Enter primary mobile"
                 />
+                {apiErrors.primary_mobile ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.primary_mobile.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -161,6 +255,11 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
                   onChange={handleChange}
                   placeholder="Enter additional contact number"
                 />
+                {apiErrors.other_contact ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.other_contact.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -176,6 +275,11 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
                   onChange={handleChange}
                   placeholder="Enter contact person"
                 />
+                {apiErrors.contact_person ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.contact_person.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -191,6 +295,11 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
                   onChange={handleChange}
                   placeholder="Enter designation"
                 />
+                {apiErrors.contact_person_designation ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.contact_person_designation.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -206,6 +315,11 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
                   onChange={handleChange}
                   placeholder="Enter website URL"
                 />
+                {apiErrors.website ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.website.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -221,6 +335,11 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
                   onChange={handleChange}
                   placeholder="Enter license number"
                 />
+                {apiErrors.license_no ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.license_no.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -235,6 +354,11 @@ const UpdateContactInfoModal: React.FC<UpdateCompanyInfoModalProps> = ({
                   accept="image/*"
                   onChange={handleFileChange}
                 />
+                {apiErrors.license_image ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.license_image.join(", ")}
+                  </div>
+                ) : null}
                 {licenseImagePreview ? (
                   <div className="mt-3">
                     <img
