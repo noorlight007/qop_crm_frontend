@@ -189,6 +189,17 @@ export const getOrganisationUrl = (session: Session | null) => {
   return "url not found";
 };
 
+export const getNetworkCaseUrl = (
+  networkslug: string,
+  caseAlias: string,
+  role: string,
+) => {
+  if (role === "SUPER_ADMIN") {
+    return `/super-admin/networks/${networkslug}/${caseAlias}`;
+  }
+  return "#";
+};
+
 export const getOrganisationCaseUrl = (
   organisationSlug: string,
   caseAlias: string,

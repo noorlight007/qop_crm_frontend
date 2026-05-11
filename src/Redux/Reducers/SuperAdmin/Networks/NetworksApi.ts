@@ -10,6 +10,7 @@ export const NetworksApi = baseApi.injectEndpoints({
       }),
       providesTags: ["NetworkList"],
     }),
+    
     getNetworkDetails: builder.query({
       query: ({ network_slug }) => ({
         url: `/api/networks/${network_slug}/`,
@@ -40,6 +41,21 @@ export const NetworksApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["NetworkList"],
     }),
+    getNetworkCaseList: builder.query({
+      query: ({ network_slug, params }) => ({
+        url: `/api/networks/${network_slug}/cases/`,
+        method: "GET",
+        params,
+      }),
+      providesTags: ["NetworkList"],
+    }),
+    getNetworkCaseDetails: builder.query({
+      query: ({ network_slug, case_alias }) => ({
+        url: `/api/networks/${network_slug}/cases/${case_alias}/`,
+        method: "GET",
+      }),
+      providesTags: ["NetworkList"],
+    }),
   }),
 });
 export const {
@@ -48,4 +64,6 @@ export const {
   useAddNetworkMutation,
   useUpdateNetworkMutation,
   useDeleteNetworkMutation,
+  useGetNetworkCaseListQuery,
+  useGetNetworkCaseDetailsQuery,
 } = NetworksApi;
