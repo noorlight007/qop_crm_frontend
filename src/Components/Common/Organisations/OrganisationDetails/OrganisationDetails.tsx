@@ -1,9 +1,6 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import {
-  useGetSingleOrganisationDashboardDataQuery,
-  useGetSingleOrganisationQuery,
-} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
+import { useGetSingleOrganisationQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import {
   restoreCustomTab,
   setCustomTab,
@@ -64,25 +61,23 @@ const OrganisationDetails: React.FC = () => {
     },
   );
 
- 
-
   useEffect(() => {
-    if (!isLoading) {
-      if (isError || !singleOrgData) {
-        router.push("/network/director/organisations");
-        toast.error("Find Wrong URL! Redirecting...");
-        return;
-      }
+    if (isLoading) return;
 
-      if (singleOrgData?.organization?.slug !== organisationslug) {
-        router.push("/network/director/organisations");
-        toast.error("Find Wrong URL! Redirecting...");
-        return;
-      }
-
-      setSingleOrgInfo(singleOrgData);
+    if (isError || !singleOrgData) {
+      toast.error("Find Wrong URL! Redirecting...");
+      router.back();
+      return;
     }
-  }, [singleOrgData, organisationslug, router, isLoading, isError]);
+
+    if (singleOrgData?.organization?.slug !== orgSlug) {
+      toast.error("Find Wrong URL! Redirecting...");
+      router.back();
+      return;
+    }
+
+    setSingleOrgInfo(singleOrgData);
+  }, [singleOrgData, orgSlug, router, isLoading, isError]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !orgSlug) return;

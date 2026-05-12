@@ -1,5 +1,4 @@
 import SVG from "@/CommonComponent/SVG";
-import { Href } from "@/Constant";
 import { notificationData } from "@/Data/Layout/HeaderData";
 import {
   useGetNotificationsQuery,
@@ -484,7 +483,7 @@ const NotificationHeader = () => {
   return (
     <li className="custom-dropdown" ref={wrapperRef}>
       <a
-        href={Href}
+        href="#javascript"
         onClick={(e) => {
           e.preventDefault();
           setShow(!show);

@@ -1,6 +1,5 @@
 import SVG from "@/CommonComponent/SVG";
 import ConfigDB from "@/Config/ThemeConfig";
-import { Href } from "@/Constant";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { addSideBarBackGround } from "@/Redux/Reducers/ThemeCustomizerReducer";
 import { useEffect } from "react";
@@ -9,7 +8,7 @@ import { BiSolidSun } from "react-icons/bi";
 const DarkMode = () => {
   const dispatch = useAppDispatch();
   const currentTheme = useAppSelector(
-    (state) => state.themeCustomizer.mix_background_layout
+    (state) => state.themeCustomizer.mix_background_layout,
   );
 
   // Load theme from localStorage on component mount and sync ConfigDB
@@ -63,7 +62,7 @@ const DarkMode = () => {
     >
       <a
         className={`dark-mode ${currentTheme !== "light" ? "active" : ""}`}
-        href={Href}
+        href="#javascript"
       >
         {currentTheme === "light" ? <SVG iconId="moondark" /> : <BiSolidSun />}
       </a>
