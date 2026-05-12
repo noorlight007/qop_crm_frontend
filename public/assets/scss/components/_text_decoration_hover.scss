@@ -21,3 +21,9 @@
 .text_decoration_hover:hover::after {
   transform: scaleX(1);
 }
+
+.text_decoration_hover:focus::after,
+.text_decoration_hover:active::after,
+.text_decoration_hover:focus-visible::after {
+  transform: scaleX(1);
+}

@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Initial state matching your data structure
 const initialState: BudgetPlanner = {
+  note: "",
   current_income: {
     applicant_one_net_monthly_income: 0,
     applicant_two_net_monthly_income: 0,
@@ -194,34 +195,43 @@ const budgetPlannerSlice = createSlice({
       }>,
     ) => {
       const { section, data } = action.payload;
-      if (typeof data === "object" && data !== null) {
-        if (section === "disclaimer") {
-          state.disclaimer = Boolean(data);
-        } else if (section === "disclaimer_details") {
-          state.disclaimer_details = String(data);
-        } else {
-          // Ensure required fields have default values
-          const updatedData = {
-            ...data,
-            ...(section === "current_debt_repayments" && {
-              total_debt_repayment: data.total_debt_repayment ?? 0,
-            }),
-            ...(section === "post_debt_repayments" && {
-              total_debt_repayment: data.total_debt_repayment ?? 0,
-            }),
-            ...(section === "current_sub_total" && {
-              available_income: data.available_income ?? 0,
-            }),
-            ...(section === "post_sub_total" && {
-              available_income: data.available_income ?? 0,
-            }),
-          };
+      if (section === "disclaimer") {
+        state.disclaimer = Boolean(data);
+        return;
+      }
 
-          state[section] = {
-            ...(state[section] as object),
-            ...updatedData,
-          };
-        }
+      if (section === "disclaimer_details") {
+        state.disclaimer_details = String(data ?? "");
+        return;
+      }
+
+      if (section === "note") {
+        state.note = String(data ?? "");
+        return;
+      }
+
+      if (typeof data === "object" && data !== null) {
+        // Ensure required fields have default values
+        const updatedData = {
+          ...data,
+          ...(section === "current_debt_repayments" && {
+            total_debt_repayment: data.total_debt_repayment ?? 0,
+          }),
+          ...(section === "post_debt_repayments" && {
+            total_debt_repayment: data.total_debt_repayment ?? 0,
+          }),
+          ...(section === "current_sub_total" && {
+            available_income: data.available_income ?? 0,
+          }),
+          ...(section === "post_sub_total" && {
+            available_income: data.available_income ?? 0,
+          }),
+        };
+
+        state[section] = {
+          ...(state[section] as object),
+          ...updatedData,
+        };
       }
     },
 
@@ -259,6 +269,8 @@ const budgetPlannerSlice = createSlice({
         state.disclaimer = value as boolean;
       } else if (section === "disclaimer_details") {
         state.disclaimer_details = value as string;
+      } else if (section === "note") {
+        state.note = value as string;
       } else {
         (state[section] as any)[field] = value;
       }

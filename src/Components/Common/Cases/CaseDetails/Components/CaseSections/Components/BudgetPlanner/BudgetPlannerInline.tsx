@@ -1,4 +1,5 @@
 "use client";
+
 import { useUpdateBudgetPlannerMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
 import {
   clearApiErrors,
@@ -7,27 +8,27 @@ import {
   updateBudgetPlannerSection,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { BudgetPlannerModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
-import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { FC, useCallback, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Nav,
-  NavItem,
-  NavLink,
-} from "reactstrap";
-import BudgetPlannerTabContent from "../BudgetPlannerTabContent";
+import { Card, CardBody, CardHeader, Nav, NavItem, NavLink } from "reactstrap";
+import BudgetPlannerTabContent from "./BudgetPlannerTabContent";
+
+export type BudgetPlannerInlineHandle = {
+  savePlanner: () => Promise<boolean>;
+  getActiveTab: () => number;
+};
+
+type BudgetPlannerInlineProps = {
+  onTabChange?: (tab: number) => void;
+};
 
 const budgetPlannerTabTitleData = [
   "Household Income",
@@ -37,25 +38,21 @@ const budgetPlannerTabTitleData = [
   "Disclaimers",
 ];
 
-const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
-  isOpen,
-  toggle,
-}) => {
-  const { data: session } = useSession();
-  const { casealias } = useParams();
+const BudgetPlannerInline = forwardRef<
+  BudgetPlannerInlineHandle,
+  BudgetPlannerInlineProps
+>(({ onTabChange }, ref) => {
+  const { casealias } = useParams() as any;
   const dispatch = useDispatch();
   const [basicTab, setBasicTab] = useState<number>(1);
+
   const budgetPlannerData = useSelector((state: any) => state.budgetPlanner);
-  const [updateBudgetPlanner, { isLoading }] = useUpdateBudgetPlannerMutation();
+  const [updateBudgetPlanner] = useUpdateBudgetPlannerMutation();
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
+
   // Local state to track only the changes
   const [updatedFields, setUpdatedFields] = useState<Record<string, any>>({});
-
-  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
-    { case_alias: casealias },
-    { skip: !casealias },
-  );
 
   // Server-side validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -63,23 +60,6 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
   const parseApiErrors = (err: any): Record<string, string> => {
     if (!err) return {};
     const out: Record<string, string> = {};
-
-    const collect = (value: any): string[] => {
-      if (value == null) return [];
-      if (typeof value === "string") return [value];
-      if (Array.isArray(value))
-        return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v),
-        );
-      if (typeof value === "object") {
-        try {
-          return Object.values(value).flatMap((v) => collect(v));
-        } catch {
-          return [String(value)];
-        }
-      }
-      return [String(value)];
-    };
 
     const data = err?.data || err;
     if (data && typeof data === "object") {
@@ -201,11 +181,23 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     return out;
   };
 
+  const setTabId = useCallback(
+    (nextTab: number | ((prev: number) => number)) => {
+      setBasicTab((prev) => {
+        const resolved =
+          typeof nextTab === "function" ? (nextTab as any)(prev) : nextTab;
+        onTabChange?.(resolved);
+        return resolved;
+      });
+    },
+    [onTabChange],
+  );
+
   const handleTabClick = (index: number) => {
-    setBasicTab(index);
+    setTabId(index);
   };
 
-  const handleSaveChanges = useCallback(async () => {
+  const savePlanner = useCallback(async (): Promise<boolean> => {
     const finalData = {
       ...budgetPlannerData,
       ...updatedFields,
@@ -216,10 +208,11 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
 
     const res = await updateBudgetPlanner({
       case_alias: casealias,
-      budgetplanner_alias: budgetPlannerData.alias,
+      budgetplanner_alias: budgetPlannerData?.alias,
       updatedBudgetPlannerData: finalData,
     });
-    if (res.data) {
+
+    if ((res as any).data) {
       toast.success("Budget Planner Updated Successfully");
       setErrors({});
       dispatch(clearApiErrors());
@@ -231,14 +224,16 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
       } catch (err) {
         console.error("Failed to update section complete status:", err);
       }
-      toggle();
-    } else if (res.error) {
+      return true;
+    }
+
+    if ((res as any).error) {
       const parsed = parseApiErrors((res as any).error);
       if (Object.keys(parsed).length) {
         const normalized = normalizeBudgetPlannerErrors(parsed);
         setErrors(normalized);
         dispatch(setApiErrors(normalized));
-        // Determine the tab containing the first error
+
         const firstKey = Object.keys(normalized)[0] || "";
         let targetTab = 1;
         if (
@@ -265,31 +260,52 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
           )
         )
           targetTab = 4;
-        setBasicTab(targetTab);
-        try {
-          scrollToFirstError(normalized);
-        } catch (e) {}
-        toast.error(String(Object.values(normalized)[0]));
-      } else {
-        const errorMessage =
-          (res.error as any)?.data?.detail ||
-          "Error updating budget planner details!";
-        toast.error(errorMessage);
-      }
-    } else {
-      toast.error("Budget Planner Update Failed");
-    }
-  }, [budgetPlannerData, updatedFields, dispatch, toggle]);
 
-  // Function to update local changes and store section
+        setTabId(targetTab);
+        scrollToFirstError(normalized);
+        toast.error(String(Object.values(normalized)[0]));
+        return false;
+      }
+
+      const errorMessage =
+        ((res as any).error as any)?.data?.detail ||
+        "Error updating budget planner details!";
+      toast.error(errorMessage);
+      return false;
+    }
+
+    toast.error("Budget Planner Update Failed");
+    return false;
+  }, [
+    budgetPlannerData,
+    updatedFields,
+    dispatch,
+    updateBudgetPlanner,
+    casealias,
+    updateSectionCompleteStatus,
+    setTabId,
+  ]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      savePlanner,
+      getActiveTab: () => basicTab,
+    }),
+    [savePlanner, basicTab],
+  );
+
+  useEffect(() => {
+    onTabChange?.(basicTab);
+  }, [basicTab, onTabChange]);
+
   const updateField = useCallback(
     (field: string, value: any) => {
       setUpdatedFields((prev: Record<string, any>) => {
         if (JSON.stringify(prev[field]) === JSON.stringify(value)) {
-          return prev; // No change, prevent unnecessary updates
+          return prev;
         }
         const next = { ...prev, [field]: value };
-        // Update only the affected section to avoid heavy reflows
         dispatch(
           updateBudgetPlannerSection({ section: field as any, data: value }),
         );
@@ -300,61 +316,45 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
   );
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="xl">
-      <ModalHeader toggle={toggle} className="bg-primary text-white">
-        <span className="fs-5">Budget Planner</span>
-      </ModalHeader>
-      <ModalBody>
-        <Card>
-          <CardBody>
-            <CardHeader className="d-flex justify-content-center align-items-center flex-wrap pb-2 p-0">
-              <Nav tabs className="w-100">
-                {budgetPlannerTabTitleData.map((tabName, index) => (
-                  <NavItem key={index + 1} className="flex-grow-1">
-                    <NavLink
-                      className={`text-primary text-center ${
-                        basicTab === index + 1 ? "active" : ""
-                      }`}
-                      onClick={() => handleTabClick(index + 1)}
-                      style={{ cursor: "pointer", fontSize: ".9rem" }}
-                    >
-                      {tabName}
-                    </NavLink>
-                  </NavItem>
-                ))}
-              </Nav>
-            </CardHeader>
-            <CardBody className="px-0 pb-0">
-              <BudgetPlannerTabContent
-                tabId={basicTab}
-                setTabId={setBasicTab}
-                updateField={useCallback(
-                  (field: string, value: any) => updateField(field, value),
-                  [updateField],
-                )}
-                errors={errors}
-                setErrors={setErrors}
-              />
-            </CardBody>
-          </CardBody>
-        </Card>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={toggle}>
-          Close
-        </Button>
-        <Button
-          color="primary"
-          onClick={handleSaveChanges}
-          disabled={
-            !budgetPlannerData.disclaimer && !updatedFields.disclaimer
-          }
-        >
-          {isLoading ? "Saving..." : "Save Changes"}
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-};
+    <Card>
+      <CardBody>
+        <CardHeader className="d-flex justify-content-center align-items-center flex-wrap pb-2 p-0">
+          <Nav tabs className="w-100">
+            {budgetPlannerTabTitleData.map((tabName, index) => (
+              <NavItem key={index + 1} className="flex-grow-1">
+                <NavLink
+                  className={`text-primary text-center ${
+                    basicTab === index + 1 ? "active" : ""
+                  }`}
+                  onClick={() => handleTabClick(index + 1)}
+                  style={{ cursor: "pointer", fontSize: ".9rem" }}
+                >
+                  {tabName}
+                </NavLink>
+              </NavItem>
+            ))}
+          </Nav>
+        </CardHeader>
 
-export default BudgetPlannerModal;
+        <CardBody className="px-0 pb-0">
+          <BudgetPlannerTabContent
+            tabId={basicTab}
+            setTabId={setTabId as any}
+            updateField={useCallback(
+              (field: string, value: any) => updateField(field, value),
+              [updateField],
+            )}
+            errors={errors}
+            setErrors={setErrors}
+          />
+        </CardBody>
+
+        <div style={{ clear: "both" }} />
+      </CardBody>
+    </Card>
+  );
+});
+
+BudgetPlannerInline.displayName = "BudgetPlannerInline";
+
+export default BudgetPlannerInline;

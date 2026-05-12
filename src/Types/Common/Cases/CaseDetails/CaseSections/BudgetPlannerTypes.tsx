@@ -1,6 +1,8 @@
 export interface BudgetPlanner {
   alias?: string;
 
+  note?: string;
+
   // Server-side validation errors (keyed by field)
   api_errors?: Record<string, string>;
 
