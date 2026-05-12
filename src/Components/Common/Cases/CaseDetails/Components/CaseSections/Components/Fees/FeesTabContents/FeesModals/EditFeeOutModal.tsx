@@ -23,7 +23,7 @@ import {
   Row,
 } from "reactstrap";
 
-const EditFeeInModal: FC<EditFeeModalProps> = ({
+const EditFeeOutModal: FC<EditFeeModalProps> = ({
   isOpen,
   toggle,
   onSubmit,
@@ -85,9 +85,9 @@ const EditFeeInModal: FC<EditFeeModalProps> = ({
     const mapKey = (k: string) => {
       const mappings: Record<string, string> = {
         amount: "fee",
-        fee_in_type: "feeType",
+        fee_out_type: "feeType",
         feeType: "feeType",
-        date_received: "feeDate",
+        date_paid_out: "feeDate",
         feeDate: "feeDate",
         method: "method",
         notes: "notes",
@@ -150,8 +150,8 @@ const EditFeeInModal: FC<EditFeeModalProps> = ({
 
     const data = {
       amount: Number(feeData.fee) || 0,
-      date_received: feeData.feeDate || null,
-      fee_in_type: feeData.feeType || null,
+      date_paid_out: feeData.feeDate || null,
+      fee_out_type: feeData.feeType || null,
       method: feeData.method || null,
       notes: feeData.notes || "",
     };
@@ -183,7 +183,7 @@ const EditFeeInModal: FC<EditFeeModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg">
       <Form onSubmit={handleSubmit}>
-        <ModalHeader toggle={toggle}>Edit Fee In</ModalHeader>
+        <ModalHeader toggle={toggle}>Edit Fee Out</ModalHeader>
         <ModalBody>
           <Row>
             <Col md={6}>
@@ -256,7 +256,7 @@ const EditFeeInModal: FC<EditFeeModalProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label for="feeDate">
-                  Date Received<span className="text-danger">*</span>
+                  Date Paid Out<span className="text-danger">*</span>
                 </Label>
                 <Input
                   type="date"
@@ -297,4 +297,4 @@ const EditFeeInModal: FC<EditFeeModalProps> = ({
   );
 };
 
-export default EditFeeInModal;
+export default EditFeeOutModal;

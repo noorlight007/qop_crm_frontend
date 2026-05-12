@@ -185,7 +185,6 @@ const FeeInTable = () => {
                             color="primary"
                             size="sm"
                             outline
-                            className="editFee"
                             onClick={() => handleFeeEdit(feeIn)}
                           >
                             <i className="fa fa-edit"></i>

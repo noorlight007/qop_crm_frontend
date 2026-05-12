@@ -44,12 +44,6 @@ export interface FeeDataDeleteProps {
   [key: string]: any;
 }
 
-export interface DeleteFeeModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  feeData: FeeDataDeleteProps | null;
-}
-
 export interface FeeEditInitialDataProps {
   alias?: string;
   fee?: number | string;
@@ -61,7 +55,7 @@ export interface FeeEditInitialDataProps {
   [key: string]: any;
 }
 
-export interface EditFeeInModalProps {
+export interface EditFeeModalProps {
   isOpen: boolean;
   toggle: () => void;
   onSubmit: (feeData: FeeDataProps) => void;
@@ -69,4 +63,9 @@ export interface EditFeeInModalProps {
   methods: { title: string; value: string }[];
   caseAlias: string | string[];
   initialData: FeeEditInitialDataProps | null;
+}
+export interface DeleteFeeModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  feeData: FeeDataDeleteProps | null;
 }
