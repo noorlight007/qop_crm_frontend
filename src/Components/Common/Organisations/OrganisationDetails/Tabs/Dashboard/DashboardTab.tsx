@@ -16,9 +16,6 @@ import Overview from "./Overview/Overview";
 const DashboardTab: React.FC = () => {
   const { data: session } = useSession();
   const { organisationslug } = useParams();
-  const orgSlug = Array.isArray(organisationslug)
-    ? organisationslug[0]
-    : organisationslug;
 
   const { data: singleOrgDashboardData, isLoading: isDashboardLoading } =
     useGetSingleOrganisationDashboardDataQuery(
