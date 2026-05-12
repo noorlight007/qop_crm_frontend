@@ -3,7 +3,6 @@ import CaseSections from "@/Components/Common/Cases/CaseDetails/Components/CaseS
 import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
 import { useGetNetworkCaseDetailsQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
 import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
-import { getNetworkCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -13,61 +12,55 @@ import CaseInfo from "./CaseInfo/CaseInfo";
 
 const CaseDetails: React.FC = () => {
   const { data: session } = useSession();
-    const { networkslug, casealias } = useParams();
-    const router = useRouter();
-    const [caseInfo, setCaseInfo] = useState<CaseInfoPrpos>();
+  const { networkslug, casealias } = useParams();
+  const router = useRouter();
+  const [caseInfo, setCaseInfo] = useState<CaseInfoPrpos>();
 
-  const { data: caseDetails, isLoading, isError } = useGetNetworkCaseDetailsQuery(
+  const {
+    data: caseDetails,
+    isLoading,
+    isError,
+  } = useGetNetworkCaseDetailsQuery(
     {
       network_slug: networkslug as string,
-    case_alias: casealias as string, 
+      case_alias: casealias as string,
     },
     { skip: !casealias || !networkslug },
   );
-const { data: jointApplicantInfo, isLoading: isJointApplicantLoading } =
+  const { data: jointApplicantInfo, isLoading: isJointApplicantLoading } =
     useGetJointApplicantInfoQuery(
       { case_alias: casealias },
       { skip: !casealias },
     );
 
-    useEffect(() => {
-        if (!isLoading) {
-          if (isError || !caseDetails) {
-            router.push(getNetworkCaseUrl(
-              networkslug as string,
-              casealias as string,
-              session?.user?.role as string
-            ));
-            toast.error("Find Wrong URL! Redirecting...");
-            return;
-          }
-    
-          if (caseDetails.alias !== casealias) {
-            router.push(getNetworkCaseUrl(
-              networkslug as string,
-              casealias as string,
-              session?.user?.role as string
-            ));
-            toast.error("Find Wrong URL! Redirecting...");
-            return;
-          }
-    
-          setCaseInfo(caseDetails);
-        }
-      }, [caseDetails, casealias, router, isLoading, isError]);
-    
-      if (isLoading) {
-        return (
-          <div className="p-4">
-            <LoadingGrow />
-          </div>
-        );
+  useEffect(() => {
+    if (!isLoading) {
+      if (isError || !caseDetails) {
+        toast.error("Find Wrong URL! Redirecting...");
+        router.back();
+        return;
       }
-    
-      if (isError || !caseInfo) {
-        return null;
+      if (caseDetails.alias !== casealias) {
+        toast.error("Find Wrong URL! Redirecting...");
+        router.back();
+        return;
       }
 
+      setCaseInfo(caseDetails);
+    }
+  }, [caseDetails, casealias, router, isLoading, isError]);
+
+  if (isLoading) {
+    return (
+      <div className="p-4">
+        <LoadingGrow />
+      </div>
+    );
+  }
+
+  if (isError || !caseInfo) {
+    return null;
+  }
 
   return (
     <>
