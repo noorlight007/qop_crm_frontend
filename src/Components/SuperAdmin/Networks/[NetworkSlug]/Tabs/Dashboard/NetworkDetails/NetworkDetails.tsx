@@ -196,11 +196,6 @@ const NetworkDetails: React.FC<NetworkDetailsProps> = ({
       });
   };
 
-  const formatDirectorRoles = (roles?: string[] | string | null) => {
-    if (!roles) return "";
-    const roleArray = Array.isArray(roles) ? roles : [roles];
-    return roleArray.map((role) => formatChoiceFieldValue(role)).join(", ");
-  };
 
   return (
     <>
