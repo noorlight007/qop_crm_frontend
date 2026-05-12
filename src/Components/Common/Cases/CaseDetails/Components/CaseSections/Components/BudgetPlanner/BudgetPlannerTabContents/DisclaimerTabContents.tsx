@@ -23,6 +23,7 @@ const DisclaimerTabContents: FC<DisclaimerTabContentsProps> = ({
   const [details, setDetails] = useState(
     budgetPlannerData.disclaimer_details || "",
   );
+  const [note, setNote] = useState(budgetPlannerData.note || "");
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.checked;
@@ -36,9 +37,16 @@ const DisclaimerTabContents: FC<DisclaimerTabContentsProps> = ({
     updateField("disclaimer_details", newValue);
   };
 
+  const handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setNote(newValue);
+    updateField("note", newValue);
+  };
+
   useEffect(() => {
     setIsChecked(budgetPlannerData.disclaimer || false);
     setDetails(budgetPlannerData.disclaimer_details || "");
+    setNote(budgetPlannerData.note || "");
   }, [budgetPlannerData]);
 
   const disclaimerText = (
@@ -85,6 +93,20 @@ const DisclaimerTabContents: FC<DisclaimerTabContentsProps> = ({
             value={details}
             onChange={handleDetailsChange}
             placeholder="Enter any additional details about the disclaimer..."
+          />
+        </FormGroup>
+        <FormGroup className="mt-3">
+          <Label for="DisclaimerNotes" className="text-muted">
+            Note
+          </Label>
+          <Input
+            type="textarea"
+            id="DisclaimerNotes"
+            name="DisclaimerNotes"
+            placeholder="Enter notes..."
+            rows={4}
+            value={note}
+            onChange={handleNoteChange}
           />
         </FormGroup>
       </CardBody>
