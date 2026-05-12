@@ -110,8 +110,8 @@ const FeeInTable = () => {
             onClick={toggleModal}
             disabled={session?.user?.role === "APPLICANT"}
           >
-            Add New Fee In
             <i className="fa-solid fa-circle-plus"></i>
+            Add New Fee In
           </Button>
         </Col>
       </Row>

@@ -110,8 +110,8 @@ const FeeOutTable = () => {
             onClick={toggleModal}
             disabled={session?.user?.role === "APPLICANT"}
           >
-            Add New Fee Out
             <i className="fa-solid fa-circle-plus"></i>
+            Add New Fee Out
           </Button>
         </Col>
       </Row>
