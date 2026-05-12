@@ -2,9 +2,8 @@ import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useUpdateNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
 import { NetworkDetailsProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
-import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
   FaCamera,
@@ -17,7 +16,16 @@ import {
 } from "react-icons/fa";
 import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
-import { Badge, Button, Card, CardBody, Col, Row } from "reactstrap";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Col,
+  FormGroup,
+  Input,
+  Row,
+} from "reactstrap";
 import UpdateNetworkDirectorInfoModal from "../Modals/UpdateNetworkDirectorInfoModal";
 import UpdateNetworkInfoModal from "../Modals/UpdateNetworkInfoModal";
 
@@ -29,6 +37,44 @@ const NetworkDetails: React.FC<NetworkDetailsProps> = ({
   const [updateNetwork, { isLoading: isUpdating }] = useUpdateNetworkMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
+
+  const [directorIsActive, setDirectorIsActive] = useState<boolean>(
+    Boolean(networkData?.user?.is_active),
+  );
+
+  const handleToggleDirectorIsActive = async (nextActive: boolean) => {
+    if (!slug) {
+      toast.error("Network identifier missing");
+      return;
+    }
+
+    const previous = directorIsActive;
+    setDirectorIsActive(nextActive);
+
+    try {
+      const payload = new FormData();
+      payload.append("user.is_active", String(nextActive));
+
+      await updateNetwork({
+        network_slug: slug,
+        payload,
+      }).unwrap();
+
+      toast.success(nextActive ? "Director activated" : "Director deactivated");
+    } catch (err: any) {
+      console.error("Director status update error:", err);
+      setDirectorIsActive(previous);
+      const msg = err?.data?.detail || err?.message || "Update failed";
+      toast.error(msg);
+    }
+  };
+
+  // Sync local UI state with server state when data loads/refetches
+  useEffect(() => {
+    if (typeof networkData?.user?.is_active === "boolean") {
+      setDirectorIsActive(networkData.user.is_active);
+    }
+  }, [networkData?.user?.is_active]);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -195,7 +241,6 @@ const NetworkDetails: React.FC<NetworkDetailsProps> = ({
         setTimeout(() => setIsDirectorEmailCopied(false), 2000);
       });
   };
-
 
   return (
     <>
@@ -697,24 +742,39 @@ const NetworkDetails: React.FC<NetworkDetailsProps> = ({
                       )}
                     </Card>
                   </Col>
+
                   <Col sm="6">
-                    {networkData?.user?.is_active ? (
-                      <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
-                        <FaShieldAlt
-                          className="me-2 bg-success p-1 rounded-1"
-                          size={25}
+                    <Card
+                      className={`${directorIsActive ? "bg-light-success" : "bg-light-danger"} p-2 d-flex align-items-center mb-2 position-relative`}
+                    >
+                      <FaShieldAlt
+                        className={`me-2 ${directorIsActive ? "bg-success" : "bg-danger"} p-1 rounded-1`}
+                        size={25}
+                      />
+                      <span>
+                        {directorIsActive ? "Verified Director" : "Inactive"}
+                      </span>
+
+                      <FormGroup
+                        switch
+                        className="mb-0 position-absolute"
+                        style={{ top: 0, right: 0 }}
+                      >
+                        <Input
+                          id="director-is-active-switch"
+                          type="switch"
+                          role="switch"
+                          checked={directorIsActive}
+                          disabled={isUpdating || !slug}
+                          onChange={(e) =>
+                            handleToggleDirectorIsActive(e.target.checked)
+                          }
+                          style={{
+                            cursor: isUpdating ? "not-allowed" : "pointer",
+                          }}
                         />
-                        Verified Director
-                      </Card>
-                    ) : (
-                      <Card className="bg-light-danger p-2 d-flex align-items-center mb-2">
-                        <FaShieldAlt
-                          className="me-2 bg-danger p-1 rounded-1"
-                          size={25}
-                        />
-                        Inactive
-                      </Card>
-                    )}
+                      </FormGroup>
+                    </Card>
                   </Col>
                 </Row>
               </CardBody>
