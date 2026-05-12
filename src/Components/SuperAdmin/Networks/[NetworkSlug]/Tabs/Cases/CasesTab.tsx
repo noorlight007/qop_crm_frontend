@@ -15,7 +15,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Fragment, useState } from "react";
 import { FaInfoCircle, FaSearch, FaTrash } from "react-icons/fa";
-import { TbArrowsRightLeft } from "react-icons/tb";
+import { TbArrowsRightLeft, TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -33,6 +33,8 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import AddNetworkCaseModal from "./Modals/AddNetworkCaseModal";
+import DeleteNetworkCaseModal from "./Modals/DeleteNetworkCaseModal";
 
 const CasesTab: React.FC = () => {
   const { data: session } = useSession();
@@ -42,6 +44,9 @@ const CasesTab: React.FC = () => {
   const [casesPerPage] = useState(10);
   const [filterIcon, setFilterIcon] = useState(false);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
+  const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
+  const [caseToDelete, setCaseToDelete] = useState<CaseInfoPrpos | null>(null);
 
   const defaultFilters = {
     case_category: "",
@@ -66,12 +71,13 @@ const CasesTab: React.FC = () => {
     network_slug: networkslug as string,
   });
 
-  const { data: adminData } = useGetUserListQuery({
-    role: "ADMIN",
-    network_slug: networkslug as string,
-  });
-
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
+
+  const toggleAddNewCaseModal = () =>
+    setIsAddNewCaseModalOpen(!isAddNewCaseModalOpen);
+  const toggleDeleteCaseModal = () => {
+    setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
+  };
 
   const toggleExpandRow = (alias: string) => {
     setExpandedRow((prev) => (prev === alias ? null : alias));
@@ -151,6 +157,10 @@ const CasesTab: React.FC = () => {
                         <i className="fa-solid fa-filter"></i>
                       )}
                     </Button>
+                    <Button color="primary" onClick={toggleAddNewCaseModal}>
+                      <TbCirclePlus className="me-1" />
+                      Add New Case
+                    </Button>
                   </Col>
                 </Row>
               </CardHeader>
@@ -175,28 +185,6 @@ const CasesTab: React.FC = () => {
                           {adviserData?.map((adviser: any) => (
                             <option key={adviser.alias} value={adviser.id}>
                               {adviser.name}
-                            </option>
-                          ))}
-                        </Input>
-                      </Col>
-
-                      <Col>
-                        <Label>Select Admin</Label>
-                        <Input
-                          type="select"
-                          className="py-1"
-                          value={filters.assigned_to_admin__id}
-                          onChange={(e) =>
-                            handleFilterChange(
-                              "assigned_to_admin__id",
-                              e.target.value,
-                            )
-                          }
-                        >
-                          <option value="">All Users</option>
-                          {adminData?.map((admin: any) => (
-                            <option key={admin.alias} value={admin.id}>
-                              {admin.name}
                             </option>
                           ))}
                         </Input>
@@ -507,7 +495,14 @@ const CasesTab: React.FC = () => {
                                     />
                                   </button>
                                   {/* Delete button placeholder — wire up your modal here */}
-                                  <Button color="danger" size="sm" disabled>
+                                  <Button
+                                    color="danger"
+                                    size="sm"
+                                    onClick={() => {
+                                      setCaseToDelete(caseItem);
+                                      toggleDeleteCaseModal();
+                                    }}
+                                  >
                                     <FaTrash />
                                   </Button>
                                 </div>
@@ -648,6 +643,17 @@ const CasesTab: React.FC = () => {
           </Row>
         </CardBody>
       </Card>
+      {/* Add New Case Modal */}
+      <AddNetworkCaseModal
+        isOpen={isAddNewCaseModalOpen}
+        toggle={toggleAddNewCaseModal}
+        role={"LEAD"}
+      />
+      <DeleteNetworkCaseModal
+        isOpen={isDeleteCaseModalOpen}
+        toggle={toggleDeleteCaseModal}
+        caseToDelete={caseToDelete}
+      />
     </>
   );
 };

@@ -1,10 +1,7 @@
+import NetworkApplicants from "../Common/Applicants/NetworkApplicants";
+
 const LeadsTab: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is leads tab
-    </div>
-  );
+  return <NetworkApplicants role="LEAD" />;
 };
 
 export default LeadsTab;

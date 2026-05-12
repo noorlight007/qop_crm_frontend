@@ -8,8 +8,8 @@ import ApplicantInvitationModal from "@/Components/Common/CommonUsers/LeadsOrApp
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi";
 import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
-import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
+import { useUpdateNetworkCaseMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { CaseInfoPrpos, NetworkCaseProps, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -40,9 +40,12 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
+import UpdateNetworkCaseModal from "../Modals/UpdateNetworkCaseModal";
+import AddNetworkJointApplicantModal from "../../../Modals/AddNetworkJointApplicantModal";
 
-const CaseInfo: React.FC<SingleCaseProps> = ({
+const CaseInfo: React.FC<NetworkCaseProps> = ({
   caseInfo,
+  networkSlug,
   isLoading,
   jointApplicantInfo,
 }) => {
@@ -65,6 +68,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useState(false);
   const [isApplicantEditAccessModalOpen, setIsApplicantEditAccessModalOpen] =
     useState(false);
+  console.log("CaseInfo Rendered with networkSlug:", networkSlug);
 
   // Inline notes editing state
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -73,8 +77,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     caseInfo?.notes || null,
   );
 
-  const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
-    useUpdateCaseMutation();
+  const [updateNetworkCaseDetails, { isLoading: isUpdatingNotes }] =
+    useUpdateNetworkCaseMutation();
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.customer);
@@ -136,8 +140,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     }
     try {
       const payload = { ...caseInfo, notes: notesDraft };
-      const res = await updateCaseDetails({
-        caseAlias: caseInfo.alias,
+      const res = await updateNetworkCaseDetails({
+        network_slug: networkSlug,
+        case_alias: caseInfo.alias,
         payload,
       });
       if ((res as any).data) {
@@ -948,10 +953,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         caseAlias={caseInfo?.alias}
       />
 
-      <UpdateCaseModal
+      <UpdateNetworkCaseModal
         isOpen={isUpdateCaseModalOpen}
         toggle={toggleUpdateCaseModal}
         caseData={currentCase as CaseInfoPrpos}
+        networkSlug={networkSlug}
       />
       <DeleteCaseModal
         isOpen={isDeleteCaseModalOpen}
@@ -973,7 +979,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           selectedApplicant={selectedJointApplicant.data}
         />
       )}
-      <AddJointApplicantModal
+      <AddNetworkJointApplicantModal
         isOpen={isAddJointApplicantModalOpen}
         toggle={toggleAddJointApplicantModal}
       />

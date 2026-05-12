@@ -75,6 +75,7 @@ const { data: jointApplicantInfo, isLoading: isJointApplicantLoading } =
         <Row>
           <CaseInfo
             caseInfo={caseInfo}
+            networkSlug={networkslug as string}
             isLoading={isLoading}
             jointApplicantInfo={jointApplicantInfo}
             isJointApplicantLoading={isJointApplicantLoading}
