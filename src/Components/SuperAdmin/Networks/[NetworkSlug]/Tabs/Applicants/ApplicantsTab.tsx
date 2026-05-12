@@ -1,10 +1,7 @@
+import NetworkApplicants from "../Common/Applicants/NetworkApplicants"
+
 const ApplicantsTab: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is applicants tab
-    </div>
-  );
+  return <NetworkApplicants role="APPLICANT" />;
 };
 
 export default ApplicantsTab;

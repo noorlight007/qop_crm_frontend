@@ -10,6 +10,7 @@ export const NetworksApi = baseApi.injectEndpoints({
       }),
       providesTags: ["NetworkList"],
     }),
+    
     getNetworkDetails: builder.query({
       query: ({ network_slug }) => ({
         url: `/api/networks/${network_slug}/`,
@@ -40,6 +41,75 @@ export const NetworksApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["NetworkList"],
     }),
+    getNetworkCaseList: builder.query({
+      query: ({ network_slug, params }) => ({
+        url: `/api/networks/${network_slug}/cases/`,
+        method: "GET",
+        params,
+      }),
+      providesTags: ["NetworkList"],
+    }),
+    getNetworkCaseDetails: builder.query({
+      query: ({ network_slug, case_alias }) => ({
+        url: `/api/networks/${network_slug}/cases/${case_alias}/`,
+        method: "GET",
+      }),
+      providesTags: ["NetworkList"],
+    }),
+    addNetworkCase: builder.mutation({
+      query: ({ network_slug, payload }) => ({
+        url: `/api/networks/${network_slug}/cases/`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["NetworkList"],
+    }),
+    updateNetworkCase: builder.mutation({
+      query: ({ network_slug, case_alias, payload }) => ({
+        url: `/api/networks/${network_slug}/cases/${case_alias}/`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["NetworkList"],
+    }),
+    deleteNetworkCase: builder.mutation({
+      query: ({ network_slug, case_alias }) => ({
+        url: `/api/networks/${network_slug}/cases/${case_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["NetworkList"],
+    }),
+    addNewNetworkApplicant: builder.mutation({
+      query: ({ network_slug, payload }) => ({
+        url: `/api/networks/${network_slug}/applicants/`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["NetworkList"],
+    }),
+    getNetworkApplicantList: builder.query({
+      query: ({ network_slug, params }) => ({
+        url: `/api/networks/${network_slug}/applicants/`,
+        method: "GET",
+        params,
+      }),
+      providesTags: ["NetworkList"],
+    }),
+    updateNetworkApplicant: builder.mutation({
+      query: ({ network_slug, user_alias, payload }) => ({
+        url: `/api/networks/${network_slug}/applicants/${user_alias}/`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["NetworkList"],
+    }),
+    deleteNetworkApplicant: builder.mutation({
+      query: ({ network_slug, user_alias }) => ({
+        url: `/api/networks/${network_slug}/applicants/${user_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["NetworkList"],
+    }),
   }),
 });
 export const {
@@ -48,4 +118,13 @@ export const {
   useAddNetworkMutation,
   useUpdateNetworkMutation,
   useDeleteNetworkMutation,
+  useGetNetworkCaseListQuery,
+  useGetNetworkCaseDetailsQuery,
+  useUpdateNetworkCaseMutation,
+  useAddNetworkCaseMutation,
+  useDeleteNetworkCaseMutation,
+  useAddNewNetworkApplicantMutation,
+  useGetNetworkApplicantListQuery,
+  useUpdateNetworkApplicantMutation,
+  useDeleteNetworkApplicantMutation,
 } = NetworksApi;

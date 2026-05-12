@@ -168,3 +168,18 @@ export interface ApplicantEditAccessModalProps {
   toggle: () => void;
   caseInfo: any;
 }
+
+export interface NetworkCaseProps {
+  caseInfo: CaseInfoPrpos | undefined;
+  networkSlug: string;
+  isLoading: boolean;
+  jointApplicantInfo?: JointApplicantProps[] | undefined;
+  isJointApplicantLoading?: boolean;
+}
+
+export interface UpdateNetworkCaseModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  caseData: CaseInfoPrpos;
+  networkSlug: string;
+}

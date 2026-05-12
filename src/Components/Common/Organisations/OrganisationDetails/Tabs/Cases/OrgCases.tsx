@@ -33,9 +33,9 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import AddNewCaseModal from "../../../../Cases/Modals/AddNewCaseModal";
-import ExpandedCaseRow from "./ExpandedCaseRow";
 import AddOrgNewCaseModal from "./Modals/AddOrgNewCaseModal";
 import DeleteOrgNewCaseModal from "./Modals/DeleteOrgNewCaseModal";
+import ExpandedCaseRow from "@/Components/Common/Cases/ExpandedCaseRow";
 
 const OrgCases: React.FC = () => {
   const { data: session } = useSession();
