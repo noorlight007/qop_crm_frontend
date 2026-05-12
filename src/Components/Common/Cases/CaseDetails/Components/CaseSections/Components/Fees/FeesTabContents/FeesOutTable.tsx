@@ -50,10 +50,14 @@ const FeeOutTable = () => {
     pageSize > 0 ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
 
   const feeTypes = [
-    { title: "Unknown", value: "UNKNOWN" },
+    { title: "Procuration Fee", value: "PROCURATION_FEE" },
     {
-      title: "Commission (Proc Fee Share)",
-      value: "COMMISSION_PROC_FEE_SHARE",
+      title: "Broker Fee",
+      value: "BROKER_FEE",
+    },
+    {
+      title: "Other",
+      value: "OTHER",
     },
   ];
 

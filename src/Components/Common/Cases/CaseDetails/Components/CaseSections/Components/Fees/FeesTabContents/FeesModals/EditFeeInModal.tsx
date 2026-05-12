@@ -1,12 +1,11 @@
-import { useAddFeesInDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useEditFeesInOutMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import {
-  AddFeeInModalProps,
+  EditFeeInModalProps,
   FeeDataProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
 import getCurrencySign from "@/utils/currency";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -24,26 +23,46 @@ import {
   Row,
 } from "reactstrap";
 
-const AddFeeInModal: FC<AddFeeInModalProps> = ({
+const EditFeeInModal: FC<EditFeeInModalProps> = ({
   isOpen,
   toggle,
   onSubmit,
   feeTypes,
   methods,
   caseAlias,
+  initialData,
 }) => {
-  const [addFeesInDetails, { isLoading }] = useAddFeesInDetailsMutation();
-  const [updateSectionCompleteStatus] =
-    useUpdateSectionCompleteStatusMutation();
-  const initialState = {
+  const [editFeesInOut, { isLoading }] = useEditFeesInOutMutation();
+
+  const initialState: FeeDataProps = {
     fee: "",
     feeType: "",
     method: "",
     notes: "",
     feeDate: "",
   };
+
   const [feeData, setFeeData] = useState<FeeDataProps>(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!initialData) {
+      setFeeData(initialState);
+      setErrors({});
+      return;
+    }
+
+    setFeeData({
+      fee: String(initialData.fee ?? initialData.amount ?? ""),
+      feeType: String(initialData.feeType ?? ""),
+      method: String(initialData.method ?? ""),
+      notes: String(initialData.notes ?? ""),
+      feeDate: String(initialData.feeDate ?? ""),
+    });
+    setErrors({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, initialData?.alias]);
 
   const handleInputChange = (field: keyof FeeDataProps, value: string) => {
     setFeeData((prev) => ({
@@ -64,7 +83,6 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
     const sanitize = (s: any) => String(s ?? "").replace(/^\s*\d+,\s*/g, "");
 
     const mapKey = (k: string) => {
-      // map server keys to our form keys
       const mappings: Record<string, string> = {
         amount: "fee",
         fee_in_type: "feeType",
@@ -98,7 +116,6 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
           } else if (Array.isArray(v)) {
             out[fk] = v.map(sanitize).join(" ");
           } else if (typeof v === "object") {
-            // nested object: flatten one level
             Object.entries(v as any).forEach(([k2, v2]) => {
               const fk2 = mapKey(k2);
               if (Array.isArray(v2)) out[fk2] = v2.map(sanitize).join(" ");
@@ -115,41 +132,48 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const normalizedCaseAlias = Array.isArray(caseAlias)
+      ? caseAlias[0]
+      : caseAlias;
+    const feeAlias = initialData?.alias;
+
+    if (!normalizedCaseAlias) {
+      toast.error("Case alias not found");
+      return;
+    }
+
+    if (!feeAlias) {
+      toast.error("Fee data not found");
+      return;
+    }
+
     const data = {
       amount: Number(feeData.fee) || 0,
-      case_alias: caseAlias,
       date_received: feeData.feeDate || null,
       fee_in_type: feeData.feeType || null,
-      fees_type: "FEES_IN",
       method: feeData.method || null,
       notes: feeData.notes || "",
     };
 
-    const res = await addFeesInDetails({
-      case_alias: caseAlias,
-      feesInDetails: data,
+    const res = await editFeesInOut({
+      case_alias: normalizedCaseAlias,
+      fee_alias: feeAlias,
+      feeDetails: data,
     });
-    if (res.data) {
+
+    if ((res as any).data) {
       setErrors({});
-      try {
-        await updateSectionCompleteStatus({
-          case_alias: caseAlias,
-          section_data: { is_fees: true },
-        });
-      } catch (err) {
-        console.error("Failed to update section complete status:", err);
-      }
       onSubmit(feeData);
-      setFeeData(initialState); // Reset form
       toggle();
-      toast.success("Fee added successfully");
-    } else if (res.error) {
-      const parsed = parseApiErrors(res.error);
+      toast.success("Fee updated successfully");
+    } else if ((res as any).error) {
+      const parsed = parseApiErrors((res as any).error);
       setErrors(parsed);
       const firstMsg =
         Object.values(parsed)[0] ||
-        (res.error as any)?.data?.detail ||
-        "Failed to add fee.";
+        (res as any).error?.data?.detail ||
+        "Failed to update fee.";
       toast.error(firstMsg);
     } else {
       toast.error("Something went wrong");
@@ -159,7 +183,7 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg">
       <Form onSubmit={handleSubmit}>
-        <ModalHeader toggle={toggle}>Add New Fee</ModalHeader>
+        <ModalHeader toggle={toggle}>Edit Fee In</ModalHeader>
         <ModalBody>
           <Row>
             <Col md={6}>
@@ -261,11 +285,11 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
           </FormGroup>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggle}>
+          <Button color="secondary" onClick={toggle} disabled={isLoading}>
             Cancel
           </Button>
           <Button color="primary" type="submit" disabled={isLoading}>
-            {isLoading ? "Adding..." : "Add Fee In"}
+            {isLoading ? "Saving..." : "Save Changes"}
           </Button>
         </ModalFooter>
       </Form>
@@ -273,4 +297,4 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
   );
 };
 
-export default AddFeeInModal;
+export default EditFeeInModal;
