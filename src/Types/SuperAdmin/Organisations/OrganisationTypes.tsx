@@ -5,6 +5,7 @@ export interface Organisation {
   email: string;
   subdomain: string;
   primary_mobile: string;
+  created_at: string;
 }
 
 export interface UpdateOrgInfoModalProps {

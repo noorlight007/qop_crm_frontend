@@ -202,7 +202,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
             networkResults.map((network: Networktype) => (
               <Col xs="12" lg="6" xxl="4" className="mb-4" key={network.slug}>
                 <Card
-                  className="h-100 shadow-sm border-0"
+                  className="h-100 shadow-sm border-0 mb-0"
                   style={{ position: "relative", overflow: "hidden" }}
                 >
                   <Link
@@ -216,7 +216,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                       className="fa-solid fa-up-right-from-square"
                     ></i>
                   </Link>
-                  <CardBody className="pb-0">
+                  <CardBody className="p-3">
                     <div className="d-flex gap-3 flex-column flex-sm-row">
                       <div className="flex-shrink-0 position-relative d-flex justify-content-center justify-content-sm-start">
                         {network.logo ? (
