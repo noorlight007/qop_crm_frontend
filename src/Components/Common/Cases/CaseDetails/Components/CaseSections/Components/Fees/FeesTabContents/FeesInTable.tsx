@@ -7,10 +7,12 @@ import { useEffect, useState } from "react";
 import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeInModal from "./FeesModals/AddFeeInModal";
 import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
+import EditFeeInModal from "./FeesModals/EditFeeInModal";
 
 const FeeInTable = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedFee, setSelectedFee] = useState<any | null>(null);
 
@@ -50,7 +52,6 @@ const FeeInTable = () => {
     pageSize > 0 ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
 
   const feeTypes = [
-    { title: "Unknown", value: "UNKNOWN" },
     { title: "Broker/Commitment Fee", value: "BROKER_COMMITMENT_FEE" },
     { title: "Procuration Fee", value: "PROCURATION_FEE" },
     { title: "Mortgage OfferFee", value: "MORTGAGE_OFFER_FEE" },
@@ -76,9 +77,20 @@ const FeeInTable = () => {
     setPage(1);
     toggleModal();
   };
+
+  const handleEditFee = (_updatedFee: any) => {
+    // rely on server-side fetch after mutation; keep user on current view
+    setPage(1);
+    setIsEditModalOpen(false);
+  };
   const handleFeeDelete = (fee: any) => {
     setSelectedFee(fee);
     setIsDeleteModalOpen(true);
+  };
+
+  const handleFeeEdit = (fee: any) => {
+    setSelectedFee(fee);
+    setIsEditModalOpen(true);
   };
 
   if (isLoading)
@@ -98,20 +110,12 @@ const FeeInTable = () => {
             onClick={toggleModal}
             disabled={session?.user?.role === "APPLICANT"}
           >
-            Add New Fee In
             <i className="fa-solid fa-circle-plus"></i>
+            Add New Fee In
           </Button>
         </Col>
       </Row>
 
-      <AddFeeInModal
-        isOpen={isModalOpen}
-        toggle={toggleModal}
-        onSubmit={handleAddFee}
-        feeTypes={feeTypes}
-        methods={methods}
-        caseAlias={casealias}
-      />
       <Row>
         <Col sm={12} className="form-group" id="FeeIn">
           <div className="table-responsive shadow-sm rounded">
@@ -137,7 +141,7 @@ const FeeInTable = () => {
                     Date Received
                   </th>
                   <th className="text-center" style={{ width: "5%" }}>
-                    Action
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -176,15 +180,25 @@ const FeeInTable = () => {
                         {feeIn.feeDate || "-"}
                       </td>
                       <td className="text-center align-middle">
-                        <Button
-                          color="danger"
-                          size="sm"
-                          outline
-                          className="removeFee"
-                          onClick={() => handleFeeDelete(feeIn)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Button>
+                        <div className="d-flex justify-content-center align-items-center gap-2">
+                          <Button
+                            color="primary"
+                            size="sm"
+                            outline
+                            onClick={() => handleFeeEdit(feeIn)}
+                          >
+                            <i className="fa fa-edit"></i>
+                          </Button>
+                          <Button
+                            color="danger"
+                            size="sm"
+                            outline
+                            className="removeFee"
+                            onClick={() => handleFeeDelete(feeIn)}
+                          >
+                            <i className="fa fa-trash"></i>
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -226,8 +240,25 @@ const FeeInTable = () => {
           </div>
         </Col>
       </Row>
+      {/* Fee Modal can be added here */}
+      <AddFeeInModal
+        isOpen={isModalOpen}
+        toggle={toggleModal}
+        onSubmit={handleAddFee}
+        feeTypes={feeTypes}
+        methods={methods}
+        caseAlias={casealias}
+      />
+      <EditFeeInModal
+        isOpen={isEditModalOpen}
+        toggle={() => setIsEditModalOpen(false)}
+        onSubmit={handleEditFee}
+        feeTypes={feeTypes}
+        methods={methods}
+        caseAlias={casealias}
+        initialData={selectedFee}
+      />
 
-      {/* Delete Fee Modal can be added here */}
       <DeleteFeeModal
         isOpen={isDeleteModalOpen}
         toggle={() => setIsDeleteModalOpen(!isDeleteModalOpen)}
