@@ -1,11 +1,4 @@
 import ConfigDB from "@/Config/ThemeConfig";
-import {
-  EmailAddressLogIn,
-  ForgotPassword,
-  Password,
-  SignIn,
-  SignInToAccount,
-} from "@/Constant";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { addSideBarBackGround } from "@/Redux/Reducers/ThemeCustomizerReducer";
@@ -150,10 +143,10 @@ export const LoginForm = () => {
             />
           </Link>
         </div>
-        <h2 className="text-center">{SignInToAccount}</h2>
+        <h2 className="text-center">Sign in to account</h2>
         <p className="text-center mb-2">Enter your email & password to login</p>
         <FormGroup>
-          <Label className="col-form-label">{EmailAddressLogIn}</Label>
+          <Label className="col-form-label">Email Address</Label>
           <Input
             type="email"
             onChange={(event) => setEmail(event.target.value)}
@@ -162,7 +155,7 @@ export const LoginForm = () => {
           />
         </FormGroup>
         <FormGroup>
-          <Label className="col-form-label">{Password}</Label>
+          <Label className="col-form-label">Password</Label>
           <div className="position-relative form-input">
             <Input
               type={show ? "text" : "password"}
@@ -177,11 +170,11 @@ export const LoginForm = () => {
         </FormGroup>
         <FormGroup className="mb-0 checkbox-checked">
           <Link className="link" href={`/auth/forgot-password/send-email`}>
-            {ForgotPassword}
+            Forgot password?
           </Link>
           <div className="text-end mt-3">
             <Button type="submit" color="primary" block disabled={isLoading}>
-              {isLoading ? <Spinner size="sm" /> : `${SignIn}`}
+              {isLoading ? <Spinner size="sm" /> : "Sign in"}
             </Button>
           </div>
         </FormGroup>

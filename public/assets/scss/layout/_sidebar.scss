@@ -9,7 +9,7 @@
   width: $sidebar-width;
   height: 100vh;
   box-shadow: $sidebar-shadow;
-  z-index: 3;
+  z-index: 30;
   background: var(--white);
   transition: 0.5s all;
   @media (max-width: 991.98px) {

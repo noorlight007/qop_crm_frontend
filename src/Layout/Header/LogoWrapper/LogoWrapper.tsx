@@ -1,5 +1,4 @@
 import SVG from "@/CommonComponent/SVG";
-import { ImagePath } from "@/Constant";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { setSideBarToggle } from "@/Redux/Reducers/ThemeCustomizerReducer";
@@ -24,7 +23,7 @@ const LogoWrapper = () => {
           height={40}
           priority
           className="light-logo img-fluid"
-          src={appearanceData?.logo || `${ImagePath}/logo/logo-dark.png`}
+          src={appearanceData?.logo || `/assets/images/logo/logo-dark.png`}
           alt="logo"
           style={{ width: "100px", height: "40px" }}
         />
@@ -33,7 +32,7 @@ const LogoWrapper = () => {
           height={40}
           priority
           className="dark-logo img-fluid"
-          src={appearanceData?.logo || `${ImagePath}/logo/logo1.png`}
+          src={appearanceData?.logo || `/assets/images/logo/logo1.png`}
           alt="logo"
           style={{ width: "100px", height: "40px" }}
         />

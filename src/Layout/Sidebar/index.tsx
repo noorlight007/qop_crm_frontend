@@ -1,5 +1,4 @@
 import ConfigDB from "@/Config/ThemeConfig";
-import { Pinned } from "@/Constant";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import {
   scrollToLeft,
@@ -10,10 +9,10 @@ import SidebarMenuList from "./SidebarMenuList";
 
 const Sidebar = () => {
   const { sideBarToggle, margin } = useAppSelector(
-    (state) => state.themeCustomizer
+    (state) => state.themeCustomizer,
   );
   const sidebarIconType = useAppSelector(
-    (state) => state.themeCustomizer.sideBarIconType
+    (state) => state.themeCustomizer.sideBarIconType,
   );
   const sideBarIcon = sidebarIconType || ConfigDB.settings.sidebar.iconType;
   const { pinedMenu } = useAppSelector((state) => state.layout);
@@ -45,7 +44,7 @@ const Sidebar = () => {
               } `}
             >
               <div>
-                <h5 className="sidebar-title f-w-700">{Pinned}</h5>
+                <h5 className="sidebar-title f-w-700">Pinned</h5>
               </div>
             </li>
             <SidebarMenuList />

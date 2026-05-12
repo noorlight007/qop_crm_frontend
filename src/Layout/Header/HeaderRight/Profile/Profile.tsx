@@ -1,11 +1,10 @@
-import { Href, ImagePath } from "@/Constant";
 import { logOut } from "@/services/auth/logout";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { TbBrush, TbBuilding, TbBuildingSkyscraper, TbSettings } from "react-icons/tb";
+import { TbBrush, TbBuildingSkyscraper } from "react-icons/tb";
 
 const Profile = () => {
   const [show, setShow] = useState(false);
@@ -51,7 +50,7 @@ const Profile = () => {
           <Image
             width={64}
             height={59}
-            src={session?.user?.profile_image || `${ImagePath}/profile.png`}
+            src={session?.user?.profile_image || `/assets/images/profile.png`}
             alt="user"
           />
         </div>
@@ -97,7 +96,7 @@ const Profile = () => {
             ) : null}
             <li className="d-flex gap-2" onClick={handleLogout}>
               <i className="fa-solid fa-arrow-right-from-bracket text-danger fs-6"></i>
-              <Link className="text-danger" href={Href}>
+              <Link className="text-danger" href="#javascript">
                 {"Log out"}
               </Link>
             </li>
