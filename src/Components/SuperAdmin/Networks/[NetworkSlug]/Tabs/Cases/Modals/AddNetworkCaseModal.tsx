@@ -2,9 +2,9 @@ import {
   useGetUserListQuery,
   useLeadOrClientFilterListQuery,
 } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
-import { useAddNetworkCaseMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { useAddNetworkCaseMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkCasesApi";
 import { LeadOptionType } from "@/Types/Common/Cases/CaseTypes";
-import { AddNetworkNewCaseModalProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
+import { AddNetworkNewCaseModalProps } from "@/Types/SuperAdmin/Networks/NetworkApplicantTypes";
 import { getOrganisationCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";

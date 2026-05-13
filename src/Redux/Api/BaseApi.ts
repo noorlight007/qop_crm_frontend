@@ -309,6 +309,9 @@ export const baseApi = createApi({
 
     // Admin Start
     "NetworkList",
+    "NetworkCases",
+    "NetworkApplicants",
+    "NetworkMembers",
   ],
   endpoints: () => ({}),
 });

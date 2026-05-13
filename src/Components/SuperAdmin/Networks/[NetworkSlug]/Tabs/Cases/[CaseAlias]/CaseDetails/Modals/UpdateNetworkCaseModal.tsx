@@ -1,5 +1,5 @@
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
-import { useUpdateNetworkCaseMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { useUpdateNetworkCaseMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkCasesApi";
 import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
