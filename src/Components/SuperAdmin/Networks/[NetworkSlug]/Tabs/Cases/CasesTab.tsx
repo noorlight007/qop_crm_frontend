@@ -6,7 +6,7 @@ import {
   mortgageStages,
 } from "@/Data/Common/FilterChoiceFields";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
-import { useGetNetworkCaseListQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { useGetNetworkCaseListQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkCasesApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getNetworkCaseUrl } from "@/utils/RedirectPaths";

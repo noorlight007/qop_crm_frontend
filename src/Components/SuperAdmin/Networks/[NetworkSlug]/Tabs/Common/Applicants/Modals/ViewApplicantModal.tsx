@@ -1,10 +1,10 @@
-import { ViewOrgApplicantModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
+import { ViewNetworkApplicantModalProps } from "@/Types/SuperAdmin/Networks/NetworkApplicantTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
 import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewOrgApplicantModal: React.FC<ViewOrgApplicantModalProps> = ({
+const ViewNetworkApplicantModal: React.FC<ViewNetworkApplicantModalProps> = ({
   isOpen,
   toggle,
   selectedApplicant,
@@ -233,4 +233,4 @@ const ViewOrgApplicantModal: React.FC<ViewOrgApplicantModalProps> = ({
   );
 };
 
-export default ViewOrgApplicantModal;
+export default ViewNetworkApplicantModal;
