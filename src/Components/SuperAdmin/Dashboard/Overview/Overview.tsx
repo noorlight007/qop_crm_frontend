@@ -1,10 +1,10 @@
 import { useGetSuperAdminDashboardOverviewDataQuery } from "@/Redux/Reducers/SuperAdmin/Dashboard/DashboardApi";
 import { OverviewCard } from "@/Types/SuperAdmin/Dashboard/DashboardTypes";
 import React from "react";
+import { FaNetworkWired } from "react-icons/fa";
 import {
   TbBuildingSkyscraper,
   TbCheckbox,
-  TbShield,
   TbTicket,
   TbUsers,
 } from "react-icons/tb";
@@ -29,7 +29,7 @@ const Overview: React.FC = () => {
     {
       title: "Networks",
       value: Number((overviewData as any)?.network ?? 0) || 0,
-      icon: TbShield,
+      icon: FaNetworkWired,
       iconBgClass: "bg-primary",
       loadingSpinnerColor: "primary",
     },

@@ -15,7 +15,6 @@ type TicketStatusPoint = {
 };
 
 const SupportTicketChart: React.FC = () => {
-  // TODO: Replace with real API data when the endpoint is available.
   const monthShort = [
     "Jan",
     "Feb",
