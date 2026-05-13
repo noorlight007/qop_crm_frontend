@@ -36,48 +36,6 @@ const SuperAdminMenu: MenuItem[] = [
         path: "/super-admin/organisations",
       },
       {
-        title: "Users",
-        icon: <FaUsers />,
-        lanClass: "lan-3",
-        children: [
-          {
-            title: "Directors",
-            type: "link",
-            path: "/super-admin/users/directors",
-          },
-          {
-            title: "Compliances",
-            type: "link",
-            path: "/super-admin/users/compliances",
-          },
-          {
-            title: "Advisers",
-            type: "link",
-            path: "/super-admin/users/advisers",
-          },
-          {
-            title: "Admins",
-            type: "link",
-            path: "/super-admin/users/admins",
-          },
-          {
-            title: "Introducers",
-            type: "link",
-            path: "/super-admin/users/introducers",
-          },
-          {
-            title: "Leads",
-            type: "link",
-            path: "/super-admin/users/leads",
-          },
-          {
-            title: "Applicants",
-            type: "link",
-            path: "/super-admin/users/applicants",
-          },
-        ],
-      },
-      {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",
@@ -739,7 +697,7 @@ export {
   OrganisationAdminMenu,
   OrganisationAdviserMenu,
   OrganisationDirectorMenu,
-  SuperAdminMenu,
+  SuperAdminMenu
 };
 
 export const getMenuByRole = (
