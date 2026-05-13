@@ -1,3 +1,4 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -22,7 +23,6 @@ import {
   FormGroup,
   Input,
   Row,
-  Spinner,
 } from "reactstrap";
 import UpdateOrgDirectorInfoModal from "../../../Modals/UpdateOrgDirectorInfoModal";
 
@@ -167,8 +167,8 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
   return (
     <>
       {isLoading ? (
-        <Card className="organisation-director-loading d-flex justify-content-center align-items-center w-100 border-0 shadow-lg">
-          <Spinner className="organisation-spinner" />
+        <Card className="organisation-director-info-card d-flex justify-content-center align-items-center w-100 border-0 shadow-lg">
+          <LoadingGrow />
         </Card>
       ) : (
         <Card className="border-0 overflow-hidden position-relative shadow-lg">
@@ -335,25 +335,6 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                   )}
                 </Card>
               </Col>
-              {/* <Col sm="6">
-                {singleOrgInfo?.user?.is_active ? (
-                  <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
-                    <FaShieldAlt
-                      className="me-2 bg-success p-1 rounded-1"
-                      size={25}
-                    />
-                    Verified Director
-                  </Card>
-                ) : (
-                  <Card className="bg-light-danger p-2 d-flex align-items-center mb-2">
-                    <FaShieldAlt
-                      className="me-2 bg-danger p-1 rounded-1"
-                      size={25}
-                    />
-                    Inactive
-                  </Card>
-                )}
-              </Col> */}
               <Col sm="6">
                 <Card
                   className={`${directorIsActive ? "bg-light-success" : "bg-light-danger"} p-2 d-flex align-items-center mb-2 position-relative`}
