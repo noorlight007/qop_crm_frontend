@@ -1,12 +1,12 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
+  useGetNetworkFilterListQuery,
+  useGetOrganisationFilterListQuery,
+} from "@/Redux/Reducers/Common/CommonFilters/CommonFiltersApi";
+import {
   useFetchSupportTicketQuery,
   useUpdateSupportTicketMutation,
 } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
-import {
-  useGetNetworkListQuery,
-  useGetOrganisationListQuery,
-} from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
 import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -146,9 +146,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
   // Fetch network and organization lists
   const { data: networkList, isLoading: networkListLoading } =
-    useGetNetworkListQuery(undefined);
+    useGetNetworkFilterListQuery(undefined);
   const { data: orgList, isLoading: orgListLoading } =
-    useGetOrganisationListQuery(
+    useGetOrganisationFilterListQuery(
       {
         network: selectedNetwork,
       },

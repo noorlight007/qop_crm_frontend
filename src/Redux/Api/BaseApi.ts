@@ -225,6 +225,7 @@ export const baseApi = createApi({
     "SupportTicket",
     "LeadsOrApplicants",
     "Notifications",
+    "CommonFilters",
     // Common components end
 
     // Single case info start
