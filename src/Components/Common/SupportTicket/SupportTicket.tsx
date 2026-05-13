@@ -4,6 +4,9 @@ import {
   statusColorMap,
   statusIconMap,
   statusOptions,
+  supportTicketPriorityFilters,
+  supportTicketStatusFilters,
+  supportTicketTypeFilters,
   ticketTypeColorMap,
 } from "@/Data/SupportTicket/SupportTicketData";
 import {
@@ -399,14 +402,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </span>
                       </DropdownToggle>
                       <DropdownMenu className="w-100">
-                        {[
-                          { value: "FEEDBACK", label: "Feedback" },
-                          { value: "BUG_REPORT", label: "Bug Report" },
-                          {
-                            value: "FEATURE_REQUEST",
-                            label: "Feature Request",
-                          },
-                        ].map((opt) => {
+                        {supportTicketTypeFilters.map((opt) => {
                           const checked = filters.ticket_type.includes(
                             opt.value,
                           );
@@ -449,13 +445,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </span>
                       </DropdownToggle>
                       <DropdownMenu className="w-100">
-                        {[
-                          { value: "OPEN", label: "Open" },
-                          { value: "IN_PROGRESS", label: "In Progress" },
-                          { value: "COMPLETED", label: "Completed" },
-                          { value: "RESOLVED", label: "Resolved" },
-                          { value: "CLOSED", label: "Closed" },
-                        ].map((opt) => {
+                        {supportTicketStatusFilters.map((opt) => {
                           const checked = filters.status.includes(opt.value);
                           return (
                             <DropdownItem
@@ -497,12 +487,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </span>
                       </DropdownToggle>
                       <DropdownMenu className="w-100">
-                        {[
-                          { value: "URGENT", label: "Urgent" },
-                          { value: "MEDIUM", label: "Medium" },
-                          { value: "NORMAL", label: "Normal" },
-                          { value: "WHEN_POSSIBLE", label: "When Possible" },
-                        ].map((opt) => {
+                        {supportTicketPriorityFilters.map((opt) => {
                           const checked = filters.priority.includes(opt.value);
                           return (
                             <DropdownItem

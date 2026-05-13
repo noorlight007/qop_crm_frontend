@@ -64,3 +64,22 @@ export const statusIconMap: Record<TicketStatus, IconType> = {
   RESOLVED: TbChecks,
   CLOSED: TbX,
 };
+
+export const supportTicketPriorityFilters = [
+  { value: "URGENT", label: "Urgent" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "NORMAL", label: "Normal" },
+  { value: "WHEN_POSSIBLE", label: "When Possible" },
+];
+export const supportTicketStatusFilters = [
+  { value: "OPEN", label: "Open" },
+  { value: "IN_PROGRESS", label: "In Progress" },
+  { value: "COMPLETED", label: "Completed" },
+  { value: "RESOLVED", label: "Resolved" },
+  { value: "CLOSED", label: "Closed" },
+];
+export const supportTicketTypeFilters = [
+  { value: "FEEDBACK", label: "Feedback" },
+  { value: "BUG_REPORT", label: "Bug Report" },
+  { value: "FEATURE_REQUEST", label: "Feature Request" },
+];
