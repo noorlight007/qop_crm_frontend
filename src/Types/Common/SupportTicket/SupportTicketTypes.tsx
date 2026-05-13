@@ -1,3 +1,12 @@
+export type TicketType = "FEEDBACK" | "BUG_REPORT" | "FEATURE_REQUEST";
+export type TicketStatus =
+  | "OPEN"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "RESOLVED"
+  | "CLOSED";
+export type Priority = "URGENT" | "MEDIUM" | "NORMAL" | "WHEN_POSSIBLE";
+
 export interface SupportTicketFormData {
   alias: string;
   ticket_type: string;
@@ -43,3 +52,17 @@ export interface DeleteSupportTicketModalProps {
   toggle: () => void;
   ticketAlias?: string;
 }
+
+export interface SupportTicketProps {
+  initialIsRemoved?: string;
+}
+
+export type SupportTicketFilters = {
+  ticket_type: string[];
+  status: string[];
+  priority: string[];
+  network: string;
+  organisation: string;
+  created_by: string;
+  is_removed: string;
+};
