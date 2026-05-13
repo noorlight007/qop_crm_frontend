@@ -9,6 +9,7 @@ export interface Networktype {
 }
 export interface NetworkDetailstype {
   network: {
+    slug: string;
     logo: string;
     name: string;
     subdomain: string;
@@ -112,7 +113,6 @@ export interface DeleteNetworkApplicantModalProps {
   applicantToDelete: NetworkApplicantInfo | null;
   role: string;
 }
-
 
 export interface NetworkFormData {
   network: {

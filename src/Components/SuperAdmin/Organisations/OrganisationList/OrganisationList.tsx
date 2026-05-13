@@ -191,7 +191,7 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                   style={{ position: "relative", overflow: "hidden" }}
                 >
                   <Link
-                    href={`/admin/organisations/${organisation.slug}`}
+                    href={`/super-admin/organisations/${organisation.slug}`}
                     title="Website"
                     className="text-muted position-absolute top-0 end-0 p-3"
                     style={{ zIndex: 5 }}

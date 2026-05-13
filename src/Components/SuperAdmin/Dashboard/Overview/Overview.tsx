@@ -1,4 +1,5 @@
 import { useGetSuperAdminDashboardOverviewDataQuery } from "@/Redux/Reducers/SuperAdmin/Dashboard/DashboardApi";
+import { OverviewCard } from "@/Types/SuperAdmin/Dashboard/DashboardTypes";
 import React from "react";
 import {
   TbBuildingSkyscraper,
@@ -16,22 +17,6 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-
-type OverviewCard = {
-  title: string;
-  value: number;
-  icon: React.ComponentType<{ className?: string }>;
-  iconBgClass: string;
-  loadingSpinnerColor:
-    | "primary"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger"
-    | "info"
-    | "light"
-    | "dark";
-};
 
 const Overview: React.FC = () => {
   const {
