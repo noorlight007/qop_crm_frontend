@@ -1,6 +1,8 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Col, Container, Row } from "reactstrap";
 import Overview from "./Overview/Overview";
+import ProfileVisitChart from "./ProfileVisitChart/ProfileVisitChart";
+import SupportTicketChart from "./SupportTicketChart/SupportTicketChart";
 
 const AdminDashboardContainer: React.FC = () => {
   return (
@@ -20,6 +22,18 @@ const AdminDashboardContainer: React.FC = () => {
             <Overview />
           </Col>
         </Row>
+        <Row>
+          <Col sm="12" md="6">
+            <ProfileVisitChart />
+          </Col>
+          <Col sm="12" md="6">
+            <SupportTicketChart />
+          </Col>
+        </Row>
+        {/* <Row>
+          <Col sm="12" md="6"></Col>
+          <Col sm="12" md="6"></Col>
+        </Row> */}
       </Container>
     </>
   );
