@@ -1,5 +1,5 @@
 "use client";
-import { useDeleteNetworkCaseMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { useDeleteNetworkCaseMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkCasesApi";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";

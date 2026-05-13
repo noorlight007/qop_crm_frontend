@@ -1,7 +1,6 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import CaseSections from "@/Components/Common/Cases/CaseDetails/Components/CaseSections/CaseSections";
 import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
-import { useGetNetworkCaseDetailsQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
 import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
@@ -9,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Container, Row } from "reactstrap";
 import CaseInfo from "./CaseInfo/CaseInfo";
+import { useGetNetworkCaseDetailsQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkCasesApi";
 
 const CaseDetails: React.FC = () => {
   const { data: session } = useSession();

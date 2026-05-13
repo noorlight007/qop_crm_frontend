@@ -1,16 +1,12 @@
-import { useDeleteOrgApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgApplicantApi";
-import { useDeleteNetworkApplicantMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { DeleteOrgApplicantModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
+import { useDeleteNetworkApplicantMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkApplicantsApi";
+import { DeleteNetworkApplicantModalProps } from "@/Types/SuperAdmin/Networks/NetworkApplicantTypes";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const DeleteNetworkApplicantModal: React.FC<DeleteOrgApplicantModalProps> = ({
-  isOpen,
-  toggle,
-  applicantToDelete,
-  role,
-}) => {
+const DeleteNetworkApplicantModal: React.FC<
+  DeleteNetworkApplicantModalProps
+> = ({ isOpen, toggle, applicantToDelete, role }) => {
   const { networkslug } = useParams();
 
   const [deleteNetworkApplicant, { isLoading: isDeleting }] =

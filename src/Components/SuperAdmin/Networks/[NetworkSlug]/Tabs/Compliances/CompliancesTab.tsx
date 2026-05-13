@@ -1,10 +1,7 @@
+import NetworkMembers from "../Common/Members/NetworkMembers";
+
 const CompliancesTab: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is compliances tab
-    </div>
-  );
+  return <NetworkMembers role="COMPLIANCE" />;
 };
 
 export default CompliancesTab;

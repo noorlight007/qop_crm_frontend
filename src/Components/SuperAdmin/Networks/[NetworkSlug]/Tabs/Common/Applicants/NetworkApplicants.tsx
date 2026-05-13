@@ -1,7 +1,7 @@
 "use client";
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useGetOrgApplicantListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgApplicantApi";
-import { useGetNetworkApplicantListQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { useGetNetworkApplicantListQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkApplicantsApi";
+import { NetworkApplicantInfo } from "@/Types/SuperAdmin/Networks/NetworkApplicantTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
@@ -23,11 +23,10 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
-import ViewOrgApplicantModal from "./Modals/ViewApplicantModal";
 import AddNetworkApplicantModal from "./Modals/AddNetworkApplicantModal";
-import UpdateNetworkApplicantModal from "./Modals/UpdateNetworkApplicantModal";
-import { NetworkApplicantInfo } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import DeleteNetworkApplicantModal from "./Modals/DeleteNetworkApplicantModal";
+import UpdateNetworkApplicantModal from "./Modals/UpdateNetworkApplicantModal";
+import ViewNetworkApplicantModal from "./Modals/ViewApplicantModal";
 
 const NetworkApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({
   role,
@@ -78,33 +77,34 @@ const NetworkApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({
     { skip: !networkslug },
   );
 
-  const [selectedApplicant, setSelectedApplicant] = useState<NetworkApplicantInfo>({
-    alias: "",
-    profile_image: "",
-    name: "",
-    title: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    gender: "",
-    role: "",
-    enquiry_type: "",
-    other_enquiry_type: "",
-    source: "",
-    other_source: "",
-    note: "",
-    created_by: {
+  const [selectedApplicant, setSelectedApplicant] =
+    useState<NetworkApplicantInfo>({
+      alias: "",
+      profile_image: "",
       name: "",
       title: "",
       first_name: "",
       middle_name: "",
       last_name: "",
       email: "",
-    },
-    created_at: "",
-  });
+      phone: "",
+      gender: "",
+      role: "",
+      enquiry_type: "",
+      other_enquiry_type: "",
+      source: "",
+      other_source: "",
+      note: "",
+      created_by: {
+        name: "",
+        title: "",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+        email: "",
+      },
+      created_at: "",
+    });
 
   const toggleViewModal = (item?: NetworkApplicantInfo) => {
     if (item) {
@@ -412,7 +412,7 @@ const NetworkApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({
         </Row>
 
         {/* Modals */}
-        <ViewOrgApplicantModal
+        <ViewNetworkApplicantModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedApplicant={selectedApplicant}

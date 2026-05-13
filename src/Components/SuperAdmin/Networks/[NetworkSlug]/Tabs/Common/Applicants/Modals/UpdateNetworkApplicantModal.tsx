@@ -1,5 +1,5 @@
-import { useUpdateNetworkApplicantMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { UpdateNetworkApplicantModalProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
+import { useUpdateNetworkApplicantMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkApplicantsApi";
+import { UpdateNetworkApplicantModalProps } from "@/Types/SuperAdmin/Networks/NetworkApplicantTypes";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
