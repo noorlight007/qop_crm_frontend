@@ -315,6 +315,10 @@ const SupportTicketDetails: React.FC = () => {
               color="primary"
               className="d-flex justify-content-between align-content-center gap-2"
               onClick={() => openUpdateModal(ticketDetails)}
+              disabled={
+                session?.user?.role !== "SUPER_ADMIN" &&
+                ticketDetails?.status === "CLOSED"
+              }
               title="Edit Ticket"
             >
               <i className="icon-pencil-alt pr-1"></i>
@@ -635,7 +639,11 @@ const SupportTicketDetails: React.FC = () => {
                       color="primary"
                       size="sm"
                       onClick={handleEditMessage}
-                      disabled={isLoading}
+                      disabled={
+                        (session?.user?.role !== "SUPER_ADMIN" &&
+                          ticketDetails?.status === "CLOSED") ||
+                        isLoading
+                      }
                     >
                       <i className="icon-pencil-alt me-1" /> Edit
                     </Button>

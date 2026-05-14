@@ -853,6 +853,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                               color="secondary"
                               size="sm"
                               title="View Ticket"
+                              disabled={
+                                session?.user?.role !== "SUPER_ADMIN" &&
+                                ticket?.status === "CLOSED"
+                              }
                               onClick={() => openUpdateModal(ticket)}
                             >
                               <i className="icon-pencil-alt"></i>

@@ -1,9 +1,14 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useFetchSupportTicketCommentsQuery,
+  useFetchSupportTicketDetailsQuery,
   useMakeSupportTicketCommentMutation,
   useMakeSupportTicketCommentReplyMutation,
 } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
+import {
+  SupportTicketComment,
+  SupportTicketCommentReply,
+} from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -19,44 +24,14 @@ import {
 import { toast } from "react-toastify";
 import { Button, Card, CardBody, Col, Form, Input, Row } from "reactstrap";
 
-interface Author {
-  id: number;
-  alias: string;
-  profile_image: string;
-  name: string;
-  email: string;
-}
-
-interface CommentFile {
-  alias: string;
-  file: string;
-}
-
-interface Reply {
-  id: number;
-  alias: string;
-  message: string;
-  parent: number;
-  author: Author;
-  files: CommentFile[];
-  replies: Reply[];
-  created_at: string;
-}
-
-interface Comment {
-  id: number;
-  alias: string;
-  message: string;
-  parent: number | null;
-  author: Author;
-  files: CommentFile[];
-  replies: Reply[];
-  created_at: string;
-}
-
 const SupportTicketComments: React.FC = () => {
   const { supportticketalias } = useParams();
   const { data: session } = useSession();
+
+  const { data: ticketDetails } = useFetchSupportTicketDetailsQuery(
+    { ticket_alias: supportticketalias as string },
+    { skip: !supportticketalias },
+  );
 
   const { data: comments, isLoading } = useFetchSupportTicketCommentsQuery(
     { ticket_alias: supportticketalias as string },
@@ -74,7 +49,11 @@ const SupportTicketComments: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [replyFiles, setReplyFiles] = useState<{ [key: number]: File[] }>({});
 
+  const isLocked =
+    session?.user?.role !== "SUPER_ADMIN" && ticketDetails?.status === "CLOSED";
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isLocked) return;
     if (e.target.files) {
       setSelectedFiles(Array.from(e.target.files));
     }
@@ -84,6 +63,7 @@ const SupportTicketComments: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     commentId: number,
   ) => {
+    if (isLocked) return;
     if (e.target.files) {
       setReplyFiles((prev) => ({
         ...prev,
@@ -93,10 +73,12 @@ const SupportTicketComments: React.FC = () => {
   };
 
   const handleRemoveFile = (index: number) => {
+    if (isLocked) return;
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleRemoveReplyFile = (commentId: number, index: number) => {
+    if (isLocked) return;
     setReplyFiles((prev) => ({
       ...prev,
       [commentId]: prev[commentId]?.filter((_, i) => i !== index) || [],
@@ -105,6 +87,10 @@ const SupportTicketComments: React.FC = () => {
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLocked) {
+      toast.info("This ticket is closed. Commenting is disabled.");
+      return;
+    }
     if (!newComment.trim()) {
       toast.warning("Please enter a comment");
       return;
@@ -133,6 +119,10 @@ const SupportTicketComments: React.FC = () => {
   };
 
   const handleSubmitReply = async (commentId: number) => {
+    if (isLocked) {
+      toast.info("This ticket is closed. Replying is disabled.");
+      return;
+    }
     const replyMessage = replyText[commentId];
     if (!replyMessage?.trim()) {
       toast.warning("Please enter a reply");
@@ -164,19 +154,11 @@ const SupportTicketComments: React.FC = () => {
     }
   };
 
-  const formatUserType = (userType: string) => {
-    if (!userType) return "";
-    return userType
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  };
-
   const getFileNameFromUrl = (url: string) => {
     return url.split("/").pop() || "Unknown file";
   };
 
-  const renderReply = (reply: Reply, depth: number = 0) => (
+  const renderReply = (reply: SupportTicketCommentReply, depth: number = 0) => (
     <div
       key={reply.id}
       className={`${depth > 0 ? "ms-4" : ""} mt-3 border-l-primary border-2 rounded`}
@@ -239,7 +221,7 @@ const SupportTicketComments: React.FC = () => {
     </div>
   );
 
-  const renderComment = (comment: Comment) => (
+  const renderComment = (comment: SupportTicketComment) => (
     <Card key={comment.id} className="mb-3 shadow-sm">
       <CardBody>
         <div className="d-flex align-items-start gap-3">
@@ -293,7 +275,9 @@ const SupportTicketComments: React.FC = () => {
                 color="link"
                 size="sm"
                 className="text-decoration-none p-0"
+                disabled={isLocked}
                 onClick={() =>
+                  !isLocked &&
                   setReplyTo(replyTo === comment.id ? null : comment.id)
                 }
               >
@@ -316,6 +300,7 @@ const SupportTicketComments: React.FC = () => {
                     rows={2}
                     placeholder="Write a reply..."
                     value={replyText[comment.id] || ""}
+                    disabled={isLocked || isReplyLoading}
                     onChange={(e) =>
                       setReplyText((prev) => ({
                         ...prev,
@@ -357,13 +342,16 @@ const SupportTicketComments: React.FC = () => {
                       className="form-control-sm"
                       style={{ maxWidth: "200px" }}
                       accept="image/*,.pdf,.doc,.docx"
+                      disabled={isLocked || isReplyLoading}
                     />
                     <Button
                       color="primary"
                       size="sm"
                       type="submit"
                       disabled={
-                        isReplyLoading || !replyText[comment.id]?.trim()
+                        isLocked ||
+                        isReplyLoading ||
+                        !replyText[comment.id]?.trim()
                       }
                     >
                       {isReplyLoading ? (
@@ -450,6 +438,7 @@ const SupportTicketComments: React.FC = () => {
                   rows={3}
                   placeholder="Write a comment..."
                   value={newComment}
+                  disabled={isLocked || isCommentLoading}
                   onChange={(e) => setNewComment(e.target.value)}
                   className="mb-2"
                 />
@@ -488,11 +477,14 @@ const SupportTicketComments: React.FC = () => {
                     className="form-control-sm"
                     style={{ maxWidth: "250px" }}
                     accept="image/*,.pdf,.doc,.docx"
+                    disabled={isLocked || isCommentLoading}
                   />
                   <Button
                     color="primary"
                     type="submit"
-                    disabled={isCommentLoading || !newComment.trim()}
+                    disabled={
+                      isLocked || isCommentLoading || !newComment.trim()
+                    }
                   >
                     {isCommentLoading ? (
                       <FaSpinner className="fa-spin me-1" />
@@ -510,7 +502,11 @@ const SupportTicketComments: React.FC = () => {
 
       {/* Comments List */}
       {comments && comments.length > 0 ? (
-        <div>{comments.map((comment: Comment) => renderComment(comment))}</div>
+        <div>
+          {comments.map((comment: SupportTicketComment) =>
+            renderComment(comment),
+          )}
+        </div>
       ) : (
         <div className="text-center py-5">
           <p className="text-muted">

@@ -66,3 +66,38 @@ export type SupportTicketFilters = {
   created_by: string;
   is_removed: string;
 };
+
+interface SupportTicketCommentAuthor {
+  id: number;
+  alias: string;
+  profile_image: string;
+  name: string;
+  email: string;
+}
+
+interface SupportTicketCommentFile {
+  alias: string;
+  file: string;
+}
+
+export interface SupportTicketCommentReply {
+  id: number;
+  alias: string;
+  message: string;
+  parent: number;
+  author: SupportTicketCommentAuthor;
+  files: SupportTicketCommentFile[];
+  replies: SupportTicketCommentReply[];
+  created_at: string;
+}
+
+export interface SupportTicketComment {
+  id: number;
+  alias: string;
+  message: string;
+  parent: number | null;
+  author: SupportTicketCommentAuthor;
+  files: SupportTicketCommentFile[];
+  replies: SupportTicketCommentReply[];
+  created_at: string;
+}
