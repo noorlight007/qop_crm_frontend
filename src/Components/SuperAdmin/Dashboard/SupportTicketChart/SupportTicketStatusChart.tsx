@@ -1,18 +1,10 @@
+import { TicketStatusPoint } from "@/Types/SuperAdmin/Dashboard/DashboardTypes";
 import dynamic from "next/dynamic";
 import React from "react";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
 // Dynamically import Google Charts with SSR disabled
 const Chart = dynamic(() => import("react-google-charts"), { ssr: false });
-
-type TicketStatusPoint = {
-  label: string;
-  open: number;
-  inProgress: number;
-  completed: number;
-  resolved: number;
-  closed: number;
-};
 
 const SupportTicketStatusChart: React.FC = () => {
   const monthShort = [

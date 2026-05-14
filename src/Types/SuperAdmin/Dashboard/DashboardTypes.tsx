@@ -13,3 +13,12 @@ export type OverviewCard = {
     | "light"
     | "dark";
 };
+
+export type TicketStatusPoint = {
+  label: string;
+  open: number;
+  inProgress: number;
+  completed: number;
+  resolved: number;
+  closed: number;
+};
