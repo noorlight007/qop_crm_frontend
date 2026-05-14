@@ -211,7 +211,7 @@ export const productTransferOptions: { value: string; label: string }[] = [
       "time restraints meant that a remortgage may not complete in time for the end of your current product, and you did not want to roll onto the standard variable rate.",
   },
   {
-    value: "SIMPLER_PROCESS",
+    value: "SIMPLER_PROCESS_PREFERENCE",
     label:
       "it was your preference to go through a simpler application process and not have to complete steps such as a lender remortgage questionnaire and the legal work involved in transferring the mortgage to a new lender.",
   },

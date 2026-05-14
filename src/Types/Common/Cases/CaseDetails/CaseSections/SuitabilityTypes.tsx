@@ -36,6 +36,7 @@ export interface SuitabilityData {
   repayment_status_type: string | null;
   max_erc: string | null;
   email: string | null;
+  address: string | null;
   outstanding_balance: string | null;
   interest_rate_type: string | null;
   repayment_method_type: string | null;
