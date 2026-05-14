@@ -49,6 +49,14 @@ export const SuitabilityApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Suitability"],
     }),
+    // suitability pdf download api
+    downloadSuitabilityPdf: builder.mutation({
+      query: ({ case_alias }) => ({
+        url: `/cases/${case_alias}/suitability-letter/pdf/`,
+        method: "GET",
+        responseHandler: (response) => response.blob(),
+      }),
+    }),
   }),
 });
 
@@ -59,4 +67,5 @@ export const {
   useUpdateDebtSummaryRecommendationMutation,
   useGetExtraAnswerQuery,
   useAddExtraAnswerMutation,
+  useDownloadSuitabilityPdfMutation,
 } = SuitabilityApi;
