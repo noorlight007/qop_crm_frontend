@@ -54,14 +54,14 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const advisorEmail = s?.adviser?.email ?? "";
   const advisorPhone = s?.adviser?.phone ?? "";
   const companyName = s?.adviser?.company ?? "";
-  const companyAddress = s?.company_address ?? 
-  [
-    s?.address?.house_name_or_number,
-    s?.address?.city,
-    s?.address?.postcode
-  ]
-    .filter(Boolean)
-    .join("\n");
+  const companyAddress =
+    [
+      s?.adviser?.address?.house_name_or_number,
+      s?.adviser?.address?.city,
+      s?.adviser?.address?.postcode,
+    ]
+      .filter(Boolean)
+      .join("\n") || "";
 
   const clientName = s?.applicant?.name;
   const jointApplicantNames = s?.joint_applicants || [];
@@ -356,15 +356,15 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsMaxErcEditing(true);
   };
   const handleAdditionalRecipientsSave = () => {
-    onFormChange({ email: additionalRecipientsDraft });
+    onFormChange({ address: additionalRecipientsDraft });
     setIsAdditionalRecipientsEditing(false);
   };
   const handleAdditionalRecipientsCancel = () => {
-    setAdditionalRecipientsDraft(formValues.email ?? "");
+    setAdditionalRecipientsDraft(formValues.address ?? "");
     setIsAdditionalRecipientsEditing(false);
   };
   const startAdditionalRecipientsEdit = () => {
-    setAdditionalRecipientsDraft(formValues.email ?? "");
+    setAdditionalRecipientsDraft(formValues.address ?? "");
     setIsAdditionalRecipientsEditing(true);
   };
   const handleRepaymentMethodSave = () => {
@@ -1845,7 +1845,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           onClick={startAdditionalRecipientsEdit}
           title="Click to edit"
         >
-          {formValues.email || "click to add email / address..."}
+          {formValues.address || "click to add email / address..."}
         </p>
       )}
     </>
