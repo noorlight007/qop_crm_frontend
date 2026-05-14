@@ -891,7 +891,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             <small className="text-muted d-block fw-500 mb-2">
                               Lender
                             </small>
-                            <p className="m-0 text-dark fw-500">
+                            <p className="m-0 text-dark fw-500 text-truncate">
                               {caseInfo?.lender ? (
                                 formatChoiceFieldValue(caseInfo.lender)
                               ) : (
