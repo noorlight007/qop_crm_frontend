@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import {
+  useDownloadSuitabilityPdfMutation,
   useGetSuitabilityQuery,
   useUpdateSuitabilityMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi";
@@ -17,11 +18,8 @@ import DebtConsolidation from "./Components/DebtConsolidation";
 import HighLoanToValue from "./Components/HighLoanToValue";
 import IslamicMortgage from "./Components/IslamicMortgage";
 import LendingIntoRetirement from "./Components/LendingIntoRetirement";
-import PortingMortgageIncrease from "./Components/PortingMortgageIncrease";
 import ProductTransfer from "./Components/ProductTransfer";
-import RateTypePaymentMethod from "./Components/RateTypePaymentMethod";
 import RecommendationLetter from "./Components/RecommendationLetter";
-import ShortenedProductTransfer from "./Components/ShortenedProductTransfer";
 
 const Divider = () => <hr className="my-4" />;
 
@@ -46,6 +44,9 @@ const Suitability: React.FC = () => {
 
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
+
+  const [downloadSuitabilityPdf, { isLoading: isDownloadingPdf }] =
+    useDownloadSuitabilityPdfMutation();
 
   const [formValues, setFormValues] = useState<SuitabilityData>({
     lender_text: "",
@@ -232,8 +233,48 @@ const Suitability: React.FC = () => {
 
   if (isCaseLoading || isSuitLoading) return <LoadingGrow />;
 
+  const handleDownloadPdf = async () => {
+    try {
+      const response = await downloadSuitabilityPdf({
+        case_alias: casealias,
+      }).unwrap();
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `suitability-${casealias}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download error:", err);
+      toast.error("Failed to download PDF");
+    }
+  };
+
   return (
     <Container fluid className="py-4 px-2 px-md-4">
+      <div className="d-flex justify-content-between mb-3 p-3 bg-light rounded">
+        <h5 className="text-body mb-0 fw-bold">Download Suitability Letter</h5>
+        <Button
+          color="primary"
+          onClick={handleDownloadPdf}
+          disabled={isDownloadingPdf}
+        >
+          {isDownloadingPdf ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" />
+              Downloading...
+            </>
+          ) : (
+            <>
+              <i className="fa fa-file-pdf-o me-2" />
+              Download PDF
+            </>
+          )}
+        </Button>
+      </div>
+      <Divider />
       <div className="suitability-letter">
         <RecommendationLetter
           caseData={caseData}
@@ -313,6 +354,7 @@ const Suitability: React.FC = () => {
           </small>
         </div>
       </div>
+      <Divider />
       <div className="d-flex justify-content-end mt-4 gap-2">
         <Button
           color="primary"
