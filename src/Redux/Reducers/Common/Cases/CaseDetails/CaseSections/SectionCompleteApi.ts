@@ -1,4 +1,3 @@
-import { Update } from "@/Constant";
 import { baseApi } from "@/Redux/Api/BaseApi";
 
 export const SectionCompleteApi = baseApi.injectEndpoints({
@@ -21,4 +20,7 @@ export const SectionCompleteApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetSectionCompleteStatusQuery, useUpdateSectionCompleteStatusMutation } = SectionCompleteApi;
+export const {
+  useGetSectionCompleteStatusQuery,
+  useUpdateSectionCompleteStatusMutation,
+} = SectionCompleteApi;

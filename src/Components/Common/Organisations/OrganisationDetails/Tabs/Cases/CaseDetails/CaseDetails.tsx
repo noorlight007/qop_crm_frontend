@@ -6,6 +6,7 @@ import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { Container, Row } from "reactstrap";
 import CaseInfo from "./CaseInfo/CaseInfo";
 
@@ -39,6 +40,16 @@ const CaseDetails: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading) {
+      if (isError || !caseData) {
+        toast.error("Find Wrong URL! Redirecting...");
+        router.back();
+        return;
+      }
+      if (caseData.alias !== caseAlias) {
+        toast.error("Find Wrong URL! Redirecting...");
+        router.back();
+        return;
+      }
       setCaseInfo(caseData);
     }
   }, [

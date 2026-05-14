@@ -10,6 +10,7 @@ export const NetworksApi = baseApi.injectEndpoints({
       }),
       providesTags: ["NetworkList"],
     }),
+
     getNetworkDetails: builder.query({
       query: ({ network_slug }) => ({
         url: `/api/networks/${network_slug}/`,

@@ -7,10 +7,12 @@ import { useEffect, useState } from "react";
 import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeOutModal from "./FeesModals/AddFeeOutModal";
 import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
+import EditFeeOutModal from "./FeesModals/EditFeeOutModal";
 
 const FeeOutTable = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedFee, setSelectedFee] = useState<any | null>(null);
 
@@ -50,10 +52,14 @@ const FeeOutTable = () => {
     pageSize > 0 ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
 
   const feeTypes = [
-    { title: "Unknown", value: "UNKNOWN" },
+    { title: "Procuration Fee", value: "PROCURATION_FEE" },
     {
-      title: "Commission (Proc Fee Share)",
-      value: "COMMISSION_PROC_FEE_SHARE",
+      title: "Broker Fee",
+      value: "BROKER_FEE",
+    },
+    {
+      title: "Other",
+      value: "OTHER",
     },
   ];
 
@@ -72,6 +78,16 @@ const FeeOutTable = () => {
   const handleAddFee = (newFee: any) => {
     setPage(1);
     toggleModal();
+  };
+
+  const handleFeeEdit = (fee: any) => {
+    setSelectedFee(fee);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditFee = (_updatedFee: any) => {
+    setPage(1);
+    setIsEditModalOpen(false);
   };
   const handleFeeDelete = (fee: any) => {
     setSelectedFee(fee);
@@ -94,20 +110,12 @@ const FeeOutTable = () => {
             onClick={toggleModal}
             disabled={session?.user?.role === "APPLICANT"}
           >
-            Add New Fee Out
             <i className="fa-solid fa-circle-plus"></i>
+            Add New Fee Out
           </Button>
         </Col>
       </Row>
 
-      <AddFeeOutModal
-        isOpen={isModalOpen}
-        toggle={toggleModal}
-        onSubmit={handleAddFee}
-        feeTypes={feeTypes}
-        methods={methods}
-        caseAlias={casealias}
-      />
       <Row>
         <Col sm={12} className="form-group" id="FeeOut">
           <div className="table-responsive shadow-sm rounded">
@@ -133,7 +141,7 @@ const FeeOutTable = () => {
                     Date Paid Out
                   </th>
                   <th className="text-center" style={{ width: "5%" }}>
-                    Action
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -173,15 +181,26 @@ const FeeOutTable = () => {
                         {feeOut.feeDate || "-"}
                       </td>
                       <td className="text-center align-middle">
-                        <Button
-                          color="danger"
-                          size="sm"
-                          outline
-                          className="removeFee"
-                          onClick={() => handleFeeDelete(feeOut)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Button>
+                        <div className="d-flex justify-content-center gap-2">
+                          <Button
+                            color="primary"
+                            size="sm"
+                            outline
+                            disabled={session?.user?.role === "APPLICANT"}
+                            onClick={() => handleFeeEdit(feeOut)}
+                          >
+                            <i className="fa fa-edit"></i>
+                          </Button>{" "}
+                          <Button
+                            color="danger"
+                            size="sm"
+                            outline
+                            className="removeFee"
+                            onClick={() => handleFeeDelete(feeOut)}
+                          >
+                            <i className="fa fa-trash"></i>
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -224,7 +243,24 @@ const FeeOutTable = () => {
         </Col>
       </Row>
 
-      {/* Delete Fee Modal can be added here */}
+      {/*  Fee Modal can be added here */}
+      <AddFeeOutModal
+        isOpen={isModalOpen}
+        toggle={toggleModal}
+        onSubmit={handleAddFee}
+        feeTypes={feeTypes}
+        methods={methods}
+        caseAlias={casealias}
+      />
+      <EditFeeOutModal
+        isOpen={isEditModalOpen}
+        toggle={() => setIsEditModalOpen(!isEditModalOpen)}
+        onSubmit={handleEditFee}
+        feeTypes={feeTypes}
+        methods={methods}
+        caseAlias={casealias}
+        initialData={selectedFee}
+      />
       <DeleteFeeModal
         isOpen={isDeleteModalOpen}
         toggle={() => setIsDeleteModalOpen(!isDeleteModalOpen)}

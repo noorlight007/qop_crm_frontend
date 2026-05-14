@@ -1,5 +1,4 @@
 import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 import DeleteOrganisationModal from "../../../Modals/DeleteOrganisationModal";
@@ -7,11 +6,6 @@ import DeleteOrganisationModal from "../../../Modals/DeleteOrganisationModal";
 const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,
 }) => {
-  const { data: session } = useSession();
-  const canDeleteOrganisation =
-    session?.user?.is_network &&
-    (session?.user?.role === "DIRECTOR" ||
-      session?.user?.role === "COMPLIANCE");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const irreversibleLossItems = [
@@ -50,7 +44,7 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
                 recovered.
               </p>
 
-              <div className="rounded-3 border border-danger-subtle bg-white p-3">
+              <div className="rounded-3 border border-danger-subtle bg-light-danger p-3">
                 <p className="fw-semibold mb-2 text-danger">
                   <i
                     className="fa fa-exclamation-triangle me-2"
@@ -73,21 +67,27 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
                   ))}
                 </ul>
               </div>
-
-              {!canDeleteOrganisation && (
-                <p className="mt-3 mb-0 text-muted">
-                  Only users with Director or Compliance role can delete an
-                  organisation.
-                </p>
-              )}
             </div>
 
             <div className="d-flex align-items-start align-items-lg-center">
               <Button
                 color="danger"
                 onClick={toggleModal}
-                disabled={!canDeleteOrganisation}
+                disabled={!singleOrgInfo?.organization?.slug}
                 className="px-4 py-2 fw-semibold"
+                style={{
+                  whiteSpace: "nowrap",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 12px rgba(220, 53, 69, 0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
               >
                 Delete Organisation Permanently
               </Button>

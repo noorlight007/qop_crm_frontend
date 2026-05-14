@@ -1,5 +1,4 @@
 import SVG from "@/CommonComponent/SVG";
-import { Href } from "@/Constant";
 import { notificationData } from "@/Data/Layout/HeaderData";
 import {
   useGetNotificationsQuery,
@@ -484,7 +483,7 @@ const NotificationHeader = () => {
   return (
     <li className="custom-dropdown" ref={wrapperRef}>
       <a
-        href={Href}
+        href="#javascript"
         onClick={(e) => {
           e.preventDefault();
           setShow(!show);
@@ -516,7 +515,7 @@ const NotificationHeader = () => {
         <ul className="activity-timeline">
           {visibleNotifications.map((item) => (
             <li className="d-flex align-items-start" key={item.id}>
-              <Link
+              <a
                 href={getNotificationTargetUrl(item, sessionData)}
                 className="d-flex align-items-start text-decoration-none text-reset w-100"
                 onClick={() => {
@@ -559,7 +558,7 @@ const NotificationHeader = () => {
                   <h5>{item.notification_type || ""}</h5>
                   <p>{item.message}</p>
                 </div>
-              </Link>
+              </a>
             </li>
           ))}
         </ul>

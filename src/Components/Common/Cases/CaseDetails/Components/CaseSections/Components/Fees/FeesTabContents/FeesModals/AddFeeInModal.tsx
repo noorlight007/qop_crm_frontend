@@ -164,7 +164,9 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="amount">Amount</Label>
+                <Label for="amount">
+                  Amount<span className="text-danger">*</span>
+                </Label>
                 <InputGroup>
                   <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
@@ -174,6 +176,7 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
                     value={feeData.fee}
                     onInput={limitDecimalPlaces}
                     onChange={(e) => handleInputChange("fee", e.target.value)}
+                    required
                   />
                 </InputGroup>
                 {errors.fee && <div className="text-danger">{errors.fee}</div>}
@@ -204,7 +207,9 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="method">Payment Method<span className="text-danger">*</span></Label>
+                <Label for="method">
+                  Payment Method<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="select"
                   id="method"
@@ -226,12 +231,15 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="feeDate">Date Received</Label>
+                <Label for="feeDate">
+                  Date Received<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="date"
                   id="feeDate"
                   value={feeData.feeDate}
                   onChange={(e) => handleInputChange("feeDate", e.target.value)}
+                  required
                 />
                 {errors.feeDate && (
                   <div className="text-danger">{errors.feeDate}</div>

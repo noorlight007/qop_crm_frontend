@@ -1,13 +1,30 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
+  priorityColorMap,
+  statusColorMap,
+  statusIconMap,
+  statusOptions,
+  supportTicketPriorityFilters,
+  supportTicketStatusFilters,
+  supportTicketTypeFilters,
+  ticketTypeColorMap,
+} from "@/Data/SupportTicket/SupportTicketData";
+import {
+  useGetNetworkFilterListQuery,
+  useGetOrganisationFilterListQuery,
+} from "@/Redux/Reducers/Common/CommonFilters/CommonFiltersApi";
+import {
   useFetchSupportTicketQuery,
   useUpdateSupportTicketMutation,
 } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
 import {
-  useGetNetworkListQuery,
-  useGetOrganisationListQuery,
-} from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
-import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
+  Priority,
+  SupportTicketFilters,
+  SupportTicketFormData,
+  SupportTicketProps,
+  TicketStatus,
+  TicketType,
+} from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getSupportTicketUrl } from "@/utils/RedirectPaths";
@@ -17,13 +34,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   FaCheck,
   FaChevronDown,
-  FaExclamationCircle,
   FaInfoCircle,
   FaRegQuestionCircle,
   FaSearch,
-  FaSpinner,
 } from "react-icons/fa";
-import { TbChecks, TbCirclePlus } from "react-icons/tb";
+import { TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Badge,
@@ -50,9 +65,6 @@ import Swal from "sweetalert2";
 import AddSupportTicketModal from "./Modals/AddSupportTicketModal";
 import DeleteSupportTicketModal from "./Modals/DeleteSupportTicketModal";
 import UpdateSupportTicketModal from "./Modals/UpdateSuppotTicketModal";
-interface SupportTicketProps {
-  initialIsRemoved?: string;
-}
 
 const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const { data: session } = useSession();
@@ -66,15 +78,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     useState<SupportTicketFormData | null>(null);
 
   const [filterIcon, setFilterIcon] = useState(false);
-  type SupportTicketFilters = {
-    ticket_type: string[];
-    status: string[];
-    priority: string[];
-    network: string;
-    organisation: string;
-    created_by: string;
-    is_removed: string;
-  };
 
   const defaultFilters: SupportTicketFilters = {
     ticket_type: [],
@@ -146,9 +149,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
   // Fetch network and organization lists
   const { data: networkList, isLoading: networkListLoading } =
-    useGetNetworkListQuery(undefined);
+    useGetNetworkFilterListQuery(undefined);
   const { data: orgList, isLoading: orgListLoading } =
-    useGetOrganisationListQuery(
+    useGetOrganisationFilterListQuery(
       {
         network: selectedNetwork,
       },
@@ -182,62 +185,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     setTicketToDelete(ticket);
     toggleDeleteModal();
   };
-
-  type TicketType = "FEEDBACK" | "BUG_REPORT" | "FEATURE_REQUEST";
-
-  const ticketTypeColorMap: Record<TicketType, string> = {
-    FEEDBACK: "success",
-    BUG_REPORT: "warning",
-    FEATURE_REQUEST: "info",
-  };
-
-  type TicketStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "RESOLVED";
-
-  const statusColorMap: Record<TicketStatus, string> = {
-    OPEN: "danger",
-    IN_PROGRESS: "warning",
-    COMPLETED: "info",
-    RESOLVED: "success",
-  };
-
-  type Priority = "URGENT" | "MEDIUM" | "NORMAL" | "WHEN_POSSIBLE";
-
-  const priorityColorMap: Record<Priority, string> = {
-    URGENT: "danger",
-    MEDIUM: "warning",
-    NORMAL: "info",
-    WHEN_POSSIBLE: "dark",
-  };
-
-  const statusIconMap: Record<TicketStatus, JSX.Element> = {
-    OPEN: <FaExclamationCircle />,
-    IN_PROGRESS: <FaSpinner />,
-    COMPLETED: <FaCheck />,
-    RESOLVED: <TbChecks size={12} />,
-  };
-
-  const statusOptions = [
-    {
-      value: "OPEN" as TicketStatus,
-      label: "Open",
-      description: "Ticket has been submitted and is awaiting action.",
-    },
-    {
-      value: "IN_PROGRESS" as TicketStatus,
-      label: "In Progress",
-      description: "Ticket is currently being worked on by our team.",
-    },
-    {
-      value: "COMPLETED" as TicketStatus,
-      label: "Completed",
-      description: "The issue has been fixed and is under review.",
-    },
-    {
-      value: "RESOLVED" as TicketStatus,
-      label: "Resolved",
-      description: "The issue has been fixed and everything is working.",
-    },
-  ];
 
   const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
     {},
@@ -311,6 +258,11 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
       return { ...prev, priority };
     });
     setCurrentPage(1);
+  };
+
+  const renderStatusIcon = (status: TicketStatus) => {
+    const Icon = statusIconMap[status];
+    return <Icon />;
   };
 
   return (
@@ -450,14 +402,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </span>
                       </DropdownToggle>
                       <DropdownMenu className="w-100">
-                        {[
-                          { value: "FEEDBACK", label: "Feedback" },
-                          { value: "BUG_REPORT", label: "Bug Report" },
-                          {
-                            value: "FEATURE_REQUEST",
-                            label: "Feature Request",
-                          },
-                        ].map((opt) => {
+                        {supportTicketTypeFilters.map((opt) => {
                           const checked = filters.ticket_type.includes(
                             opt.value,
                           );
@@ -500,12 +445,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </span>
                       </DropdownToggle>
                       <DropdownMenu className="w-100">
-                        {[
-                          { value: "OPEN", label: "Open" },
-                          { value: "IN_PROGRESS", label: "In Progress" },
-                          { value: "COMPLETED", label: "Completed" },
-                          { value: "RESOLVED", label: "Resolved" },
-                        ].map((opt) => {
+                        {supportTicketStatusFilters.map((opt) => {
                           const checked = filters.status.includes(opt.value);
                           return (
                             <DropdownItem
@@ -547,12 +487,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </span>
                       </DropdownToggle>
                       <DropdownMenu className="w-100">
-                        {[
-                          { value: "URGENT", label: "Urgent" },
-                          { value: "MEDIUM", label: "Medium" },
-                          { value: "NORMAL", label: "Normal" },
-                          { value: "WHEN_POSSIBLE", label: "When Possible" },
-                        ].map((opt) => {
+                        {supportTicketPriorityFilters.map((opt) => {
                           const checked = filters.priority.includes(opt.value);
                           return (
                             <DropdownItem
@@ -677,13 +612,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         style={{ cursor: "pointer" }}
                       />
                       <>
-                        <style>{`
-                          .status-popover {
-                            max-width: 380px !important;
-                            width: 380px !important;
-                            z-index: 1050;
-                          }
-                        `}</style>
                         <UncontrolledPopover
                           placement="right"
                           target="statusInfoIcon"
@@ -699,7 +627,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                 <span
                                   className={`me-2 text-${statusColorMap[status.value]}`}
                                 >
-                                  {statusIconMap[status.value]}
+                                  {renderStatusIcon(status.value)}
                                 </span>
                                 <div>
                                   <strong
@@ -784,11 +712,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                     className="d-flex justify-content-center align-items-center gap-1 px-1"
                                     style={{ cursor: "pointer" }}
                                   >
-                                    {
-                                      statusIconMap[
-                                        ticket?.status as TicketStatus
-                                      ]
-                                    }
+                                    {renderStatusIcon(
+                                      ticket?.status as TicketStatus,
+                                    )}
                                     <span style={{ marginTop: "2.5px" }}>
                                       {formatChoiceFieldValue(ticket?.status)}
                                     </span>
@@ -851,7 +777,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                 }
                                 className="d-flex justify-content-center align-items-center gap-1"
                               >
-                                {statusIconMap[ticket?.status as TicketStatus]}{" "}
+                                {renderStatusIcon(
+                                  ticket?.status as TicketStatus,
+                                )}{" "}
                                 <span style={{ marginTop: "2.5px" }}>
                                   {formatChoiceFieldValue(ticket?.status)}
                                 </span>
@@ -925,6 +853,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                               color="secondary"
                               size="sm"
                               title="View Ticket"
+                              disabled={
+                                session?.user?.role !== "SUPER_ADMIN" &&
+                                ticket?.status === "CLOSED"
+                              }
                               onClick={() => openUpdateModal(ticket)}
                             >
                               <i className="icon-pencil-alt"></i>

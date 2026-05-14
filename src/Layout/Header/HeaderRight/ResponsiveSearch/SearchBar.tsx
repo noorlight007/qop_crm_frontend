@@ -1,4 +1,3 @@
-import { Loading, SearchQOPTheme } from "@/Constant";
 import { getMenuByRole } from "@/Data/Layout/SidebarData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { MenuItem, SearchSuggestionItem } from "@/Types/LayoutTypes";
@@ -75,12 +74,12 @@ export const SearchBar = () => {
               <Input
                 className="demo-input Typeahead-input form-control-plaintext border-0 w-100"
                 type="text"
-                placeholder={SearchQOPTheme}
+                placeholder="Search..."
                 value={searchedWord}
                 onChange={(e) => handleSearch(e)}
               />
               <div className="spinner-border Typeahead-spinner" role="status">
-                <span className="sr-only">{Loading}</span>
+                <span className="sr-only">Loading</span>
               </div>
               <X className="close-search" onClick={handleClose} />
             </div>

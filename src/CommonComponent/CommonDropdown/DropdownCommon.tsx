@@ -1,4 +1,3 @@
-import { Href } from "@/Constant";
 import React, { useState } from "react";
 import {
   ButtonGroup,
@@ -26,7 +25,7 @@ const DropdownCommon: React.FC = ({ item, toggleClass }: any) => {
         <DropdownMenu className={item.bodyClass}>
           {item.menulist &&
             item.menulist.map((item: any, index: any) => (
-              <DropdownItem href={Href} key={index}>
+              <DropdownItem href="#javascript" key={index}>
                 {item}
               </DropdownItem>
             ))}

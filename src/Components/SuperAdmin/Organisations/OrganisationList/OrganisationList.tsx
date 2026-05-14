@@ -1,11 +1,13 @@
 import { useGetOrganisationListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
 import { Organisation } from "@/Types/SuperAdmin/Organisations/OrganisationTypes";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getOrganisationUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  FaCalendarAlt,
   FaCheckCircle,
   FaEnvelope,
   FaGlobe,
@@ -185,11 +187,11 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                 key={organisation.slug}
               >
                 <Card
-                  className="h-100 shadow-sm border-0"
+                  className="h-100 shadow-sm border-0 mb-0"
                   style={{ position: "relative", overflow: "hidden" }}
                 >
                   <Link
-                    href={`/admin/organisations/${organisation.slug}`}
+                    href={`/super-admin/organisations/${organisation.slug}`}
                     title="Website"
                     className="text-muted position-absolute top-0 end-0 p-3"
                     style={{ zIndex: 5 }}
@@ -311,6 +313,22 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                           </small>
                         </div>
                       </div>
+                    </div>
+                    <hr className="my-3" />
+                    <div className="d-flex justify-content-between align-items-center">
+                      <small
+                        className="text-muted"
+                        style={{
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
+                        }}
+                      >
+                        <FaCalendarAlt className="me-1" />
+                        Created{" "}
+                        {formatDateAndTime(
+                          organisation.created_at || "Not available",
+                        )}
+                      </small>
                     </div>
                   </CardBody>
                 </Card>

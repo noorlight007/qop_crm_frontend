@@ -9,6 +9,7 @@ export interface Networktype {
 }
 export interface NetworkDetailstype {
   network: {
+    slug: string;
     logo: string;
     name: string;
     subdomain: string;

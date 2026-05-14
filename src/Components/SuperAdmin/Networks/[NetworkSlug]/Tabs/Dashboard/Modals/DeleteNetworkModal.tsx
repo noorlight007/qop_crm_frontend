@@ -9,7 +9,6 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
   isOpen,
   toggle,
   networkInfo,
-  slug,
 }) => {
   const router = useRouter();
   // rtk hooks
@@ -17,7 +16,7 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
 
   const handleDelete = async () => {
     try {
-      const network_slug = slug;
+      const network_slug = networkInfo?.network?.slug;
       const response = await deleteNetwork({ network_slug });
       toggle();
       if (response.data === null) {
@@ -25,7 +24,7 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
       } else {
         toast.error("Failed to delete network.");
       }
-      router.push("/admin/networks");
+      router.back();
     } catch (error) {
       console.error("Failed to delete network", error);
       toast.error("Failed to delete network. Please try again.");

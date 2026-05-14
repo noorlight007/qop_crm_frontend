@@ -1,9 +1,19 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
+  priorityColorMap,
+  statusColorMap,
+  statusIconMap,
+  statusOptions,
+} from "@/Data/SupportTicket/SupportTicketData";
+import {
   useFetchSupportTicketDetailsQuery,
   useUpdateSupportTicketMutation,
 } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
-import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
+import {
+  Priority,
+  SupportTicketFormData,
+  TicketStatus,
+} from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -17,9 +27,8 @@ import {
   FaExclamationCircle,
   FaFileAlt,
   FaRegQuestionCircle,
-  FaSpinner,
 } from "react-icons/fa";
-import { TbChecks, TbCopy } from "react-icons/tb";
+import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Alert,
@@ -87,29 +96,6 @@ const SupportTicketDetails: React.FC = () => {
     // reset image visibility when ticket/creator changes
     setShowCreatorImage(true);
   }, [ticketDetails?.created_by?.profile_image]);
-
-  const statusOptions = [
-    {
-      value: "OPEN" as TicketStatus,
-      label: "Open",
-      description: "Ticket has been submitted and is awaiting action.",
-    },
-    {
-      value: "IN_PROGRESS" as TicketStatus,
-      label: "In Progress",
-      description: "Ticket is currently being worked on by our team.",
-    },
-    {
-      value: "COMPLETED" as TicketStatus,
-      label: "Completed",
-      description: "The issue has been fixed and is under review.",
-    },
-    {
-      value: "RESOLVED" as TicketStatus,
-      label: "Resolved",
-      description: "The issue has been fixed and everything is working.",
-    },
-  ];
 
   const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
     {},
@@ -315,30 +301,11 @@ const SupportTicketDetails: React.FC = () => {
     );
   };
 
-  type TicketStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "RESOLVED";
-
-  const statusColorMap: Record<TicketStatus, string> = {
-    OPEN: "danger",
-    IN_PROGRESS: "warning",
-    COMPLETED: "info",
-    RESOLVED: "success",
+  const renderStatusIcon = (status: TicketStatus) => {
+    const Icon = statusIconMap[status];
+    return <Icon />;
   };
 
-  type Priority = "URGENT" | "MEDIUM" | "NORMAL" | "WHEN_POSSIBLE";
-
-  const priorityColorMap: Record<Priority, string> = {
-    URGENT: "danger",
-    MEDIUM: "warning",
-    NORMAL: "info",
-    WHEN_POSSIBLE: "dark",
-  };
-
-  const statusIconMap: Record<TicketStatus, JSX.Element> = {
-    OPEN: <FaExclamationCircle />,
-    IN_PROGRESS: <FaSpinner />,
-    COMPLETED: <FaCheck />,
-    RESOLVED: <TbChecks size={14} />,
-  };
   return (
     <>
       <Row>
@@ -348,6 +315,10 @@ const SupportTicketDetails: React.FC = () => {
               color="primary"
               className="d-flex justify-content-between align-content-center gap-2"
               onClick={() => openUpdateModal(ticketDetails)}
+              disabled={
+                session?.user?.role !== "SUPER_ADMIN" &&
+                ticketDetails?.status === "CLOSED"
+              }
               title="Edit Ticket"
             >
               <i className="icon-pencil-alt pr-1"></i>
@@ -466,11 +437,9 @@ const SupportTicketDetails: React.FC = () => {
                                 className="d-flex justify-content-center align-items-center gap-1"
                                 style={{ cursor: "pointer" }}
                               >
-                                {
-                                  statusIconMap[
-                                    ticketDetails?.status as TicketStatus
-                                  ]
-                                }
+                                {renderStatusIcon(
+                                  ticketDetails.status as TicketStatus,
+                                )}
                                 <span style={{ marginTop: "2.5px" }}>
                                   {formatChoiceFieldValue(
                                     ticketDetails?.status,
@@ -536,13 +505,6 @@ const SupportTicketDetails: React.FC = () => {
                           </span>
 
                           <>
-                            <style>{`
-                              .status-popover {
-                                max-width: 380px !important;
-                                width: 380px !important;
-                              }
-                            `}</style>
-
                             <UncontrolledPopover
                               placement="left"
                               target="orgAdminSearch"
@@ -558,7 +520,7 @@ const SupportTicketDetails: React.FC = () => {
                                     <span
                                       className={`me-2 text-${statusColorMap[status.value]}`}
                                     >
-                                      {statusIconMap[status.value]}
+                                      {renderStatusIcon(status.value)}
                                     </span>
                                     <div>
                                       <strong
@@ -584,11 +546,9 @@ const SupportTicketDetails: React.FC = () => {
                             }
                             className="d-flex justify-content-center align-items-center gap-1"
                           >
-                            {
-                              statusIconMap[
-                                ticketDetails?.status as TicketStatus
-                              ]
-                            }{" "}
+                            {renderStatusIcon(
+                              ticketDetails.status as TicketStatus,
+                            )}{" "}
                             <span style={{ marginTop: "2.5px" }}>
                               {formatChoiceFieldValue(ticketDetails?.status)}
                             </span>
@@ -607,13 +567,6 @@ const SupportTicketDetails: React.FC = () => {
                           </span>
 
                           <>
-                            <style>{`
-                              .status-popover {
-                                max-width: 380px !important;
-                                width: 380px !important;
-                              }
-                            `}</style>
-
                             <UncontrolledPopover
                               placement="left"
                               target="orgAdminSearch"
@@ -629,7 +582,7 @@ const SupportTicketDetails: React.FC = () => {
                                     <span
                                       className={`me-2 text-${statusColorMap[status.value]}`}
                                     >
-                                      {statusIconMap[status.value]}
+                                      {renderStatusIcon(status.value)}
                                     </span>
                                     <div>
                                       <strong
@@ -686,7 +639,11 @@ const SupportTicketDetails: React.FC = () => {
                       color="primary"
                       size="sm"
                       onClick={handleEditMessage}
-                      disabled={isLoading}
+                      disabled={
+                        (session?.user?.role !== "SUPER_ADMIN" &&
+                          ticketDetails?.status === "CLOSED") ||
+                        isLoading
+                      }
                     >
                       <i className="icon-pencil-alt me-1" /> Edit
                     </Button>

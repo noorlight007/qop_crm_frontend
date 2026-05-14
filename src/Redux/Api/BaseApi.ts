@@ -201,6 +201,10 @@ export const baseApi = createApi({
   tagTypes: [
     //Appearance Settings
     "AppearanceSettings",
+
+    //company info
+    "CompanyInfo",
+
     //AddUser
     "AddUser",
     "AuthUserList",
@@ -221,6 +225,7 @@ export const baseApi = createApi({
     "SupportTicket",
     "LeadsOrApplicants",
     "Notifications",
+    "CommonFilters",
     // Common components end
 
     // Single case info start
@@ -304,6 +309,9 @@ export const baseApi = createApi({
 
     // Admin Start
     "NetworkList",
+    "NetworkCases",
+    "NetworkApplicants",
+    "NetworkMembers",
   ],
   endpoints: () => ({}),
 });

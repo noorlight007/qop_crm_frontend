@@ -1,11 +1,9 @@
-import OrganisationDelete from "./OrganisationDelete/OrganisationDelete";
-import OrganisationDetails from "./OrganisationDetails/OrganisationDetails";
+import DashboardTab from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Dashboard/DashboardTab";
 
 const Dashboard: React.FC = () => {
   return (
     <div>
-      <OrganisationDetails />
-      <OrganisationDelete />
+      <DashboardTab />
     </div>
   );
 };

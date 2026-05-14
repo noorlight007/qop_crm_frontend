@@ -1,10 +1,7 @@
+import NetworkMembers from "../Common/Members/NetworkMembers"
+
 const AdvisersTab: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is advisers tab
-    </div>
-  );
+  return <NetworkMembers role="ADVISER"/>;
 };
 
 export default AdvisersTab;
