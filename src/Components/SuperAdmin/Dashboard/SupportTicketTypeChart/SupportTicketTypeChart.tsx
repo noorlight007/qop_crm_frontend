@@ -1,3 +1,4 @@
+import type { TicketType } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import dynamic from "next/dynamic";
 import React from "react";
 import { Card, CardBody, CardHeader } from "reactstrap";
@@ -5,16 +6,8 @@ import { Card, CardBody, CardHeader } from "reactstrap";
 // Dynamically import Google Charts with SSR disabled
 const Chart = dynamic(() => import("react-google-charts"), { ssr: false });
 
-type TicketStatusPoint = {
-  label: string;
-  open: number;
-  inProgress: number;
-  completed: number;
-  resolved: number;
-  closed: number;
-};
-
-const SupportTicketChart: React.FC = () => {
+const SupportTicketTypeChart: React.FC = () => {
+  // TODO: Replace with real API data when the endpoint is available.
   const monthShort = [
     "Jan",
     "Feb",
@@ -30,61 +23,49 @@ const SupportTicketChart: React.FC = () => {
     "Dec",
   ];
 
+  const ticketTypes = [
+    { value: "FEEDBACK", label: "Feedback" },
+    { value: "BUG_REPORT", label: "Bug Report" },
+    { value: "FEATURE_REQUEST", label: "Feature Request" },
+  ] satisfies Array<{ value: TicketType; label: string }>;
+
   // Oldest -> newest (last 12 months)
-  const sample = {
-    open: [18, 22, 20, 26, 28, 24, 30, 32, 29, 27, 25, 21],
-    inProgress: [10, 12, 11, 14, 15, 13, 16, 18, 17, 15, 20, 12],
-    completed: [8, 10, 9, 12, 14, 20, 16, 40, 17, 15, 14, 12],
-    resolved: [26, 24, 28, 30, 33, 31, 40, 38, 36, 34, 32, 29],
-    closed: [14, 16, 15, 18, 20, 19, 22, 24, 23, 21, 19, 10],
+  const sample: Record<TicketType, number[]> = {
+    FEEDBACK: [12, 10, 14, 13, 18, 15, 21, 20, 19, 22, 18, 24],
+    BUG_REPORT: [6, 7, 5, 8, 9, 8, 11, 10, 12, 14, 13, 15],
+    FEATURE_REQUEST: [9, 8, 10, 11, 12, 14, 13, 15, 16, 18, 17, 19],
   };
 
   const now = new Date();
-  const points: TicketStatusPoint[] = Array.from({ length: 12 }).map((_, i) => {
+  const months = Array.from({ length: 12 }).map((_, i) => {
     const date = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
-    return {
-      label: monthShort[date.getMonth()] ?? "",
-      open: sample.open[i] ?? 0,
-      inProgress: sample.inProgress[i] ?? 0,
-      completed: sample.completed[i] ?? 0,
-      resolved: sample.resolved[i] ?? 0,
-      closed: sample.closed[i] ?? 0,
-    };
+    return monthShort[date.getMonth()] ?? "";
   });
 
-  const allValuesZero = points.every(
-    (p) =>
-      (p.open ?? 0) === 0 &&
-      (p.inProgress ?? 0) === 0 &&
-      (p.completed ?? 0) === 0 &&
-      (p.resolved ?? 0) === 0 &&
-      (p.closed ?? 0) === 0,
+  const allValuesZero = months.every((_, i) =>
+    ticketTypes.every((t) => (sample[t.value]?.[i] ?? 0) === 0),
   );
 
   const data: any[] = [
-    ["Month", "Open", "In Progress", "Completed", "Resolved", "Closed"],
-    ...points.map((p) => [
-      p.label,
-      p.open,
-      p.inProgress,
-      p.completed,
-      p.resolved,
-      p.closed,
+    ["Month", ...ticketTypes.map((t) => t.label)],
+    ...months.map((label, i) => [
+      label,
+      ...ticketTypes.map((t) => sample[t.value]?.[i] ?? 0),
     ]),
   ];
 
   const options = {
+    title: "",
     backgroundColor: "transparent",
-    chartArea: { left: 44, top: 18, width: "88%", height: "72%" },
     legend: {
       position: "bottom" as const,
       alignment: "center" as const,
       textStyle: { fontSize: 12 },
     },
-    colors: ["#e74b2b", "#ea9200", "#308e87", "#51bb25", "#57375d"],
-    lineWidth: 3,
-    pointSize: 4,
-    curveType: "function" as const,
+    chartArea: { left: 44, top: 18, width: "88%", height: "72%" },
+    bar: { groupWidth: "62%" },
+    isStacked: false,
+    colors: ["#308e87", "#ea9200", "#51bb25"],
     hAxis: {
       textStyle: { fontSize: 11 },
     },
@@ -95,8 +76,9 @@ const SupportTicketChart: React.FC = () => {
       format: "0",
     },
     tooltip: {
-      isHtml: false,
-      textStyle: { fontSize: 12 },
+      textStyle: {
+        fontSize: 12,
+      },
     },
   };
 
@@ -105,9 +87,9 @@ const SupportTicketChart: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div
           className="skeleton-loading"
-          style={{ width: "50%", height: 14 }}
+          style={{ width: "45%", height: 14 }}
         />
-        <div className="skeleton-loading" style={{ width: 90, height: 14 }} />
+        <div className="skeleton-loading" style={{ width: 60, height: 14 }} />
       </div>
       <div
         className="skeleton-loading"
@@ -119,8 +101,8 @@ const SupportTicketChart: React.FC = () => {
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="bg-transparent border-0 pb-0">
-        <h3 className="mb-1">Ticket Status</h3>
-        <small className="text-muted">Monthly trend by status</small>
+        <h3 className="mb-1">Ticket Types</h3>
+        <small className="text-muted">Monthly breakdown by type</small>
       </CardHeader>
       <CardBody className="google-chart">
         {allValuesZero ? (
@@ -130,12 +112,12 @@ const SupportTicketChart: React.FC = () => {
           >
             <h6 className="mb-1">No ticket data yet</h6>
             <small className="text-muted">
-              Once tickets are created, trends will appear here.
+              Once activity is available, it will appear here.
             </small>
           </div>
         ) : (
           <Chart
-            chartType="LineChart"
+            chartType="ColumnChart"
             width="100%"
             height="320px"
             data={data}
@@ -148,4 +130,4 @@ const SupportTicketChart: React.FC = () => {
   );
 };
 
-export default SupportTicketChart;
+export default SupportTicketTypeChart;

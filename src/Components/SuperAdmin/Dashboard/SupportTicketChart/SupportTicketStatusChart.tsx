@@ -5,13 +5,16 @@ import { Card, CardBody, CardHeader } from "reactstrap";
 // Dynamically import Google Charts with SSR disabled
 const Chart = dynamic(() => import("react-google-charts"), { ssr: false });
 
-type ProfileVisitPoint = {
+type TicketStatusPoint = {
   label: string;
-  visits: number;
+  open: number;
+  inProgress: number;
+  completed: number;
+  resolved: number;
+  closed: number;
 };
 
-const ProfileVisitChart: React.FC = () => {
-  // TODO: Replace with real API data when the endpoint is available.
+const SupportTicketStatusChart: React.FC = () => {
   const monthShort = [
     "Jan",
     "Feb",
@@ -28,51 +31,60 @@ const ProfileVisitChart: React.FC = () => {
   ];
 
   // Oldest -> newest (last 12 months)
-  const sampleValues = [
-    420, 380, 460, 510, 640, 590, 720, 680, 740, 810, 770, 860,
-  ];
+  const sample = {
+    open: [18, 22, 20, 26, 28, 24, 30, 32, 29, 27, 25, 21],
+    inProgress: [10, 12, 11, 14, 15, 13, 16, 18, 17, 15, 20, 12],
+    completed: [8, 10, 9, 12, 14, 20, 16, 40, 17, 15, 14, 12],
+    resolved: [26, 24, 28, 30, 33, 31, 40, 38, 36, 34, 32, 29],
+    closed: [14, 16, 15, 18, 20, 19, 22, 24, 23, 21, 19, 10],
+  };
 
   const now = new Date();
-  const points: ProfileVisitPoint[] = Array.from({ length: 12 }).map((_, i) => {
+  const points: TicketStatusPoint[] = Array.from({ length: 12 }).map((_, i) => {
     const date = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
     return {
       label: monthShort[date.getMonth()] ?? "",
-      visits: sampleValues[i] ?? 0,
+      open: sample.open[i] ?? 0,
+      inProgress: sample.inProgress[i] ?? 0,
+      completed: sample.completed[i] ?? 0,
+      resolved: sample.resolved[i] ?? 0,
+      closed: sample.closed[i] ?? 0,
     };
   });
 
-  const barColors = [
-    "#308e87",
-    "#f39159",
-    "#51bb25",
-    "#ea9200",
-    "#e74b2b",
-    "#a927f9",
-  ];
-
-  const allValuesZero = points.every((p) => (p.visits ?? 0) === 0);
+  const allValuesZero = points.every(
+    (p) =>
+      (p.open ?? 0) === 0 &&
+      (p.inProgress ?? 0) === 0 &&
+      (p.completed ?? 0) === 0 &&
+      (p.resolved ?? 0) === 0 &&
+      (p.closed ?? 0) === 0,
+  );
 
   const data: any[] = [
-    ["Month", "Visits", { role: "style" }, { role: "annotation" }],
-    ...points.map((p, index) => [
+    ["Month", "Open", "In Progress", "Completed", "Resolved", "Closed"],
+    ...points.map((p) => [
       p.label,
-      p.visits,
-      barColors[index % barColors.length],
-      String(p.visits),
+      p.open,
+      p.inProgress,
+      p.completed,
+      p.resolved,
+      p.closed,
     ]),
   ];
 
   const options = {
-    title: "",
     backgroundColor: "transparent",
-    legend: { position: "none" as const },
     chartArea: { left: 44, top: 18, width: "88%", height: "72%" },
-    bar: { groupWidth: "62%" },
-    annotations: {
-      textStyle: {
-        fontSize: 10,
-      },
+    legend: {
+      position: "bottom" as const,
+      alignment: "center" as const,
+      textStyle: { fontSize: 12 },
     },
+    colors: ["#e74b2b", "#ea9200", "#308e87", "#51bb25", "#57375d"],
+    lineWidth: 3,
+    pointSize: 4,
+    curveType: "function" as const,
     hAxis: {
       textStyle: { fontSize: 11 },
     },
@@ -83,10 +95,8 @@ const ProfileVisitChart: React.FC = () => {
       format: "0",
     },
     tooltip: {
-      textStyle: {
-        fontSize: 12,
-      },
-      showColorCode: true,
+      isHtml: false,
+      textStyle: { fontSize: 12 },
     },
   };
 
@@ -95,9 +105,9 @@ const ProfileVisitChart: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div
           className="skeleton-loading"
-          style={{ width: "45%", height: 14 }}
+          style={{ width: "50%", height: 14 }}
         />
-        <div className="skeleton-loading" style={{ width: 60, height: 14 }} />
+        <div className="skeleton-loading" style={{ width: 90, height: 14 }} />
       </div>
       <div
         className="skeleton-loading"
@@ -109,8 +119,8 @@ const ProfileVisitChart: React.FC = () => {
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="bg-transparent border-0 pb-0">
-        <h3 className="mb-1">Profile Visits</h3>
-        <small className="text-muted">Monthly visits (last 12 months)</small>
+        <h3 className="mb-1">Ticket Status</h3>
+        <small className="text-muted">Monthly trend by status</small>
       </CardHeader>
       <CardBody className="google-chart">
         {allValuesZero ? (
@@ -118,14 +128,14 @@ const ProfileVisitChart: React.FC = () => {
             className="d-flex flex-column justify-content-center align-items-center text-center"
             style={{ height: 320 }}
           >
-            <h6 className="mb-1">No visit data yet</h6>
+            <h6 className="mb-1">No ticket data yet</h6>
             <small className="text-muted">
-              Once activity is available, it will appear here.
+              Once tickets are created, trends will appear here.
             </small>
           </div>
         ) : (
           <Chart
-            chartType="ColumnChart"
+            chartType="LineChart"
             width="100%"
             height="320px"
             data={data}
@@ -138,4 +148,4 @@ const ProfileVisitChart: React.FC = () => {
   );
 };
 
-export default ProfileVisitChart;
+export default SupportTicketStatusChart;
