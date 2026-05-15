@@ -1,5 +1,5 @@
 import { useGetSuperAdminDashboardSupportTicketStatusChartQuery } from "@/Redux/Reducers/SuperAdmin/Dashboard/DashboardApi";
-import { TicketStatusPoint } from "@/Types/SuperAdmin/Dashboard/DashboardTypes";
+import { TicketStatusKey, TicketStatusPoint } from "@/Types/SuperAdmin/Dashboard/DashboardTypes";
 import dynamic from "next/dynamic";
 import React from "react";
 import { Card, CardBody, CardHeader } from "reactstrap";
@@ -22,12 +22,7 @@ const monthShort = [
   "Dec",
 ];
 
-type TicketStatusKey =
-  | "open"
-  | "inProgress"
-  | "completed"
-  | "resolved"
-  | "closed";
+
 
 const statusSeries = [
   { key: "open", label: "Open" },
