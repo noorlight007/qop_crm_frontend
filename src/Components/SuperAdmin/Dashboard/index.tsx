@@ -8,7 +8,7 @@ const AdminDashboardContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Admin Dashboard(Under development)"
+        title="Admin Dashboard"
         subTitle="Manage your admin dashboard"
         items={[
           { label: "Home" },
