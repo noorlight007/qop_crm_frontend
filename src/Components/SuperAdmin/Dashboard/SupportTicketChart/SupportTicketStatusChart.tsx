@@ -1,5 +1,8 @@
 import { useGetSuperAdminDashboardSupportTicketStatusChartQuery } from "@/Redux/Reducers/SuperAdmin/Dashboard/DashboardApi";
-import { TicketStatusKey, TicketStatusPoint } from "@/Types/SuperAdmin/Dashboard/DashboardTypes";
+import {
+  TicketStatusKey,
+  TicketStatusPoint,
+} from "@/Types/SuperAdmin/Dashboard/DashboardTypes";
 import dynamic from "next/dynamic";
 import React from "react";
 import { Card, CardBody, CardHeader } from "reactstrap";
@@ -21,8 +24,6 @@ const monthShort = [
   "Nov",
   "Dec",
 ];
-
-
 
 const statusSeries = [
   { key: "open", label: "Open" },
@@ -68,6 +69,11 @@ const pickNumber = (value: unknown): number => {
     return Number.isFinite(n) ? n : 0;
   }
   return 0;
+};
+
+const pickRecord = (value: unknown): Record<string, unknown> | null => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
 };
 
 const getStatusCandidates = (key: TicketStatusKey) => {
@@ -161,6 +167,8 @@ const normalizeTicketStatusChartResponse = (
     for (const item of base) {
       if (!item || typeof item !== "object") continue;
       const row = item as Record<string, unknown>;
+      const counts = pickRecord(row.counts);
+      const rowForValues = counts ? { ...row, ...counts } : row;
       const label =
         formatMonthLabel(
           row.month ?? row.label ?? row.x ?? row.date ?? row.period,
@@ -173,7 +181,7 @@ const normalizeTicketStatusChartResponse = (
       if (idx < 0) continue;
 
       for (const s of statusSeries) {
-        points[idx][s.key] = readStatusValue(row, s.key);
+        points[idx][s.key] = readStatusValue(rowForValues, s.key);
       }
     }
 
@@ -286,6 +294,9 @@ const SupportTicketStatusChart: React.FC = () => {
     },
     vAxis: {
       minValue: 0,
+      viewWindowMode: "explicit" as const,
+      viewWindow: { min: 0 },
+      baseline: 0,
       gridlines: { color: "#f1f1f1" },
       textStyle: { fontSize: 12 },
       format: "0",

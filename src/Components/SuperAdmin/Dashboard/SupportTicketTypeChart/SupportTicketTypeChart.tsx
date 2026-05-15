@@ -91,6 +91,11 @@ const readTypeValue = (row: Record<string, unknown>, type: TicketType) => {
   return 0;
 };
 
+const pickRecord = (value: unknown): Record<string, unknown> | null => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+};
+
 const normalizeTicketTypeChartResponse = (
   raw: unknown,
 ): { months: string[]; series: Record<TicketType, number[]> } => {
@@ -104,7 +109,27 @@ const normalizeTicketTypeChartResponse = (
         .filter((m): m is string => Boolean(m))
     : [];
 
-  const months = monthsFromApi.length > 0 ? monthsFromApi : buildLast12Months();
+  const inferMonthsFromRows = (rows: unknown[]): string[] => {
+    const inferred: string[] = [];
+    for (const item of rows) {
+      if (!item || typeof item !== "object") continue;
+      const row = item as Record<string, unknown>;
+      const label =
+        formatMonthLabel(
+          row.month ?? row.label ?? row.x ?? row.date ?? row.period,
+        ) ?? null;
+      if (!label) continue;
+      inferred.push(label);
+    }
+    return inferred.length > 0 ? inferred : buildLast12Months();
+  };
+
+  const months =
+    monthsFromApi.length > 0
+      ? monthsFromApi
+      : Array.isArray(base)
+        ? inferMonthsFromRows(base)
+        : buildLast12Months();
 
   const series: Record<TicketType, number[]> = {
     FEEDBACK: Array.from({ length: months.length }).map(() => 0),
@@ -116,6 +141,9 @@ const normalizeTicketTypeChartResponse = (
     for (const item of base) {
       if (!item || typeof item !== "object") continue;
       const row = item as Record<string, unknown>;
+
+      const counts = pickRecord(row.counts);
+      const rowForValues = counts ? { ...row, ...counts } : row;
       const label =
         formatMonthLabel(
           row.month ?? row.label ?? row.x ?? row.date ?? row.period,
@@ -127,7 +155,7 @@ const normalizeTicketTypeChartResponse = (
       if (idx < 0) continue;
 
       for (const t of ticketTypes) {
-        series[t.value][idx] = readTypeValue(row, t.value);
+        series[t.value][idx] = readTypeValue(rowForValues, t.value);
       }
     }
     return { months, series };
