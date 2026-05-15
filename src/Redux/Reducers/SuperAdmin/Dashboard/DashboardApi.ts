@@ -4,12 +4,27 @@ export const SuperAdminDashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getSuperAdminDashboardOverviewData: builder.query({
       query: () => ({
-        url: "/superadmin/dashboard/overview",
+        url: "/dashboard/super-admin-summary/",
+        method: "GET",
+      }),
+    }),
+    getSuperAdminDashboardSupportTicketTypeChart: builder.query({
+      query: () => ({
+        url: "/dashboard/ticket-types-chart/",
+        method: "GET",
+      }),
+    }),
+    getSuperAdminDashboardSupportTicketStatusChart: builder.query({
+      query: () => ({
+        url: "/dashboard/ticket-status-chart/",
         method: "GET",
       }),
     }),
   }),
 });
 
-export const { useGetSuperAdminDashboardOverviewDataQuery } =
-  SuperAdminDashboardApi;
+export const {
+  useGetSuperAdminDashboardOverviewDataQuery,
+  useGetSuperAdminDashboardSupportTicketTypeChartQuery,
+  useGetSuperAdminDashboardSupportTicketStatusChartQuery,
+} = SuperAdminDashboardApi;

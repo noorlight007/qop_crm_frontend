@@ -28,14 +28,14 @@ const Overview: React.FC = () => {
   const cards: OverviewCard[] = [
     {
       title: "Networks",
-      value: Number((overviewData as any)?.network ?? 0) || 0,
+      value: Number((overviewData as any)?.networks ?? 0) || 0,
       icon: FaNetworkWired,
       iconBgClass: "bg-primary",
       loadingSpinnerColor: "primary",
     },
     {
       title: "Organisations",
-      value: Number((overviewData as any)?.organisation ?? 0) || 0,
+      value: Number((overviewData as any)?.organisations ?? 0) || 0,
       icon: TbBuildingSkyscraper,
       iconBgClass: "bg-info",
       loadingSpinnerColor: "info",

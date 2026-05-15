@@ -22,3 +22,10 @@ export type TicketStatusPoint = {
   resolved: number;
   closed: number;
 };
+
+export type TicketStatusKey =
+  | "open"
+  | "inProgress"
+  | "completed"
+  | "resolved"
+  | "closed";
