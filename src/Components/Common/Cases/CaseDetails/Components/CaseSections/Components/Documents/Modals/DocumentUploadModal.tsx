@@ -76,11 +76,11 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
       filesArray.forEach((file, index) => {
         const fileErrors: string[] = [];
 
-        // Check file size (limit to 10MB per file)
-        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+        // Check file size (limit to 50MB per file)
+        const maxSize = 50 * 1024 * 1024; // 50MB in bytes
         if (file.size > maxSize) {
           fileErrors.push(
-            `File size exceeds 10MB limit (${(file.size / 1024 / 1024).toFixed(
+            `File size exceeds 50MB limit (${(file.size / 1024 / 1024).toFixed(
               2,
             )}MB)`,
           );
@@ -380,7 +380,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                   <span className="text-danger">*</span>
                   <br />
                   <small className="text-muted">
-                    Max file size: 10MB per file | Max filename length: 100
+                    Max file size: 50MB per file | Max filename length: 100
                     characters
                   </small>
                 </Label>

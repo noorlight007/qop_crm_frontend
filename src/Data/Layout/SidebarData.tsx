@@ -42,6 +42,13 @@ const SuperAdminMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/super-admin/support-ticket",
       },
+      // {
+      //   title: "Login History",
+      //   icon: <FaHistory />,
+      //   type: "link",
+      //   lanClass: "lan-3",
+      //   path: "/super-admin/login-history",
+      // },
     ],
   },
 ];
