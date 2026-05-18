@@ -163,6 +163,7 @@ export const LenderList = [
     label: "Progressive Building Society",
   },
   { value: "PURE_RETIREMENT", label: "Pure Retirement" },
+  { value: "RELY_MORTGAGES", label: "Rely Mortgages" },
   { value: "SAFFRON_BUILDING_SOCIETY", label: "Saffron Building Society" },
   { value: "SAINSBURYS_BANK", label: "Sainsbury's Bank" },
   { value: "SANTANDER", label: "Santander" },
