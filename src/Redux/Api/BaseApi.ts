@@ -201,6 +201,7 @@ export const baseApi = createApi({
   tagTypes: [
     //Appearance Settings
     "AppearanceSettings",
+    "AdsDetails",
 
     //company info
     "CompanyInfo",

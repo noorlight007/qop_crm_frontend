@@ -1,42 +1,83 @@
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { useGetWelcomeBannerAdsQuery } from "@/Redux/Reducers/Common/WelcomeBanner/WelcomeBannerAdsApi";
+import { useGetAdsQuery } from "@/Redux/Reducers/Common/Ads/AdsApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FaNetworkWired } from "react-icons/fa";
 import { TbBuildingSkyscraper } from "react-icons/tb";
-import { Card } from "reactstrap";
+import { Card, Carousel, CarouselItem } from "reactstrap";
+
+type AdItem = {
+  alias?: string;
+  title?: string;
+  image?: string;
+  redirect_url?: string;
+  placement?: string;
+};
 
 const WelcomeBanner: React.FC = () => {
   const { data: session } = useSession();
   const { data: appearanceData, isLoading } =
     useGetPublicAppranceQuery(undefined);
-  const { data: adsData, isLoading: isAdsLoading } =
-    useGetWelcomeBannerAdsQuery(undefined);
+  const { data: adsData, isLoading: isAdsLoading } = useGetAdsQuery(undefined);
+
+  const adsList: AdItem[] = useMemo(() => {
+    const raw = adsData as any;
+    if (Array.isArray(raw)) return raw as AdItem[];
+    if (Array.isArray(raw?.results)) return raw.results as AdItem[];
+    return [];
+  }, [adsData]);
 
   const isNetwork = Boolean(appearanceData?.is_network);
   const heading = isNetwork
     ? appearanceData?.network
     : appearanceData?.organisation;
 
-  const adsResults = (adsData as any)?.results as
-    | Array<{
-        title?: string;
-        image?: string;
-        redirect_url?: string;
-        placement?: string;
-      }>
-    | undefined;
+  const dashboardTopAds = useMemo(
+    () =>
+      adsList.filter(
+        (ad) => ad?.placement === "DASHBOARD_TOP" && Boolean(ad?.image),
+      ),
+    [adsList],
+  );
 
-  const dashboardTopAd =
-    adsResults?.find((ad) => ad?.placement === "DASHBOARD_TOP") ||
-    adsResults?.[0];
+  const selectedAds = dashboardTopAds.length
+    ? dashboardTopAds
+    : adsList.filter((ad) => Boolean(ad?.image));
+
+  const hasCarousel = selectedAds.length > 1;
+  const dashboardTopAd = selectedAds[0];
 
   const rightImageSrc =
     dashboardTopAd?.image || "/assets/images/dashboard-1/welcome-bg.png";
   const rightHref = dashboardTopAd?.redirect_url;
   const rightAlt = dashboardTopAd?.title || "";
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [selectedAds.length]);
+
+  const next = useCallback(() => {
+    if (animating) return;
+    setActiveIndex((prev) => (prev === selectedAds.length - 1 ? 0 : prev + 1));
+  }, [animating, selectedAds.length]);
+
+  const previous = useCallback(() => {
+    if (animating) return;
+    setActiveIndex((prev) => (prev === 0 ? selectedAds.length - 1 : prev - 1));
+  }, [animating, selectedAds.length]);
+
+  useEffect(() => {
+    if (!hasCarousel) return;
+    const id = window.setInterval(() => {
+      next();
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, [hasCarousel, next]);
 
   if (isLoading || isAdsLoading) {
     return (
@@ -81,7 +122,61 @@ const WelcomeBanner: React.FC = () => {
           </div>
         </div>
 
-        {rightHref ? (
+        {hasCarousel ? (
+          <div
+            className="welcomeCardRight welcomeAdCarousel"
+            aria-label="Advertisements"
+          >
+            <Carousel
+              activeIndex={activeIndex}
+              next={next}
+              previous={previous}
+              interval={false}
+            >
+              {selectedAds.map((ad, idx) => {
+                const slideAlt = ad?.title || "";
+                const slideSrc = ad?.image || rightImageSrc;
+                const slideHref = ad?.redirect_url;
+                const key = ad?.alias || ad?.image || String(idx);
+
+                const slideContent = (
+                  <div className="welcomeAdSlide">
+                    <Image
+                      src={slideSrc}
+                      alt={slideAlt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 240px"
+                      className="welcomeRightImage"
+                      priority={idx === 0}
+                    />
+                  </div>
+                );
+
+                return (
+                  <CarouselItem
+                    key={key}
+                    onExiting={() => setAnimating(true)}
+                    onExited={() => setAnimating(false)}
+                  >
+                    {slideHref ? (
+                      <a
+                        className="welcomeAdSlideLink"
+                        href={slideHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={slideAlt || "Advertisement"}
+                      >
+                        {slideContent}
+                      </a>
+                    ) : (
+                      slideContent
+                    )}
+                  </CarouselItem>
+                );
+              })}
+            </Carousel>
+          </div>
+        ) : rightHref ? (
           <a
             className="welcomeCardRight welcomeCardRightLink"
             href={rightHref}
