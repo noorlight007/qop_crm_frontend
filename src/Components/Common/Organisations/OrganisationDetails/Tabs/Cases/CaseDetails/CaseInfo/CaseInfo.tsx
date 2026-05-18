@@ -547,7 +547,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                           {caseInfo?.case_category
                             ? formatChoiceFieldValue(caseInfo.case_category)
                             : "N/A"}
-                          {caseInfo?.case_category === "MORTGAGE" &&
+                          {/* {caseInfo?.case_category === "MORTGAGE" &&
                             ((caseInfo?.application_type &&
                               String(caseInfo.application_type).trim() !==
                                 "") ||
@@ -576,7 +576,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                                 )}
                                 )
                               </small>
-                            )}
+                            )} */}
                         </strong>
                       </h6>
 
@@ -792,235 +792,222 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           <Col sm="12">
             <Card className="shadow">
               <CardBody className="pt-2">
-                {/* Property Details Section */}
-                <div className="mb-4">
-                  <h6
-                    className="text-uppercase fw-bold text-primary mb-3"
-                    style={{ fontSize: "11px", letterSpacing: "0.5px" }}
-                  >
-                    Property Details
-                  </h6>
-                  <Row>
-                    <Col md="6">
-                      <div className="p-3 bg-light rounded mb-3">
-                        <small className="text-muted d-block fw-500 mb-2">
-                          Property Address
-                        </small>
-                        <p className="m-0 text-dark fw-500">
-                          {(() => {
-                            const pd = caseInfo?.property_details;
-                            if (!pd) return "N/A";
-                            const countryFormatted = pd.country
-                              ? formatChoiceFieldValue(pd.country)
-                              : pd.country;
-                            const parts = [
-                              pd.house_name_or_number,
-                              pd.address_one,
-                              pd.address_two,
-                              pd.city,
-                              pd.county,
-                              formatChoiceFieldValue(pd.region),
-                              pd.postcode,
-                              countryFormatted,
-                            ].filter(
-                              (v) =>
-                                v !== null &&
-                                v !== undefined &&
-                                String(v).trim() !== "",
-                            );
-                            return parts.length ? (
-                              parts.join(", ")
+                <div className="d-flex gap-4">
+                  {/* LEFT SIDE: Property Details */}
+                  <div className="flex-fill w-50 pt-3">
+                    <h6
+                      className="text-uppercase fw-bold text-primary mb-3"
+                      style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                    >
+                      Property Details
+                    </h6>
+
+                    <div className="p-3 bg-light rounded mb-3">
+                      <small className="text-muted d-block fw-500 mb-2">
+                        Property Address
+                      </small>
+                      <p className="m-0 text-dark fw-500">
+                        {(() => {
+                          const pd = caseInfo?.property_details;
+                          if (!pd) return "N/A";
+                          const countryFormatted = pd.country
+                            ? formatChoiceFieldValue(pd.country)
+                            : pd.country;
+                          const parts = [
+                            pd.house_name_or_number,
+                            pd.address_one,
+                            pd.address_two,
+                            pd.city,
+                            pd.county,
+                            formatChoiceFieldValue(pd.region),
+                            pd.postcode,
+                            countryFormatted,
+                          ].filter(
+                            (v) =>
+                              v !== null &&
+                              v !== undefined &&
+                              String(v).trim() !== "",
+                          );
+                          return parts.length ? (
+                            parts.join(", ")
+                          ) : (
+                            <span className="text-muted">Not available</span>
+                          );
+                        })()}
+                      </p>
+                    </div>
+
+                    <Row>
+                      <Col md="6" className="mb-3">
+                        <div className="p-3 bg-light rounded">
+                          <small className="text-muted d-block fw-500 mb-2">
+                            Property Value
+                          </small>
+                          <p className="m-0 text-dark fw-500">
+                            {caseInfo?.property_valuation ? (
+                              `${getCurrencySign()}${caseInfo.property_valuation}`
                             ) : (
                               <span className="text-muted">Not available</span>
-                            );
-                          })()}
-                        </p>
-                      </div>
-
-                      <Row>
-                        <Col md="6" className="mb-3">
-                          <div className="p-3 bg-light rounded">
-                            <small className="text-muted d-block fw-500 mb-2">
-                              Property Value
-                            </small>
-                            <p className="m-0 text-dark fw-500">
-                              {caseInfo?.property_valuation ? (
-                                `${getCurrencySign()}${caseInfo.property_valuation}`
-                              ) : (
-                                <span className="text-muted">
-                                  Not available
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                        </Col>
-                        <Col md="6" className="mb-3">
-                          <div className="p-3 bg-light rounded">
-                            <small className="text-muted d-block fw-500 mb-2">
-                              Purchase Price
-                            </small>
-                            <p className="m-0 text-dark fw-500">
-                              {caseInfo?.purchase_price ? (
-                                `${getCurrencySign()}${caseInfo.purchase_price}`
-                              ) : (
-                                <span className="text-muted">
-                                  Not available
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                        </Col>
-                        <Col md="6" className="mb-3">
-                          <div className="p-3 bg-light rounded">
-                            <small className="text-muted d-block fw-500 mb-2">
-                              Loan Amount
-                            </small>
-                            <p className="m-0 text-dark fw-500">
-                              {caseInfo?.loan_amount ? (
-                                `${getCurrencySign()}${caseInfo.loan_amount}`
-                              ) : (
-                                <span className="text-muted">
-                                  Not available
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                        </Col>
-                        <Col md="6" className="mb-3">
-                          <div className="p-3 bg-light rounded">
-                            <small className="text-muted d-block fw-500 mb-2">
-                              Lender
-                            </small>
-                            <p className="m-0 text-dark fw-500 text-truncate">
-                              {caseInfo?.lender ? (
-                                formatChoiceFieldValue(caseInfo.lender)
-                              ) : (
-                                <span className="text-muted">
-                                  Not available
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                        </Col>
-                      </Row>
-                    </Col>
-
-                    {/* Notes Section on the right */}
-                    <Col md="6" className="ps-3">
-                      <h6
-                        className="text-uppercase fw-bold text-primary mb-3 position-relative"
-                        style={{ fontSize: "11px", letterSpacing: "0.5px" }}
-                      >
-                        Notes
-                        <Button
-                          color="primary"
-                          size="sm"
-                          className="position-absolute"
-                          onClick={handleEditNotes}
-                          style={{
-                            top: "30%",
-                            right: "0px",
-                            transform: "translateY(-50%)",
-                          }}
-                          disabled={isLoading}
-                        >
-                          <i className="fa-solid fa-pen-to-square me-1" />
-                          Edit
-                        </Button>
-                      </h6>
-                      <div className="p-3 bg-light rounded h-75 overflow-auto border-l-primary border-2">
-                        {isEditingNotes ? (
-                          <>
-                            <Input
-                              type="textarea"
-                              value={notesDraft}
-                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setNotesDraft(e.target.value)
-                              }
-                              rows={6}
-                            />
-                            <div className="mt-2 text-end">
-                              <Button
-                                color="primary"
-                                size="sm"
-                                onClick={handleSaveNotes}
-                                disabled={isUpdatingNotes}
-                              >
-                                {isUpdatingNotes ? (
-                                  <Spinner size="sm" />
-                                ) : (
-                                  "Save"
-                                )}
-                              </Button>{" "}
-                              <Button
-                                color="secondary"
-                                size="sm"
-                                onClick={handleCancelEditNotes}
-                                disabled={isUpdatingNotes}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </>
-                        ) : (
-                          <p
-                            className="m-0 text-dark"
-                            style={{ whiteSpace: "pre-wrap" }}
-                          >
-                            {localNotes ? (
-                              localNotes
-                            ) : (
-                              <span className="text-muted">
-                                No notes available
-                              </span>
                             )}
                           </p>
-                        )}
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
+                        </div>
+                      </Col>
+                      <Col md="6" className="mb-3">
+                        <div className="p-3 bg-light rounded">
+                          <small className="text-muted d-block fw-500 mb-2">
+                            Purchase Price
+                          </small>
+                          <p className="m-0 text-dark fw-500">
+                            {caseInfo?.purchase_price ? (
+                              `${getCurrencySign()}${caseInfo.purchase_price}`
+                            ) : (
+                              <span className="text-muted">Not available</span>
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col md="6" className="mb-3">
+                        <div className="p-3 bg-light rounded">
+                          <small className="text-muted d-block fw-500 mb-2">
+                            Loan Amount
+                          </small>
+                          <p className="m-0 text-dark fw-500">
+                            {caseInfo?.loan_amount ? (
+                              `${getCurrencySign()}${caseInfo.loan_amount}`
+                            ) : (
+                              <span className="text-muted">Not available</span>
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col md="6" className="mb-3">
+                        <div className="p-3 bg-light rounded">
+                          <small className="text-muted d-block fw-500 mb-2">
+                            Lender
+                          </small>
+                          <p className="m-0 text-dark fw-500 text-truncate">
+                            {caseInfo?.lender ? (
+                              formatChoiceFieldValue(caseInfo.lender)
+                            ) : (
+                              <span className="text-muted">Not available</span>
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+                  </div>
 
-                <hr className="my-3" />
-
-                {/* Application & Mortgage Type Section */}
-                <div>
-                  <h6
-                    className="text-uppercase fw-bold text-primary mb-3"
-                    style={{ fontSize: "11px", letterSpacing: "0.5px" }}
-                  >
-                    Application & Mortgage Details
-                  </h6>
-                  <Row>
-                    <Col md="6" className="mb-3">
-                      <div className="p-3 bg-light rounded">
-                        <small className="text-muted d-block fw-500 mb-2">
-                          Application Type
-                        </small>
-                        <p className="m-0 text-dark fw-500">
-                          {caseInfo?.application_type ? (
-                            formatChoiceFieldValue(caseInfo.application_type)
+                  {/* RIGHT SIDE: Notes + Application & Mortgage Details */}
+                  <div className="flex-fill w-50 pt-3">
+                    {/* Notes Section */}
+                    <h6
+                      className="text-uppercase fw-bold text-primary mb-3 position-relative"
+                      style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                    >
+                      Notes
+                      <Button
+                        color="primary"
+                        size="sm"
+                        className="position-absolute"
+                        onClick={handleEditNotes}
+                        style={{
+                          top: "50%",
+                          right: "0px",
+                          transform: "translateY(-50%)",
+                        }}
+                        disabled={isLoading}
+                      >
+                        <i className="fa-solid fa-pen-to-square me-1" />
+                        Edit
+                      </Button>
+                    </h6>
+                    <div
+                      className="p-3 bg-light rounded mb-3 overflow-auto border-l-primary border-2"
+                      style={{ height: "140px" }}
+                    >
+                      {isEditingNotes ? (
+                        <>
+                          <Input
+                            type="textarea"
+                            value={notesDraft}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setNotesDraft(e.target.value)
+                            }
+                            rows={3}
+                          />
+                          <div className="mt-2 text-end">
+                            <Button
+                              color="primary"
+                              size="sm"
+                              onClick={handleSaveNotes}
+                              disabled={isUpdatingNotes}
+                            >
+                              {isUpdatingNotes ? <Spinner size="sm" /> : "Save"}
+                            </Button>{" "}
+                            <Button
+                              color="secondary"
+                              size="sm"
+                              onClick={handleCancelEditNotes}
+                              disabled={isUpdatingNotes}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <p
+                          className="m-0 text-dark"
+                          style={{ whiteSpace: "pre-wrap" }}
+                        >
+                          {localNotes ? (
+                            localNotes
                           ) : (
-                            <span className="text-muted">Not available</span>
+                            <span className="text-muted">
+                              No notes available
+                            </span>
                           )}
                         </p>
-                      </div>
-                    </Col>
-                    <Col md="6" className="mb-3">
-                      <div className="p-3 bg-light rounded">
-                        <small className="text-muted d-block fw-500 mb-2">
-                          Mortgage Type
-                        </small>
-                        <p className="m-0 text-dark fw-500">
-                          {caseInfo?.mortgage_type ? (
-                            formatChoiceFieldValue(caseInfo.mortgage_type)
-                          ) : (
-                            <span className="text-muted">Not available</span>
-                          )}
-                        </p>
-                      </div>
-                    </Col>
-                  </Row>
+                      )}
+                    </div>
+
+                    {/* Application & Mortgage Details Section */}
+                    <h6
+                      className="text-uppercase fw-bold text-primary mb-3"
+                      style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                    >
+                      Application & Mortgage Details
+                    </h6>
+                    <Row>
+                      <Col md="6" className="mb-3">
+                        <div className="p-3 bg-light rounded">
+                          <small className="text-muted d-block fw-500 mb-2">
+                            Application Type
+                          </small>
+                          <p className="m-0 text-dark fw-500">
+                            {caseInfo?.application_type ? (
+                              formatChoiceFieldValue(caseInfo.application_type)
+                            ) : (
+                              <span className="text-muted">Not available</span>
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col md="6" className="mb-3">
+                        <div className="p-3 bg-light rounded">
+                          <small className="text-muted d-block fw-500 mb-2">
+                            Mortgage Type
+                          </small>
+                          <p className="m-0 text-dark fw-500">
+                            {caseInfo?.mortgage_type ? (
+                              formatChoiceFieldValue(caseInfo.mortgage_type)
+                            ) : (
+                              <span className="text-muted">Not available</span>
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+                  </div>
                 </div>
               </CardBody>
             </Card>
