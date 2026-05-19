@@ -1,4 +1,10 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetAdvertisersQuery } from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
+import {
+  Advertiser,
+  AdvertiserListResponse,
+} from "@/Types/SuperAdmin/Advertisers/AdvertisersTypes";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PlusCircle } from "react-feather";
 import { FaEnvelope, FaGlobe, FaInfoCircle, FaSearch } from "react-icons/fa";
@@ -18,20 +24,7 @@ import {
   Spinner,
   UncontrolledPopover,
 } from "reactstrap";
-
-type Advertiser = {
-  alias: string;
-  company_name: string;
-  contact_email?: string | null;
-  website?: string | null;
-};
-
-type AdvertiserListResponse = {
-  count?: number;
-  next?: string | null;
-  previous?: string | null;
-  results?: Advertiser[];
-};
+import AddAdvertiserModal from "./Modal/AddAdvertiserModal";
 
 const getInitials = (value?: string | null) => {
   const trimmed = (value ?? "").trim();
@@ -52,8 +45,19 @@ const toAbsoluteUrl = (value: string) => {
 };
 
 const AdvertiserList: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isAddAdvertiserOpen, setIsAddAdvertiserOpen] = useState(false);
   const itemsPerPage = 12;
+
+  const toggleAddAdvertiserModal = () =>
+    setIsAddAdvertiserOpen((prev) => !prev);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   const {
     data: advertisersData,
@@ -61,6 +65,7 @@ const AdvertiserList: React.FC = () => {
     isFetching,
     error,
   } = useGetAdvertisersQuery({
+    search: debouncedSearch,
     page: currentPage,
     page_size: itemsPerPage,
   });
@@ -112,13 +117,18 @@ const AdvertiserList: React.FC = () => {
   }
 
   if (!advertisers.length) {
+    const hasSearch = Boolean(debouncedSearch);
     return (
       <Row className="py-5">
         <Col xs="12" className="text-center">
           <div className="text-muted">
             <FaSearch size={48} className="mb-3 opacity-50" />
             <h5 className="mb-1">No advertisers found</h5>
-            <p className="mb-0">Create an advertiser to get started.</p>
+            <p className="mb-0">
+              {hasSearch
+                ? `No advertisers match “${debouncedSearch}”.`
+                : "Create an advertiser to get started."}
+            </p>
           </div>
         </Col>
       </Row>
@@ -128,8 +138,8 @@ const AdvertiserList: React.FC = () => {
   return (
     <>
       <Row>
-        <Col md={4} xs="12" />
-        <Col md={4} xs="12">
+        <Col lg={5} md={4} xs="12" />
+        <Col lg={3} md={4} xs="12">
           <InputGroup className="position-relative">
             <FaSearch
               className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
@@ -137,12 +147,12 @@ const AdvertiserList: React.FC = () => {
             />
             <Input
               type="text"
-              placeholder="Search Organisation... "
-              //   value={searchQuery}
-              //   onChange={(e) => {
-              //     setSearchQuery(e.target.value);
-              //     setCurrentPage(1);
-              //   }}
+              placeholder="Search... "
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
               style={{ padding: "10px 10px 10px 25px" }}
               className="rounded-end-1"
             />
@@ -158,22 +168,25 @@ const AdvertiserList: React.FC = () => {
               trigger="hover"
             >
               <PopoverBody className="bg-white rounded text-dark p-3 small">
-                🔍 You can search using Organisation Name.
+                🔍 You can search using Company Name.
               </PopoverBody>
             </UncontrolledPopover>
           </InputGroup>
         </Col>
 
         <Col md={4} xs="12" className="text-md-end text-center mt-2 mt-md-0">
-          <Button color="primary">
+          <Button color="primary" onClick={toggleAddAdvertiserModal}>
             <PlusCircle size={16} className="me-2" />
             Add Advertiser
           </Button>
         </Col>
       </Row>
+
+      {isFetching ? <LoadingGrow /> : null}
+
       <Row className="mt-4 g-4">
         {advertisers.map((advertiser) => (
-          <Col xs="12" md="6" xl="4" key={advertiser.alias}>
+          <Col xs="12" md="4" xl="3" key={advertiser.alias}>
             <Card className="h-100 border-0 shadow-lg rounded-4 overflow-hidden mb-0 bg-white">
               <CardBody className="p-4 d-flex flex-column">
                 <div className="d-flex align-items-start justify-content-between gap-3">
@@ -186,20 +199,15 @@ const AdvertiserList: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="flex-grow-1 overflow-hidden">
-                      <h5 className="mb-1 fw-bold text-dark text-truncate w-100">
+                    <div className="flex-grow-1 overflow-hidden ">
+                      <Link
+                        href={`/super-admin/advertisers/${advertiser.alias}`}
+                        className="mb-1 fw-bold text-dark w-100 text_decoration_hover"
+                      >
                         {advertiser.company_name || "Not provided"}
-                      </h5>
+                      </Link>
                     </div>
                   </div>
-
-                  {isFetching ? (
-                    <Spinner
-                      size="sm"
-                      color="primary"
-                      className="flex-shrink-0"
-                    />
-                  ) : null}
                 </div>
 
                 <div className="border-top pt-3 mt-3 w-100">
@@ -208,10 +216,8 @@ const AdvertiserList: React.FC = () => {
                       <FaEnvelope className="text-primary" />
                     </div>
 
-                    <div className="flex-grow-1 overflow-hidden">
-                      <small className="text-muted d-block mb-1 text-truncate">
-                        Email
-                      </small>
+                    <div className="flex-grow-1 overflow-hidden text-truncate">
+                      <small className="text-muted d-block mb-1">Email</small>
                       {advertiser.contact_email ? (
                         advertiser.contact_email
                       ) : (
@@ -359,6 +365,11 @@ const AdvertiserList: React.FC = () => {
           </Col>
         ) : null}
       </Row>
+
+      <AddAdvertiserModal
+        isOpen={isAddAdvertiserOpen}
+        toggleModal={toggleAddAdvertiserModal}
+      />
     </>
   );
 };

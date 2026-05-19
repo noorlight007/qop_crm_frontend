@@ -1,7 +1,36 @@
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import { useGetAdvertiserDetailsQuery } from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
+import { useParams } from "next/navigation";
+import { Container } from "reactstrap";
+import AdvertisersInfo from "./AdvertisersInfo/AdvertisersInfo";
+import DeleteAdvertiser from "./DeleteAdvertiser/DeleteAdvertiser";
+
 const AdvertiserDetailsContainer: React.FC = () => {
+  const { advertiseralias } = useParams();
+  const { data: advertiserData, isLoading } = useGetAdvertiserDetailsQuery({
+    alias: advertiseralias,
+  });
+
   return (
     <div>
-      {/* JSX here */}
+      <Breadcrumbs
+        title="Advertiser Details"
+        subTitle="Manage your advertiser details and information here."
+        items={[
+          { label: "Advertisers", href: "/super-admin/advertisers" },
+          { label: "Advertiser Details", href: "#", active: true },
+        ]}
+      />
+      <Container fluid>
+        <AdvertisersInfo
+          advertiserData={advertiserData}
+          isLoading={isLoading}
+        />
+        <DeleteAdvertiser
+          advertiserData={advertiserData}
+          isLoading={isLoading}
+        />
+      </Container>
     </div>
   );
 };

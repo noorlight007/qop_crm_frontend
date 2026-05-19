@@ -9,8 +9,11 @@ const AdvertisersContainer: React.FC = () => {
         title="Advertisers"
         subTitle="Manage your advertisers"
         items={[
-          { label: "Home", href: "/" },
-          { label: "Advertisers", href: "/super-admin/advertisers" },
+          {
+            label: "Advertisers",
+            href: "/super-admin/advertisers",
+            active: true,
+          },
         ]}
       />
       <Container fluid>
