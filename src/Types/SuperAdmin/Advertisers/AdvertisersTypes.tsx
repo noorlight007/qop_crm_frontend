@@ -17,8 +17,19 @@ export type AddAdvertiserModalProps = {
   toggleModal: () => void;
 };
 
+export type EditAdvertiserModalProps = {
+  isOpen: boolean;
+  toggleModal: () => void;
+  advertiserData: Advertiser | null;
+};
+
 export type AddAdvertiserForm = {
   company_name: string;
   contact_email: string;
   website: string;
 };
+
+export interface AdvertisersInfoProps {
+  advertiserData: Advertiser | null;
+  isLoading: boolean;
+}
