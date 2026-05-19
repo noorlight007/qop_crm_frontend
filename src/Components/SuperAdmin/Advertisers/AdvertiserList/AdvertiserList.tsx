@@ -1,3 +1,4 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetAdvertisersQuery } from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
 import { useEffect, useState } from "react";
 import { PlusCircle } from "react-feather";
@@ -52,8 +53,15 @@ const toAbsoluteUrl = (value: string) => {
 };
 
 const AdvertiserList: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   const {
     data: advertisersData,
@@ -61,6 +69,7 @@ const AdvertiserList: React.FC = () => {
     isFetching,
     error,
   } = useGetAdvertisersQuery({
+    search: debouncedSearch,
     page: currentPage,
     page_size: itemsPerPage,
   });
@@ -112,13 +121,18 @@ const AdvertiserList: React.FC = () => {
   }
 
   if (!advertisers.length) {
+    const hasSearch = Boolean(debouncedSearch);
     return (
       <Row className="py-5">
         <Col xs="12" className="text-center">
           <div className="text-muted">
             <FaSearch size={48} className="mb-3 opacity-50" />
             <h5 className="mb-1">No advertisers found</h5>
-            <p className="mb-0">Create an advertiser to get started.</p>
+            <p className="mb-0">
+              {hasSearch
+                ? `No advertisers match “${debouncedSearch}”.`
+                : "Create an advertiser to get started."}
+            </p>
           </div>
         </Col>
       </Row>
@@ -128,8 +142,8 @@ const AdvertiserList: React.FC = () => {
   return (
     <>
       <Row>
-        <Col md={4} xs="12" />
-        <Col md={4} xs="12">
+        <Col md={5} xs="12" />
+        <Col md={3} xs="12">
           <InputGroup className="position-relative">
             <FaSearch
               className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
@@ -137,12 +151,12 @@ const AdvertiserList: React.FC = () => {
             />
             <Input
               type="text"
-              placeholder="Search Organisation... "
-              //   value={searchQuery}
-              //   onChange={(e) => {
-              //     setSearchQuery(e.target.value);
-              //     setCurrentPage(1);
-              //   }}
+              placeholder="Search... "
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
               style={{ padding: "10px 10px 10px 25px" }}
               className="rounded-end-1"
             />
@@ -158,7 +172,7 @@ const AdvertiserList: React.FC = () => {
               trigger="hover"
             >
               <PopoverBody className="bg-white rounded text-dark p-3 small">
-                🔍 You can search using Organisation Name.
+                🔍 You can search using Company Name.
               </PopoverBody>
             </UncontrolledPopover>
           </InputGroup>
@@ -171,9 +185,12 @@ const AdvertiserList: React.FC = () => {
           </Button>
         </Col>
       </Row>
+
+      {isFetching ? <LoadingGrow /> : null}
+
       <Row className="mt-4 g-4">
         {advertisers.map((advertiser) => (
-          <Col xs="12" md="6" xl="4" key={advertiser.alias}>
+          <Col xs="12" md="4" xl="3" key={advertiser.alias}>
             <Card className="h-100 border-0 shadow-lg rounded-4 overflow-hidden mb-0 bg-white">
               <CardBody className="p-4 d-flex flex-column">
                 <div className="d-flex align-items-start justify-content-between gap-3">
@@ -192,14 +209,6 @@ const AdvertiserList: React.FC = () => {
                       </h5>
                     </div>
                   </div>
-
-                  {isFetching ? (
-                    <Spinner
-                      size="sm"
-                      color="primary"
-                      className="flex-shrink-0"
-                    />
-                  ) : null}
                 </div>
 
                 <div className="border-top pt-3 mt-3 w-100">
