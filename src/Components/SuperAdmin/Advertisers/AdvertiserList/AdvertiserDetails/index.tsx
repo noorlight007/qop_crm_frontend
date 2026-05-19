@@ -26,7 +26,10 @@ const AdvertiserDetailsContainer: React.FC = () => {
           advertiserData={advertiserData}
           isLoading={isLoading}
         />
-        <DeleteAdvertiser />
+        <DeleteAdvertiser
+          advertiserData={advertiserData}
+          isLoading={isLoading}
+        />
       </Container>
     </div>
   );

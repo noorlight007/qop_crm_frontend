@@ -33,3 +33,14 @@ export interface AdvertisersInfoProps {
   advertiserData: Advertiser | null;
   isLoading: boolean;
 }
+
+export interface DeleteAdvertiserProps {
+  advertiserData: Advertiser | null;
+  isLoading: boolean;
+}
+
+export interface DeleteAdvertiserModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  advertiserData: Advertiser | null;
+}

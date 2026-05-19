@@ -33,6 +33,13 @@ export const AdvertisersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["AdvertisersDetails"],
     }),
+    deleteAdvertiser: builder.mutation<null, { alias: string }>({
+      query: ({ alias }) => ({
+        url: `/api/advertisers/${alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AdvertisersDetails"],
+    }),
   }),
 });
 
@@ -41,4 +48,5 @@ export const {
   useGetAdvertiserDetailsQuery,
   useAddAdvertiserMutation,
   useEditAdvertiserMutation,
+  useDeleteAdvertiserMutation,
 } = AdvertisersApi;
