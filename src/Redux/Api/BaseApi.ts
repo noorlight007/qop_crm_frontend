@@ -202,6 +202,7 @@ export const baseApi = createApi({
     //Appearance Settings
     "AppearanceSettings",
     "AdsDetails",
+    "AdvertisersDetails",
 
     //company info
     "CompanyInfo",

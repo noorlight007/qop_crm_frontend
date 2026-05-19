@@ -1,4 +1,5 @@
 import { MenuItem } from "@/Types/LayoutTypes";
+import { BiSolidMegaphone } from "react-icons/bi";
 import {
   FaBriefcase,
   FaCalculator,
@@ -42,6 +43,13 @@ const SuperAdminMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/super-admin/support-ticket",
       },
+      {
+        title: "Advertisers",
+        icon: <BiSolidMegaphone />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/super-admin/advertisers",
+      }
       // {
       //   title: "Login History",
       //   icon: <FaHistory />,
