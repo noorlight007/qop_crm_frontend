@@ -2,11 +2,11 @@ import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/Appearanc
 import { useGetAdsQuery } from "@/Redux/Reducers/Common/Ads/AdsApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "react-feather";
 import { FaNetworkWired } from "react-icons/fa";
 import { TbBuildingSkyscraper } from "react-icons/tb";
-import { Card, Carousel, CarouselItem } from "reactstrap";
+import { Card } from "reactstrap";
 
 type AdItem = {
   alias?: string;
@@ -18,6 +18,13 @@ type AdItem = {
 
 const WelcomeBanner: React.FC = () => {
   const { data: session } = useSession();
+  const [currentAdIndex, setCurrentAdIndex] = useState(0);
+  const [autoPlayEnabled, setAutoPlayEnabled] = useState(true);
+  const [isSliding, setIsSliding] = useState(false);
+  const [slideOffsetPct, setSlideOffsetPct] = useState(0);
+  const [slideTransitionEnabled, setSlideTransitionEnabled] = useState(false);
+  const [slidePair, setSlidePair] = useState<[number, number]>([0, 0]);
+  const slideTimeoutRef = useRef<number | null>(null);
   const { data: appearanceData, isLoading } =
     useGetPublicAppranceQuery(undefined);
   const { data: adsData, isLoading: isAdsLoading } = useGetAdsQuery(undefined);
@@ -29,55 +36,123 @@ const WelcomeBanner: React.FC = () => {
     return [];
   }, [adsData]);
 
+  // Filter ads by placement position
+  const dashboardAds = useMemo(() => {
+    return adsList.filter(
+      (ad) => ad?.placement === "DASHBOARD_TOP" && Boolean(ad?.image),
+    );
+  }, [adsList]);
+
+  const FALLBACK_IMAGE_SRC = "/assets/images/dashboard-1/welcome-bg.png";
+  const SLIDE_DURATION_MS = 360;
+
+  const getAdImageSrc = (index: number) => {
+    return dashboardAds[index]?.image || FALLBACK_IMAGE_SRC;
+  };
+
+  const getAdAlt = (index: number) => {
+    return dashboardAds[index]?.title || "";
+  };
+
+  const startSlideToIndex = (toIndex: number, direction: "next" | "prev") => {
+    if (dashboardAds.length === 0) return;
+    if (isSliding || toIndex === currentAdIndex) return;
+
+    if (slideTimeoutRef.current) {
+      window.clearTimeout(slideTimeoutRef.current);
+      slideTimeoutRef.current = null;
+    }
+
+    setIsSliding(true);
+
+    if (direction === "next") {
+      setSlidePair([currentAdIndex, toIndex]);
+      setSlideTransitionEnabled(false);
+      setSlideOffsetPct(0);
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          setSlideTransitionEnabled(true);
+          setSlideOffsetPct(-50);
+        });
+      });
+    } else {
+      setSlidePair([toIndex, currentAdIndex]);
+      setSlideTransitionEnabled(false);
+      setSlideOffsetPct(-50);
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          setSlideTransitionEnabled(true);
+          setSlideOffsetPct(0);
+        });
+      });
+    }
+
+    slideTimeoutRef.current = window.setTimeout(() => {
+      setCurrentAdIndex(toIndex);
+      setSlideTransitionEnabled(false);
+      setSlideOffsetPct(0);
+      setSlidePair([toIndex, toIndex]);
+      setIsSliding(false);
+      slideTimeoutRef.current = null;
+    }, SLIDE_DURATION_MS);
+  };
+
+  useEffect(() => {
+    if (!isSliding) {
+      setSlidePair([currentAdIndex, currentAdIndex]);
+      setSlideTransitionEnabled(false);
+      setSlideOffsetPct(0);
+    }
+  }, [currentAdIndex, isSliding]);
+
+  useEffect(() => {
+    return () => {
+      if (slideTimeoutRef.current) {
+        window.clearTimeout(slideTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Auto-rotate carousel every 5 seconds
+  useEffect(() => {
+    if (!autoPlayEnabled || dashboardAds.length <= 1) return;
+
+    const interval = setInterval(() => {
+      const nextIndex = (currentAdIndex + 1) % dashboardAds.length;
+      startSlideToIndex(nextIndex, "next");
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [dashboardAds.length, autoPlayEnabled, currentAdIndex, isSliding]);
+
+  const currentAd = dashboardAds[currentAdIndex] || dashboardAds[0];
+
+  const goToPrevious = () => {
+    const nextIndex =
+      (currentAdIndex - 1 + dashboardAds.length) % dashboardAds.length;
+    startSlideToIndex(nextIndex, "prev");
+    setAutoPlayEnabled(false);
+  };
+
+  const goToNext = () => {
+    const nextIndex = (currentAdIndex + 1) % dashboardAds.length;
+    startSlideToIndex(nextIndex, "next");
+    setAutoPlayEnabled(false);
+  };
+
+  const goToSlide = (index: number) => {
+    const direction = index > currentAdIndex ? "next" : "prev";
+    startSlideToIndex(index, direction);
+    setAutoPlayEnabled(false);
+  };
+
   const isNetwork = Boolean(appearanceData?.is_network);
   const heading = isNetwork
     ? appearanceData?.network
     : appearanceData?.organisation;
 
-  const dashboardTopAds = useMemo(
-    () =>
-      adsList.filter(
-        (ad) => ad?.placement === "DASHBOARD_TOP" && Boolean(ad?.image),
-      ),
-    [adsList],
-  );
-
-  const selectedAds = dashboardTopAds.length
-    ? dashboardTopAds
-    : adsList.filter((ad) => Boolean(ad?.image));
-
-  const hasCarousel = selectedAds.length > 1;
-  const dashboardTopAd = selectedAds[0];
-
-  const rightImageSrc =
-    dashboardTopAd?.image || "/assets/images/dashboard-1/welcome-bg.png";
-  const rightHref = dashboardTopAd?.redirect_url;
-  const rightAlt = dashboardTopAd?.title || "";
-
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [animating, setAnimating] = useState(false);
-
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [selectedAds.length]);
-
-  const next = useCallback(() => {
-    if (animating) return;
-    setActiveIndex((prev) => (prev === selectedAds.length - 1 ? 0 : prev + 1));
-  }, [animating, selectedAds.length]);
-
-  const previous = useCallback(() => {
-    if (animating) return;
-    setActiveIndex((prev) => (prev === 0 ? selectedAds.length - 1 : prev - 1));
-  }, [animating, selectedAds.length]);
-
-  useEffect(() => {
-    if (!hasCarousel) return;
-    const id = window.setInterval(() => {
-      next();
-    }, 5000);
-    return () => window.clearInterval(id);
-  }, [hasCarousel, next]);
+  const rightHref = currentAd?.redirect_url;
+  const rightAlt = currentAd?.title || "";
 
   if (isLoading || isAdsLoading) {
     return (
@@ -85,7 +160,7 @@ const WelcomeBanner: React.FC = () => {
         <div className="placeholder-glow">
           <span
             className="placeholder col-12 rounded"
-            style={{ height: 120 }}
+            style={{ height: 160 }}
           />
         </div>
       </div>
@@ -122,87 +197,149 @@ const WelcomeBanner: React.FC = () => {
           </div>
         </div>
 
-        {hasCarousel ? (
-          <div
-            className="welcomeCardRight welcomeAdCarousel"
-            aria-label="Advertisements"
-          >
-            <Carousel
-              activeIndex={activeIndex}
-              next={next}
-              previous={previous}
-              interval={false}
-            >
-              {selectedAds.map((ad, idx) => {
-                const slideAlt = ad?.title || "";
-                const slideSrc = ad?.image || rightImageSrc;
-                const slideHref = ad?.redirect_url;
-                const key = ad?.alias || ad?.image || String(idx);
-
-                const slideContent = (
-                  <div className="welcomeAdSlide">
-                    <Image
-                      src={slideSrc}
-                      alt={slideAlt}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 240px"
-                      className="welcomeRightImage"
-                      priority={idx === 0}
-                    />
-                  </div>
-                );
-
-                return (
-                  <CarouselItem
-                    key={key}
-                    onExiting={() => setAnimating(true)}
-                    onExited={() => setAnimating(false)}
-                  >
-                    {slideHref ? (
-                      <a
-                        className="welcomeAdSlideLink"
-                        href={slideHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={slideAlt || "Advertisement"}
-                      >
-                        {slideContent}
-                      </a>
-                    ) : (
-                      slideContent
-                    )}
-                  </CarouselItem>
-                );
-              })}
-            </Carousel>
-          </div>
-        ) : rightHref ? (
+        {rightHref ? (
           <a
             className="welcomeCardRight welcomeCardRightLink"
             href={rightHref}
             target="_blank"
             rel="noopener noreferrer"
             title={rightAlt || "Advertisement"}
+            onMouseEnter={() => setAutoPlayEnabled(false)}
+            onMouseLeave={() => setAutoPlayEnabled(true)}
           >
-            <Image
-              src={rightImageSrc}
-              alt={rightAlt}
-              fill
-              sizes="(max-width: 768px) 100vw, 240px"
-              className="welcomeRightImage"
-              priority
-            />
+            <div className="welcomeSlideViewport" aria-hidden="true">
+              <div
+                className={`welcomeSlideTrack ${
+                  slideTransitionEnabled ? "" : "noTransition"
+                }`}
+                style={{ transform: `translateX(${slideOffsetPct}%)` }}
+              >
+                {slidePair.map((adIndex, i) => (
+                  <div className="welcomeSlideItem" key={`${adIndex}-${i}`}>
+                    <img
+                      src={getAdImageSrc(adIndex)}
+                      alt={getAdAlt(adIndex)}
+                      className="welcomeRightImage"
+                      onError={(e) => {
+                        const image = e.currentTarget;
+                        image.onerror = null;
+                        image.src = FALLBACK_IMAGE_SRC;
+                      }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {dashboardAds.length > 1 && (
+              <>
+                <button
+                  className="welcomeCarouselBtn welcomeCarouselBtnPrev"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToPrevious();
+                  }}
+                  aria-label="Previous ad"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  className="welcomeCarouselBtn welcomeCarouselBtnNext"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToNext();
+                  }}
+                  aria-label="Next ad"
+                >
+                  <ChevronRight size={20} />
+                </button>
+                <div className="welcomeCarouselDots">
+                  {dashboardAds.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`welcomeDot ${
+                        index === currentAdIndex ? "active" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        goToSlide(index);
+                      }}
+                      aria-label={`Go to ad ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </a>
         ) : (
-          <div className="welcomeCardRight" aria-hidden="true">
-            <Image
-              src={rightImageSrc}
-              alt={rightAlt}
-              fill
-              sizes="(max-width: 768px) 100vw, 240px"
-              className="welcomeRightImage"
-              priority
-            />
+          <div
+            className="welcomeCardRight"
+            aria-hidden="true"
+            onMouseEnter={() => setAutoPlayEnabled(false)}
+            onMouseLeave={() => setAutoPlayEnabled(true)}
+          >
+            <div className="welcomeSlideViewport" aria-hidden="true">
+              <div
+                className={`welcomeSlideTrack ${
+                  slideTransitionEnabled ? "" : "noTransition"
+                }`}
+                style={{ transform: `translateX(${slideOffsetPct}%)` }}
+              >
+                {slidePair.map((adIndex, i) => (
+                  <div className="welcomeSlideItem" key={`${adIndex}-${i}`}>
+                    <img
+                      src={getAdImageSrc(adIndex)}
+                      alt={getAdAlt(adIndex)}
+                      className="welcomeRightImage"
+                      onError={(e) => {
+                        const image = e.currentTarget;
+                        image.onerror = null;
+                        image.src = FALLBACK_IMAGE_SRC;
+                      }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {dashboardAds.length > 1 && (
+              <>
+                <button
+                  className="welcomeCarouselBtn welcomeCarouselBtnPrev"
+                  onClick={() => goToPrevious()}
+                  aria-label="Previous ad"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  className="welcomeCarouselBtn welcomeCarouselBtnNext"
+                  onClick={() => goToNext()}
+                  aria-label="Next ad"
+                >
+                  <ChevronRight size={20} />
+                </button>
+                <div className="welcomeCarouselDots">
+                  {dashboardAds.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`welcomeDot ${
+                        index === currentAdIndex ? "active" : ""
+                      }`}
+                      onClick={() => goToSlide(index)}
+                      aria-label={`Go to ad ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

@@ -12,6 +12,7 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  width: 100%;
 
   &::before {
     content: "";
@@ -61,9 +62,9 @@
 }
 
 .welcomeCardRight {
-  flex-shrink: 0;
-  width: 240px;
-  height: 120px;
+  flex: 0 0 50%;
+  width: 50%;
+  height: 160px;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
@@ -77,33 +78,83 @@
   cursor: pointer;
 }
 
-.welcomeAdCarousel {
-  padding: 0;
-
-  .carousel,
-  .carousel-inner,
-  .carousel-item {
-    height: 100%;
-  }
-}
-
-.welcomeAdSlide {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-.welcomeAdSlideLink {
-  display: block;
-  height: 100%;
-  width: 100%;
-  text-decoration: none;
-}
-
 .welcomeRightImage {
   object-fit: cover;
   opacity: 0.9;
+  transition: opacity 280ms ease;
+  will-change: opacity;
+}
+
+.welcomeRightImage.isFading {
+  opacity: 0;
+}
+
+.welcomeCarouselBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2.5;
+  }
+}
+
+.welcomeCarouselBtnPrev {
+  left: 8px;
+}
+
+.welcomeCarouselBtnNext {
+  right: 8px;
+}
+
+.welcomeCarouselDots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.welcomeDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.95);
+    width: 10px;
+  }
 }
 
 .welcomeIconWrapper {
@@ -196,8 +247,9 @@
   }
 
   .welcomeCardRight {
+    flex: 0 0 100%;
     width: 100%;
-    height: 160px;
+    height: 200px;
   }
 
   .welcomeIconWrapper {
