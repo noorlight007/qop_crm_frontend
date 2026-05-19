@@ -1,4 +1,5 @@
 import { MenuItem } from "@/Types/LayoutTypes";
+import { BiSolidMegaphone } from "react-icons/bi";
 import {
   FaBriefcase,
   FaCalculator,
@@ -6,6 +7,7 @@ import {
   FaNetworkWired,
   FaUsers,
 } from "react-icons/fa";
+import { TbReport } from "react-icons/tb";
 
 //SuperAdminMenu
 const SuperAdminMenu: MenuItem[] = [
@@ -41,6 +43,13 @@ const SuperAdminMenu: MenuItem[] = [
         type: "link",
         lanClass: "lan-3",
         path: "/super-admin/support-ticket",
+      },
+      {
+        title: "Advertisers",
+        icon: <BiSolidMegaphone />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/super-admin/advertisers",
       },
       // {
       //   title: "Login History",
@@ -152,6 +161,19 @@ const NetworkDirectorMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Reports",
+        icon: <TbReport />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Mortgage Report",
+            type: "link",
+            path: "/network/director/reports/mortgage-report",
+          },
+        ],
+      },
+      {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",
@@ -258,6 +280,19 @@ const NetworkComplianceMenu: MenuItem[] = [
             title: "Stamp Duty",
             type: "link",
             path: "/network/director/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
+      {
+        title: "Reports",
+        icon: <TbReport />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Case Report",
+            type: "link",
+            path: "/network/director/reports/mortgage-report",
           },
         ],
       },
@@ -704,7 +739,7 @@ export {
   OrganisationAdminMenu,
   OrganisationAdviserMenu,
   OrganisationDirectorMenu,
-  SuperAdminMenu
+  SuperAdminMenu,
 };
 
 export const getMenuByRole = (

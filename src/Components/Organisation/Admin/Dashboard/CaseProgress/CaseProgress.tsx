@@ -16,23 +16,46 @@ const CaseProgress: React.FC<AdminDashboardProps> = ({
 
   // derive categories (names) and series values (normalized to 0-1)
   const categories = advisers.map((a) => a.adviser_name || "Unknown");
-  // create shorter labels for display on the chart (keep full names for tooltips)
+  // show full name on the chart; truncate only if it's more than 7 letters (keep full names for tooltips)
   const shortCategories = categories.map((name) => {
-    if (!name) return "Unknown";
-    const words = name.trim().split(/\s+/);
-    if (words.length === 1) {
-      return words[0].length > 12 ? words[0].slice(0, 12) + "..." : words[0];
-    }
-    const title = words[0].toLowerCase();
-    if (["mr", "mrs", "ms", "dr"].includes(title)) {
-      const last = words[words.length - 1];
-      return last.length > 10
-        ? words[0] + " " + last.slice(0, 10) + "..."
-        : words[0] + " " + last;
-    }
-    // default: FirstName + LastInitial. -> "John D."
-    return words[0] + " " + words[1].charAt(0) + ".";
+    const safeName = (name || "").trim();
+    if (!safeName) return "Unknown";
+    return safeName.length > 7 ? `${safeName.slice(0, 7)}...` : safeName;
   });
+
+  const applyYAxisLabelTooltips = (chartContext: any) => {
+    const root = chartContext?.el as HTMLElement | undefined;
+    if (!root) return;
+
+    let yAxisLabelNodes = root.querySelectorAll<SVGTextElement>(
+      "text.apexcharts-yaxis-label",
+    );
+    if (!yAxisLabelNodes || yAxisLabelNodes.length === 0) {
+      yAxisLabelNodes = root.querySelectorAll<SVGTextElement>(
+        "g.apexcharts-yaxis-texts-g text",
+      );
+    }
+
+    yAxisLabelNodes.forEach((textEl, i) => {
+      const label = (textEl.textContent || "").trim();
+      const idx = label ? shortCategories.indexOf(label) : -1;
+      const fullName = categories[idx >= 0 ? idx : i] || label;
+
+      textEl.setAttribute("title", fullName);
+
+      const existingTitle = textEl.querySelector("title");
+      if (existingTitle) {
+        existingTitle.textContent = fullName;
+      } else {
+        const titleEl = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "title",
+        );
+        titleEl.textContent = fullName;
+        textEl.appendChild(titleEl);
+      }
+    });
+  };
   const seriesValues = advisers.map((a) => {
     const raw = Number(a.completion_percentage ?? 0);
     if (isNaN(raw)) return 0;
@@ -43,6 +66,14 @@ const CaseProgress: React.FC<AdminDashboardProps> = ({
     chart: {
       type: "bar",
       height: 300,
+      events: {
+        mounted: function (chartContext: any) {
+          applyYAxisLabelTooltips(chartContext);
+        },
+        updated: function (chartContext: any) {
+          applyYAxisLabelTooltips(chartContext);
+        },
+      },
       toolbar: {
         show: false,
       },
