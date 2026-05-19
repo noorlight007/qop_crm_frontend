@@ -2,6 +2,7 @@ import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/Appearanc
 import {
   useGetAdsQuery,
   useLazyGetAdClickCountQuery,
+  useLazyGetAdImpressionCountQuery,
 } from "@/Redux/Reducers/Common/Ads/AdsApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -29,6 +30,8 @@ const WelcomeBanner: React.FC = () => {
   const [slidePair, setSlidePair] = useState<[number, number]>([0, 0]);
   const slideTimeoutRef = useRef<number | null>(null);
   const [trackAdClick] = useLazyGetAdClickCountQuery();
+  const [trackAdImpression] = useLazyGetAdImpressionCountQuery();
+  const hasTrackedImpressionRef = useRef(false);
   const { data: appearanceData, isLoading } =
     useGetPublicAppranceQuery(undefined);
   const { data: adsData, isLoading: isAdsLoading } = useGetAdsQuery(undefined);
@@ -158,6 +161,16 @@ const WelcomeBanner: React.FC = () => {
   const rightHref = currentAd?.redirect_url;
   const rightAlt = currentAd?.title || "";
   const rightAlias = currentAd?.alias;
+
+  // Track an impression once when the banner loads with a valid ad.
+  useEffect(() => {
+    if (hasTrackedImpressionRef.current) return;
+    if (isLoading || isAdsLoading) return;
+    if (!rightAlias) return;
+
+    hasTrackedImpressionRef.current = true;
+    void trackAdImpression(rightAlias);
+  }, [isLoading, isAdsLoading, rightAlias, trackAdImpression]);
 
   if (isLoading || isAdsLoading) {
     return (
