@@ -99,7 +99,7 @@ const NetworkDirectorMenu: MenuItem[] = [
           {
             title: "Reports",
             type: "link",
-            path: "/network/director/reports",
+            path: "/network/director/cases/reports",
           },
           {
             title: "Tasks",
@@ -227,7 +227,7 @@ const NetworkComplianceMenu: MenuItem[] = [
           {
             title: "Reports",
             type: "link",
-            path: "/network/director/reports",
+            path: "/network/director/cases/reports",
           },
           {
             title: "Tasks",
