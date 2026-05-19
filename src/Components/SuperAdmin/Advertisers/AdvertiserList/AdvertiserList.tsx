@@ -1,5 +1,10 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetAdvertisersQuery } from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
+import {
+  Advertiser,
+  AdvertiserListResponse,
+} from "@/Types/SuperAdmin/Advertisers/AdvertisersTypes";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PlusCircle } from "react-feather";
 import { FaEnvelope, FaGlobe, FaInfoCircle, FaSearch } from "react-icons/fa";
@@ -19,20 +24,7 @@ import {
   Spinner,
   UncontrolledPopover,
 } from "reactstrap";
-
-type Advertiser = {
-  alias: string;
-  company_name: string;
-  contact_email?: string | null;
-  website?: string | null;
-};
-
-type AdvertiserListResponse = {
-  count?: number;
-  next?: string | null;
-  previous?: string | null;
-  results?: Advertiser[];
-};
+import AddAdvertiserModal from "./Modal/AddAdvertiserModal";
 
 const getInitials = (value?: string | null) => {
   const trimmed = (value ?? "").trim();
@@ -56,7 +48,11 @@ const AdvertiserList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isAddAdvertiserOpen, setIsAddAdvertiserOpen] = useState(false);
   const itemsPerPage = 12;
+
+  const toggleAddAdvertiserModal = () =>
+    setIsAddAdvertiserOpen((prev) => !prev);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
@@ -142,8 +138,8 @@ const AdvertiserList: React.FC = () => {
   return (
     <>
       <Row>
-        <Col md={5} xs="12" />
-        <Col md={3} xs="12">
+        <Col lg={5} md={4} xs="12" />
+        <Col lg={3} md={4} xs="12">
           <InputGroup className="position-relative">
             <FaSearch
               className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
@@ -179,7 +175,7 @@ const AdvertiserList: React.FC = () => {
         </Col>
 
         <Col md={4} xs="12" className="text-md-end text-center mt-2 mt-md-0">
-          <Button color="primary">
+          <Button color="primary" onClick={toggleAddAdvertiserModal}>
             <PlusCircle size={16} className="me-2" />
             Add Advertiser
           </Button>
@@ -203,10 +199,13 @@ const AdvertiserList: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="flex-grow-1 overflow-hidden">
-                      <h5 className="mb-1 fw-bold text-dark text-truncate w-100">
+                    <div className="flex-grow-1 overflow-hidden ">
+                      <Link
+                        href={`/super-admin/advertisers/${advertiser.alias}`}
+                        className="mb-1 fw-bold text-dark w-100 text_decoration_hover"
+                      >
                         {advertiser.company_name || "Not provided"}
-                      </h5>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -217,10 +216,8 @@ const AdvertiserList: React.FC = () => {
                       <FaEnvelope className="text-primary" />
                     </div>
 
-                    <div className="flex-grow-1 overflow-hidden">
-                      <small className="text-muted d-block mb-1 text-truncate">
-                        Email
-                      </small>
+                    <div className="flex-grow-1 overflow-hidden text-truncate">
+                      <small className="text-muted d-block mb-1">Email</small>
                       {advertiser.contact_email ? (
                         advertiser.contact_email
                       ) : (
@@ -368,6 +365,11 @@ const AdvertiserList: React.FC = () => {
           </Col>
         ) : null}
       </Row>
+
+      <AddAdvertiserModal
+        isOpen={isAddAdvertiserOpen}
+        toggleModal={toggleAddAdvertiserModal}
+      />
     </>
   );
 };

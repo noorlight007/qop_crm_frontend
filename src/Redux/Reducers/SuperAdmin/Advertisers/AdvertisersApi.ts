@@ -10,7 +10,16 @@ export const AdvertisersApi = baseApi.injectEndpoints({
       }),
       providesTags: ["AdvertisersDetails"],
     }),
+    addAdvertiser: builder.mutation({
+      query: (payload) => ({
+        url: `/api/advertisers/`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["AdvertisersDetails"],
+    }),
   }),
 });
 
-export const { useGetAdvertisersQuery } = AdvertisersApi;
+export const { useGetAdvertisersQuery, useAddAdvertiserMutation } =
+  AdvertisersApi;
