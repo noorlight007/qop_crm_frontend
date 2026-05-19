@@ -167,7 +167,7 @@ const NetworkDirectorMenu: MenuItem[] = [
         lanClass: "lan-3",
         children: [
           {
-            title: "Case Report",
+            title: "Mortgage Report",
             type: "link",
             path: "/network/director/reports/mortgage-report",
           },
@@ -280,6 +280,19 @@ const NetworkComplianceMenu: MenuItem[] = [
             title: "Stamp Duty",
             type: "link",
             path: "/network/director/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
+      {
+        title: "Reports",
+        icon: <TbReport />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Case Report",
+            type: "link",
+            path: "/network/director/reports/mortgage-report",
           },
         ],
       },
