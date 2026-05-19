@@ -290,7 +290,7 @@ const NetworkComplianceMenu: MenuItem[] = [
         lanClass: "lan-3",
         children: [
           {
-            title: "Case Report",
+            title: "Mortgage Report",
             type: "link",
             path: "/network/director/reports/mortgage-report",
           },
