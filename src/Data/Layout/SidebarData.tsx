@@ -7,6 +7,7 @@ import {
   FaNetworkWired,
   FaUsers,
 } from "react-icons/fa";
+import { TbReport } from "react-icons/tb";
 
 //SuperAdminMenu
 const SuperAdminMenu: MenuItem[] = [
@@ -49,7 +50,7 @@ const SuperAdminMenu: MenuItem[] = [
         type: "link",
         lanClass: "lan-3",
         path: "/super-admin/advertisers",
-      }
+      },
       // {
       //   title: "Login History",
       //   icon: <FaHistory />,
@@ -156,6 +157,19 @@ const NetworkDirectorMenu: MenuItem[] = [
             title: "Stamp Duty",
             type: "link",
             path: "/network/director/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
+      {
+        title: "Reports",
+        icon: <TbReport />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Case Report",
+            type: "link",
+            path: "/network/director/reports/mortgage-report",
           },
         ],
       },
@@ -712,7 +726,7 @@ export {
   OrganisationAdminMenu,
   OrganisationAdviserMenu,
   OrganisationDirectorMenu,
-  SuperAdminMenu
+  SuperAdminMenu,
 };
 
 export const getMenuByRole = (
