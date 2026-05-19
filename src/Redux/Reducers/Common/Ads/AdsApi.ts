@@ -9,15 +9,25 @@ export const AdsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["AdsDetails"],
     }),
-    addAd: builder.mutation({
-      query: (payload) => ({
-        url: `/api/advertisements/`,
-        method: "POST",
-        body: payload,
+    getAdClickCount: builder.query({
+      query: (adsAlias) => ({
+        url: `/api/advertisers/ads/${adsAlias}/click/`,
+        method: "GET",
       }),
-      invalidatesTags: ["AdsDetails"],
+      providesTags: ["AdsDetails"],
+    }),
+    getAdImpressionCount: builder.query({
+      query: (adsAlias) => ({
+        url: `/api/advertisers/ads/${adsAlias}/impression/`,
+        method: "GET",
+      }),
+      providesTags: ["AdsDetails"],
     }),
   }),
 });
 
-export const { useGetAdsQuery, useAddAdMutation } = AdsApi;
+export const {
+  useGetAdsQuery,
+  useLazyGetAdClickCountQuery,
+  useLazyGetAdImpressionCountQuery,
+} = AdsApi;

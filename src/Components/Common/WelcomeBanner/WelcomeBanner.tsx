@@ -1,5 +1,8 @@
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { useGetAdsQuery } from "@/Redux/Reducers/Common/Ads/AdsApi";
+import {
+  useGetAdsQuery,
+  useLazyGetAdClickCountQuery,
+} from "@/Redux/Reducers/Common/Ads/AdsApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -25,6 +28,7 @@ const WelcomeBanner: React.FC = () => {
   const [slideTransitionEnabled, setSlideTransitionEnabled] = useState(false);
   const [slidePair, setSlidePair] = useState<[number, number]>([0, 0]);
   const slideTimeoutRef = useRef<number | null>(null);
+  const [trackAdClick] = useLazyGetAdClickCountQuery();
   const { data: appearanceData, isLoading } =
     useGetPublicAppranceQuery(undefined);
   const { data: adsData, isLoading: isAdsLoading } = useGetAdsQuery(undefined);
@@ -153,6 +157,7 @@ const WelcomeBanner: React.FC = () => {
 
   const rightHref = currentAd?.redirect_url;
   const rightAlt = currentAd?.title || "";
+  const rightAlias = currentAd?.alias;
 
   if (isLoading || isAdsLoading) {
     return (
@@ -206,6 +211,16 @@ const WelcomeBanner: React.FC = () => {
             title={rightAlt || "Advertisement"}
             onMouseEnter={() => setAutoPlayEnabled(false)}
             onMouseLeave={() => setAutoPlayEnabled(true)}
+            onClick={(e) => {
+              // Don't count carousel controls/dots as an ad click
+              const target = e.target as HTMLElement | null;
+              if (target?.closest("button")) return;
+
+              if (rightAlias) {
+                // fire-and-forget; navigation continues in a new tab
+                void trackAdClick(rightAlias);
+              }
+            }}
           >
             <div className="welcomeSlideViewport" aria-hidden="true">
               <div
