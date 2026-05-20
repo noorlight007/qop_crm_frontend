@@ -273,7 +273,10 @@ const EditAdModal: React.FC<EditAdModalProps> = ({
             <Col md="12">
               <FormGroup>
                 <Label for="image">
-                  Image <span className="text-danger">*</span>
+                  Image <span className="text-danger">*</span>{" "}
+                  <small className="text-warning">
+                    (Recommended size: 800x300px)
+                  </small>
                 </Label>
                 <Input
                   id="image"
