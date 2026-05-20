@@ -134,11 +134,11 @@ const FeeInTable = () => {
                   <th className="text-center" style={{ width: "15%" }}>
                     Method
                   </th>
-                  <th className="text-center" style={{ width: "25%" }}>
-                    Notes
-                  </th>
                   <th className="text-center" style={{ width: "15%" }}>
                     Date Received
+                  </th>{" "}
+                  <th className="text-center" style={{ width: "25%" }}>
+                    Notes
                   </th>
                   <th className="text-center" style={{ width: "5%" }}>
                     Actions
@@ -174,10 +174,10 @@ const FeeInTable = () => {
                           ?.title || "-"}
                       </td>
                       <td className="text-center align-middle">
-                        {feeIn.notes || "-"}
+                        {feeIn.feeDate || "-"}
                       </td>
                       <td className="text-center align-middle">
-                        {feeIn.feeDate || "-"}
+                        {feeIn.notes || "-"}
                       </td>
                       <td className="text-center align-middle">
                         <div className="d-flex justify-content-center align-items-center gap-2">

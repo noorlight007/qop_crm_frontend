@@ -218,15 +218,12 @@ const AddFeeOutModal: FC<AddFeeOutModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="feeDate">
-                  Date Paid Out<span className="text-danger">*</span>
-                </Label>
+                <Label for="feeDate">Date Paid Out</Label>
                 <Input
                   type="date"
                   id="feeDate"
                   value={feeData.feeDate}
                   onChange={(e) => handleInputChange("feeDate", e.target.value)}
-                  required
                 />
                 {errors.feeDate && (
                   <div className="text-danger">{errors.feeDate}</div>

@@ -1,4 +1,5 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
+import { useEditAdvertiserAdMutation } from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
 import {
   AdvertiserAdsData,
   AdvertiserAdsProps,
@@ -7,6 +8,7 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useEffect, useState } from "react";
 import { Edit, PlusCircle, Trash } from "react-feather";
+import { toast } from "react-toastify";
 import {
   Button,
   Card,
@@ -19,6 +21,7 @@ import {
   Row,
   Table,
 } from "reactstrap";
+import Swal from "sweetalert2";
 import AddNewAdModal from "../Modals/AddNewAdModal";
 import DeleteAdModal from "../Modals/DeleteAdModal";
 import EditAdModal from "../Modals/EditAdModal";
@@ -37,6 +40,8 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   const [isEditAdModalOpen, setIsEditAdModalOpen] = useState(false);
   const [isDeleteAdModalOpen, setIsDeleteAdModalOpen] = useState(false);
   const [selectedAd, setSelectedAd] = useState<AdvertiserAdsData | null>(null);
+  const [editAdStatus, { isLoading: isStatusUpdating }] =
+    useEditAdvertiserAdMutation();
 
   const advertiserAdsDataResults = Array.isArray(advertiserAdsData)
     ? advertiserAdsData
@@ -72,6 +77,24 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   const openDeleteAdModal = (ad: AdvertiserAdsData) => {
     setSelectedAd(ad);
     setIsDeleteAdModalOpen(true);
+  };
+
+  const handleToggleActive = async (ad: AdvertiserAdsData) => {
+    try {
+      await editAdStatus({
+        alias: advertiserAlias,
+        adAlias: ad.alias,
+        payload: { is_active: !ad.is_active },
+      }).unwrap();
+      Swal.fire({
+        icon: "success",
+        title: `Ad has been ${ad.is_active ? "deactivated" : "activated"}.`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (error: any) {
+      toast.error("Failed to toggle active status", error);
+    }
   };
 
   const totalCount =
@@ -115,7 +138,7 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                 <th>Impressions</th>
                 <th>Clicks</th>
                 <th>Priority</th>
-                <th >Actions</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -158,7 +181,17 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                     <td className="text-truncate">
                       {formatChoiceFieldValue(ad.placement)}
                     </td>
-                    <td>{ad.is_active ? "Yes" : "No"}</td>
+                    <td>
+                      <Button
+                        color={ad.is_active ? "success" : "secondary"}
+                        size="sm"
+                        outline={!ad.is_active}
+                        onClick={() => handleToggleActive(ad)}
+                        disabled={isStatusUpdating}
+                      >
+                        {ad.is_active ? "Active" : "Inactive"}
+                      </Button>
+                    </td>
                     <td>{formatDateAndTime(ad.start_date)}</td>
                     <td>{formatDateAndTime(ad.end_date)}</td>
                     <td>{ad.impressions}</td>
