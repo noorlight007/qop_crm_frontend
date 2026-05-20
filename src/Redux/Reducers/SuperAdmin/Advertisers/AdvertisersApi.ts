@@ -49,7 +49,7 @@ export const AdvertisersApi = baseApi.injectEndpoints({
       providesTags: ["AdvertisersDetails"],
     }),
     addAdvertiserAd: builder.mutation({
-      query: ({ alias, ...payload }) => ({
+      query: ({ alias, payload }) => ({
         url: `/api/advertisers/${alias}/ads/`,
         method: "POST",
         body: payload,

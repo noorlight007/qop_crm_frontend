@@ -66,9 +66,16 @@ export type AdvertiserAdsListResponse = {
   results?: AdvertiserAdsData[];
 };
 
+export type AddNewAdModalProps = {
+  isOpen: boolean;
+  toggleModal: () => void;
+  advertiserAlias: string;
+};
+
 export interface AdvertiserAdsProps {
   advertiserAdsData: AdvertiserAdsData[] | AdvertiserAdsListResponse | null;
   advertiserAdsLoading: boolean;
+  advertiserAlias: string;
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;

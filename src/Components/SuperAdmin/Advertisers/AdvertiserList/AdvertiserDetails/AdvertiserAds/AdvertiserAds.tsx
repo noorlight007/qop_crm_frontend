@@ -19,16 +19,19 @@ import {
   Row,
   Table,
 } from "reactstrap";
+import AddNewAdModal from "../Modals/AddNewAdModal";
 
 const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   advertiserAdsData,
   advertiserAdsLoading,
+  advertiserAlias,
   currentPage,
   pageSize,
   onPageChange,
 }) => {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [fullscreenAlt, setFullscreenAlt] = useState<string>("");
+  const [isAddAdModalOpen, setIsAddAdModalOpen] = useState(false);
 
   const advertiserAdsDataResults = Array.isArray(advertiserAdsData)
     ? advertiserAdsData
@@ -54,6 +57,8 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
     setFullscreenAlt(alt);
   };
 
+  const toggleAddAdModal = () => setIsAddAdModalOpen((prev) => !prev);
+
   const totalCount =
     !Array.isArray(advertiserAdsData) && advertiserAdsData?.count
       ? advertiserAdsData.count
@@ -76,7 +81,7 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
       <Card>
         <CardHeader className="d-flex justify-content-between align-items-center">
           <h3>Ads</h3>
-          <Button color="primary">
+          <Button color="primary" onClick={toggleAddAdModal}>
             <PlusCircle size={18} className="me-1" />
             Add New Ad
           </Button>
@@ -331,6 +336,12 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
           />
         </div>
       )}
+
+      <AddNewAdModal
+        isOpen={isAddAdModalOpen}
+        toggleModal={toggleAddAdModal}
+        advertiserAlias={advertiserAlias}
+      />
     </>
   );
 };
