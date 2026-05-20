@@ -1,5 +1,8 @@
 import { useAddAdvertiserAdMutation } from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
-import { AddNewAdModalProps } from "@/Types/SuperAdmin/Advertisers/AdvertisersTypes";
+import {
+  AddAdFormState,
+  AddNewAdModalProps,
+} from "@/Types/SuperAdmin/Advertisers/AdvertisersTypes";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -18,15 +21,6 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-
-type AddAdFormState = {
-  title: string;
-  redirect_url: string;
-  placement: string;
-  start_date: string;
-  end_date: string;
-  imageFile: File | null;
-};
 
 const initialForm: AddAdFormState = {
   title: "",

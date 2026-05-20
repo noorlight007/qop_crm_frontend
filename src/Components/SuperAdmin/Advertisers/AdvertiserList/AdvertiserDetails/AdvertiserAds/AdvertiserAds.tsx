@@ -20,6 +20,8 @@ import {
   Table,
 } from "reactstrap";
 import AddNewAdModal from "../Modals/AddNewAdModal";
+import DeleteAdModal from "../Modals/DeleteAdModal";
+import EditAdModal from "../Modals/EditAdModal";
 
 const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   advertiserAdsData,
@@ -32,6 +34,9 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [fullscreenAlt, setFullscreenAlt] = useState<string>("");
   const [isAddAdModalOpen, setIsAddAdModalOpen] = useState(false);
+  const [isEditAdModalOpen, setIsEditAdModalOpen] = useState(false);
+  const [isDeleteAdModalOpen, setIsDeleteAdModalOpen] = useState(false);
+  const [selectedAd, setSelectedAd] = useState<AdvertiserAdsData | null>(null);
 
   const advertiserAdsDataResults = Array.isArray(advertiserAdsData)
     ? advertiserAdsData
@@ -58,6 +63,16 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   };
 
   const toggleAddAdModal = () => setIsAddAdModalOpen((prev) => !prev);
+  const toggleEditAdModal = () => setIsEditAdModalOpen((prev) => !prev);
+  const toggleDeleteAdModal = () => setIsDeleteAdModalOpen((prev) => !prev);
+  const openEditAdModal = (ad: AdvertiserAdsData) => {
+    setSelectedAd(ad);
+    setIsEditAdModalOpen(true);
+  };
+  const openDeleteAdModal = (ad: AdvertiserAdsData) => {
+    setSelectedAd(ad);
+    setIsDeleteAdModalOpen(true);
+  };
 
   const totalCount =
     !Array.isArray(advertiserAdsData) && advertiserAdsData?.count
@@ -120,6 +135,7 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                           src={ad.image}
                           alt={ad.title}
                           width="100"
+                          height="50"
                           style={{ cursor: "zoom-in" }}
                           onClick={() =>
                             openFullscreenImage(ad.image, ad.title || "Ad")
@@ -150,10 +166,18 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                     <td>{ad.priority}</td>
                     <td className="text-center">
                       <div className="d-flex justify-content-center gap-1">
-                        <Button color="primary" size="sm">
+                        <Button
+                          color="primary"
+                          size="sm"
+                          onClick={() => openEditAdModal(ad)}
+                        >
                           <Edit size={16} />
                         </Button>
-                        <Button color="danger" size="sm">
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={() => openDeleteAdModal(ad)}
+                        >
                           <Trash size={16} />
                         </Button>
                       </div>
@@ -341,6 +365,18 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
         isOpen={isAddAdModalOpen}
         toggleModal={toggleAddAdModal}
         advertiserAlias={advertiserAlias}
+      />
+      <EditAdModal
+        isOpen={isEditAdModalOpen}
+        toggleModal={toggleEditAdModal}
+        advertiserAlias={advertiserAlias}
+        adData={selectedAd}
+      />
+      <DeleteAdModal
+        isOpen={isDeleteAdModalOpen}
+        toggleModal={toggleDeleteAdModal}
+        advertiserAlias={advertiserAlias}
+        adData={selectedAd}
       />
     </>
   );
