@@ -98,25 +98,25 @@ export const getCaseUrl = (
   }
 
   if (role === "ADMIN" && isNetwork === false) {
-    return `/organisation/admin/cases/${caseAlias}`;
+    return `/organisation/admin/cases/all-cases/${caseAlias}`;
   }
 
   if (role === "DIRECTOR") {
     return isNetwork
-      ? `/network/director/cases/${caseAlias}`
-      : `/organisation/director/cases/${caseAlias}`;
+      ? `/network/director/cases/all-cases/${caseAlias}`
+      : `/organisation/director/cases/all-cases/${caseAlias}`;
   }
 
   if (role === "COMPLIANCE") {
     return isNetwork
-      ? `/network/director/cases/${caseAlias}`
-      : `/organisation/director/cases/${caseAlias}`;
+      ? `/network/director/cases/all-cases/${caseAlias}`
+      : `/organisation/director/cases/all-cases/${caseAlias}`;
   }
 
   if (role === "ADVISER") {
     return isNetwork
-      ? `/network/adviser/cases/${caseAlias}`
-      : `/organisation/adviser/cases/${caseAlias}`;
+      ? `/network/adviser/cases/all-cases/${caseAlias}`
+      : `/organisation/adviser/cases/all-cases/${caseAlias}`;
   }
 
   if (role === "APPLICANT") {
