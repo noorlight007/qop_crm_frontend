@@ -104,8 +104,8 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
         <CardBody>
           <Table responsive>
             <thead>
-              <tr>
-                <th>Title</th>
+              <tr className="text-center">
+                <th className="text-start">Title</th>
                 <th>Image</th>
                 <th>Redirect URL</th>
                 <th>Placement</th>
@@ -115,7 +115,7 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                 <th>Impressions</th>
                 <th>Clicks</th>
                 <th>Priority</th>
-                <th className="text-center">Actions</th>
+                <th >Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -127,8 +127,8 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                 </tr>
               ) : advertiserAdsDataResults.length > 0 ? (
                 advertiserAdsDataResults.map((ad: AdvertiserAdsData) => (
-                  <tr key={ad.alias}>
-                    <td>{ad.title}</td>
+                  <tr key={ad.alias} className="align-middle text-center">
+                    <td className="text-start">{ad.title}</td>
                     <td>
                       {ad.image && (
                         <img
