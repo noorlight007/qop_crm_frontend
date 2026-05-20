@@ -7,7 +7,7 @@ const SingleCaseAlias = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/Network/Adviser/Cases/AllCases/[CaseAlias]")
+          await import("@/Components/Network/Adviser/CaseManagement/AllCases/[CaseAlias]")
         ).default;
         setClient(() => newClient);
       }

@@ -7,7 +7,7 @@ const TasksPage = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/Network/Adviser/Cases/Tasks")
+          await import("@/Components/Network/Adviser/CaseManagement/Tasks")
         ).default;
         setClient(() => newClient);
       }
