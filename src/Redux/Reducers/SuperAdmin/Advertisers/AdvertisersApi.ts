@@ -40,6 +40,37 @@ export const AdvertisersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["AdvertisersDetails"],
     }),
+    getAdvertiserAds: builder.query({
+      query: ({ alias, ...params }) => ({
+        url: `/api/advertisers/${alias}/ads/`,
+        method: "GET",
+        params: params ?? undefined,
+      }),
+      providesTags: ["AdvertisersDetails"],
+    }),
+    addAdvertiserAd: builder.mutation({
+      query: ({ alias, payload }) => ({
+        url: `/api/advertisers/${alias}/ads/`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["AdvertisersDetails"],
+    }),
+    editAdvertiserAd: builder.mutation({
+      query: ({ alias, adAlias, payload }) => ({
+        url: `/api/advertisers/${alias}/ads/${adAlias}/`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["AdvertisersDetails"],
+    }),
+    deleteAdvertiserAd: builder.mutation({
+      query: ({ alias, adAlias }) => ({
+        url: `/api/advertisers/${alias}/ads/${adAlias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AdvertisersDetails"],
+    }),
   }),
 });
 
@@ -49,4 +80,8 @@ export const {
   useAddAdvertiserMutation,
   useEditAdvertiserMutation,
   useDeleteAdvertiserMutation,
+  useGetAdvertiserAdsQuery,
+  useAddAdvertiserAdMutation,
+  useEditAdvertiserAdMutation,
+  useDeleteAdvertiserAdMutation,
 } = AdvertisersApi;
