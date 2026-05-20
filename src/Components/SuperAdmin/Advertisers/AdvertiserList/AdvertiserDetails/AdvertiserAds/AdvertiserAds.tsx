@@ -7,11 +7,25 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useEffect, useState } from "react";
 import { Edit, PlusCircle, Trash } from "react-feather";
-import { Button, Card, CardBody, CardHeader, Table } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Row,
+  Table,
+} from "reactstrap";
 
 const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   advertiserAdsData,
   advertiserAdsLoading,
+  currentPage,
+  pageSize,
+  onPageChange,
 }) => {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [fullscreenAlt, setFullscreenAlt] = useState<string>("");
@@ -39,6 +53,23 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
     setFullscreenImage(src);
     setFullscreenAlt(alt);
   };
+
+  const totalCount =
+    !Array.isArray(advertiserAdsData) && advertiserAdsData?.count
+      ? advertiserAdsData.count
+      : advertiserAdsDataResults.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / Math.max(1, pageSize)));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      onPageChange(totalPages);
+    }
+    if (currentPage < 1) {
+      onPageChange(1);
+    }
+  }, [currentPage, totalPages, onPageChange]);
+
+  const isPaginationDisabled = advertiserAdsLoading || totalPages <= 1;
 
   return (
     <>
@@ -133,6 +164,124 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
               )}
             </tbody>
           </Table>
+
+          <Row className="mt-3 align-items-center">
+            <Col sm={6}>
+              <div className="text-muted">
+                Showing {advertiserAdsDataResults.length} entries
+                {totalCount ? ` of ${totalCount}` : ""}
+              </div>
+            </Col>
+            <Col sm={6} className="text-end">
+              {!isPaginationDisabled
+                ? (() => {
+                    const leadsPerPage = 5;
+                    return (
+                      <Pagination className="d-flex justify-content-end p-2">
+                        <PaginationItem disabled={currentPage === 1}>
+                          <PaginationLink
+                            first
+                            onClick={() => onPageChange(1)}
+                          />
+                        </PaginationItem>
+                        <PaginationItem disabled={currentPage === 1}>
+                          <PaginationLink
+                            previous
+                            onClick={() =>
+                              onPageChange(Math.max(1, currentPage - 1))
+                            }
+                          />
+                        </PaginationItem>
+
+                        {totalPages <= leadsPerPage ? (
+                          Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1,
+                          ).map((pageNumber) => (
+                            <PaginationItem
+                              key={pageNumber}
+                              active={pageNumber === currentPage}
+                            >
+                              <PaginationLink
+                                onClick={() => onPageChange(pageNumber)}
+                              >
+                                {pageNumber}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))
+                        ) : (
+                          <>
+                            <PaginationItem active={currentPage === 1}>
+                              <PaginationLink onClick={() => onPageChange(1)}>
+                                1
+                              </PaginationLink>
+                            </PaginationItem>
+
+                            {currentPage > 3 && (
+                              <PaginationItem disabled>
+                                <PaginationLink>...</PaginationLink>
+                              </PaginationItem>
+                            )}
+
+                            {Array.from(
+                              { length: 3 },
+                              (_, i) => currentPage - 1 + i,
+                            )
+                              .filter(
+                                (pageNumber) =>
+                                  pageNumber > 1 && pageNumber < totalPages,
+                              )
+                              .map((pageNumber) => (
+                                <PaginationItem
+                                  key={pageNumber}
+                                  active={pageNumber === currentPage}
+                                >
+                                  <PaginationLink
+                                    onClick={() => onPageChange(pageNumber)}
+                                  >
+                                    {pageNumber}
+                                  </PaginationLink>
+                                </PaginationItem>
+                              ))}
+
+                            {currentPage < totalPages - 2 && (
+                              <PaginationItem disabled>
+                                <PaginationLink>...</PaginationLink>
+                              </PaginationItem>
+                            )}
+
+                            <PaginationItem active={currentPage === totalPages}>
+                              <PaginationLink
+                                onClick={() => onPageChange(totalPages)}
+                              >
+                                {totalPages}
+                              </PaginationLink>
+                            </PaginationItem>
+                          </>
+                        )}
+
+                        <PaginationItem disabled={currentPage === totalPages}>
+                          <PaginationLink
+                            next
+                            onClick={() =>
+                              onPageChange(
+                                Math.min(totalPages, currentPage + 1),
+                              )
+                            }
+                          />
+                        </PaginationItem>
+                        <PaginationItem disabled={currentPage === totalPages}>
+                          <PaginationLink
+                            last
+                            onClick={() => onPageChange(totalPages)}
+                          />
+                        </PaginationItem>
+                      </Pagination>
+                    );
+                  })()
+                : null}
+            </Col>
+          </Row>
         </CardBody>
       </Card>
 

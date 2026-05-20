@@ -69,4 +69,7 @@ export type AdvertiserAdsListResponse = {
 export interface AdvertiserAdsProps {
   advertiserAdsData: AdvertiserAdsData[] | AdvertiserAdsListResponse | null;
   advertiserAdsLoading: boolean;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
 }
