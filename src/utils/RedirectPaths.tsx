@@ -56,28 +56,26 @@ export const getAllCasesUrl = (session: Session | null) => {
 
   if (!role) return "/auth/login";
 
-  if (role === "SUPER_ADMIN") {
-    return "/admin/cases";
-  }
-
   if (role === "ADMIN" && isNetwork === false) {
-    return "/organisation/admin/cases";
+    return "/organisation/admin/case-management/all-cases";
   }
 
   if (role === "DIRECTOR") {
     return isNetwork
-      ? "/network/director/cases"
-      : "/organisation/director/cases";
+      ? "/network/director/case-management/all-cases"
+      : "/organisation/director/case-management/all-cases";
   }
 
   if (role === "COMPLIANCE") {
     return isNetwork
-      ? "/network/director/cases"
-      : "/organisation/director/cases";
+      ? "/network/director/case-management/all-cases"
+      : "/organisation/director/case-management/all-cases";
   }
 
   if (role === "ADVISER") {
-    return isNetwork ? "/network/adviser/cases" : "/organisation/adviser/cases";
+    return isNetwork
+      ? "/network/adviser/case-management/all-cases"
+      : "/organisation/adviser/case-management/all-cases";
   }
 
   if (role === "APPLICANT") {
@@ -93,30 +91,26 @@ export const getCaseUrl = (
   role: string,
   isNetwork?: boolean,
 ) => {
-  if (role === "SUPER_ADMIN") {
-    return `/admin/cases/${caseAlias}`;
-  }
-
   if (role === "ADMIN" && isNetwork === false) {
-    return `/organisation/admin/cases/all-cases/${caseAlias}`;
+    return `/organisation/admin/case-management/all-cases/${caseAlias}`;
   }
 
   if (role === "DIRECTOR") {
     return isNetwork
-      ? `/network/director/cases/all-cases/${caseAlias}`
-      : `/organisation/director/cases/all-cases/${caseAlias}`;
+      ? `/network/director/case-management/all-cases/${caseAlias}`
+      : `/organisation/director/case-management/all-cases/${caseAlias}`;
   }
 
   if (role === "COMPLIANCE") {
     return isNetwork
-      ? `/network/director/cases/all-cases/${caseAlias}`
-      : `/organisation/director/cases/all-cases/${caseAlias}`;
+      ? `/network/director/case-management/all-cases/${caseAlias}`
+      : `/organisation/director/case-management/all-cases/${caseAlias}`;
   }
 
   if (role === "ADVISER") {
     return isNetwork
-      ? `/network/adviser/cases/all-cases/${caseAlias}`
-      : `/organisation/adviser/cases/all-cases/${caseAlias}`;
+      ? `/network/adviser/case-management/all-cases/${caseAlias}`
+      : `/organisation/adviser/case-management/all-cases/${caseAlias}`;
   }
 
   if (role === "APPLICANT") {
