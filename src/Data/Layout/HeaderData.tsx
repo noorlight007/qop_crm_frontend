@@ -12,7 +12,7 @@ const getTodayDate = () => {
   const day = String(today.getDate()).padStart(2, "0");
   const month = String(today.getMonth() + 1).padStart(2, "0");
   const year = today.getFullYear();
-  return `${year}-${month}-${day}`;
+  return `${day}-${month}-${year}`;
 };
 
 export const notificationData = [
@@ -21,32 +21,6 @@ export const notificationData = [
     time: "Today",
     dotColor: "primary",
     fontColor: "primary",
-    // name: "QOP Dev. Team",
-    message:
-      "No new notifications yet.",
+    message: "No new notifications yet.",
   },
-  // {
-  //   date: "28-06-2024",
-  //   time: "1 hour ago",
-  //   dotColor: "secondary",
-  //   fontColor: "secondary",
-  //   name: "Herry Venter",
-  //   message: "I am convinced that there can be luxury in simplicity.",
-  // },
-  // {
-  //   date: "04-08-2024",
-  //   time: "Today",
-  //   dotColor: "primary",
-  //   fontColor: "primary",
-  //   name: "Loain Deo",
-  //   message: "I feel that things happen for open new opportunities.",
-  // },
-  // {
-  //   date: "12-11-2024",
-  //   time: "Yesterday",
-  //   dotColor: "secondary",
-  //   fontColor: "secondary",
-  //   name: "Fenter Jessy",
-  //   message: "Sometimes the simplest things are the most profound.",
-  // },
 ];
