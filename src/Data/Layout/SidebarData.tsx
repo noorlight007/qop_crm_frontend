@@ -84,17 +84,17 @@ const NetworkDirectorMenu: MenuItem[] = [
           {
             title: "All Cases",
             type: "link",
-            path: "/network/director/cases",
+            path: "/network/director/cases/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/network/director/leads",
+            path: "/network/director/cases/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/network/director/applicants",
+            path: "/network/director/cases/applicants",
           },
           {
             title: "Reports",
@@ -104,7 +104,7 @@ const NetworkDirectorMenu: MenuItem[] = [
           {
             title: "Tasks",
             type: "link",
-            path: "/network/director/tasks",
+            path: "/network/director/cases/tasks",
           },
         ],
       },
@@ -123,12 +123,12 @@ const NetworkDirectorMenu: MenuItem[] = [
           {
             title: "Compliances",
             type: "link",
-            path: "/network/director/compliances",
+            path: "/network/director/users/compliances",
           },
           {
             title: "Advisers",
             type: "link",
-            path: "/network/director/advisers",
+            path: "/network/director/users/advisers",
           },
         ],
       },
@@ -212,17 +212,17 @@ const NetworkComplianceMenu: MenuItem[] = [
           {
             title: "All Cases",
             type: "link",
-            path: "/network/director/cases",
+            path: "/network/director/cases/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/network/director/leads",
+            path: "/network/director/cases/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/network/director/applicants",
+            path: "/network/director/cases/applicants",
           },
           {
             title: "Reports",
@@ -232,7 +232,7 @@ const NetworkComplianceMenu: MenuItem[] = [
           {
             title: "Tasks",
             type: "link",
-            path: "/network/director/tasks",
+            path: "/network/director/cases/tasks",
           },
         ],
       },
@@ -251,7 +251,7 @@ const NetworkComplianceMenu: MenuItem[] = [
           {
             title: "Advisers",
             type: "link",
-            path: "/network/director/advisers",
+            path: "/network/director/users/advisers",
           },
         ],
       },
@@ -336,17 +336,17 @@ const NetworkAdviserMenu: MenuItem[] = [
           {
             title: "All Cases",
             type: "link",
-            path: "/network/adviser/cases",
+            path: "/network/adviser/cases/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/network/adviser/leads",
+            path: "/network/adviser/cases/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/network/adviser/applicants",
+            path: "/network/adviser/cases/applicants",
           },
           {
             title: "Reports",
@@ -356,7 +356,7 @@ const NetworkAdviserMenu: MenuItem[] = [
           {
             title: "Tasks",
             type: "link",
-            path: "/network/adviser/tasks",
+            path: "/network/adviser/cases/tasks",
           },
         ],
       },
@@ -435,17 +435,17 @@ const OrganisationDirectorMenu: MenuItem[] = [
           {
             title: "All Cases",
             type: "link",
-            path: "/organisation/director/cases",
+            path: "/organisation/director/cases/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/organisation/director/leads",
+            path: "/organisation/director/cases/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/organisation/director/applicants",
+            path: "/organisation/director/cases/applicants",
           },
           {
             title: "Reports",
@@ -455,7 +455,7 @@ const OrganisationDirectorMenu: MenuItem[] = [
           {
             title: "Tasks",
             type: "link",
-            path: "/organisation/director/tasks",
+            path: "/organisation/director/cases/tasks",
           },
         ],
       },
@@ -467,17 +467,17 @@ const OrganisationDirectorMenu: MenuItem[] = [
           {
             title: "Advisers",
             type: "link",
-            path: "/organisation/director/advisers",
+            path: "/organisation/director/users/advisers",
           },
           {
             title: "Admins",
             type: "link",
-            path: "/organisation/director/admins",
+            path: "/organisation/director/users/admins",
           },
           {
             title: "Introducers",
             type: "link",
-            path: "/organisation/director/introducers",
+            path: "/organisation/director/users/introducers",
           },
         ],
       },
@@ -550,17 +550,17 @@ const OrganisationAdviserMenu: MenuItem[] = [
           {
             title: "All Cases",
             type: "link",
-            path: "/organisation/adviser/cases",
+            path: "/organisation/adviser/cases/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/organisation/adviser/leads",
+            path: "/organisation/adviser/cases/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/organisation/adviser/applicants",
+            path: "/organisation/adviser/cases/applicants",
           },
           {
             title: "Reports",
@@ -570,7 +570,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
           {
             title: "Tasks",
             type: "link",
-            path: "/organisation/adviser/tasks",
+            path: "/organisation/adviser/cases/tasks",
           },
         ],
       },
@@ -650,17 +650,17 @@ const OrganisationAdminMenu: MenuItem[] = [
           {
             title: "All Cases",
             type: "link",
-            path: "/organisation/admin/cases",
+            path: "/organisation/admin/cases/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/organisation/admin/leads",
+            path: "/organisation/admin/cases/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/organisation/admin/applicants",
+            path: "/organisation/admin/cases/applicants",
           },
           {
             title: "Reports",
@@ -670,7 +670,7 @@ const OrganisationAdminMenu: MenuItem[] = [
           {
             title: "Tasks",
             type: "link",
-            path: "/organisation/admin/tasks",
+            path: "/organisation/admin/cases/tasks",
           },
         ],
       },
