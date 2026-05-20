@@ -171,6 +171,11 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/reports/mortgage-report",
           },
+          {
+            title: "Vulnerability Report",
+            type: "link",
+            path: "/network/director/reports/vulnerability-report",
+          }
         ],
       },
       {
