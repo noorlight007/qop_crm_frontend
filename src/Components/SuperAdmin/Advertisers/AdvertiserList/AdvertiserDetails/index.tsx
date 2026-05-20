@@ -1,7 +1,11 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import { useGetAdvertiserDetailsQuery } from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
+import {
+  useGetAdvertiserAdsQuery,
+  useGetAdvertiserDetailsQuery,
+} from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
 import { useParams } from "next/navigation";
 import { Container } from "reactstrap";
+import AdvertiserAds from "./AdvertiserAds/AdvertiserAds";
 import AdvertisersInfo from "./AdvertisersInfo/AdvertisersInfo";
 import DeleteAdvertiser from "./DeleteAdvertiser/DeleteAdvertiser";
 
@@ -10,6 +14,10 @@ const AdvertiserDetailsContainer: React.FC = () => {
   const { data: advertiserData, isLoading } = useGetAdvertiserDetailsQuery({
     alias: advertiseralias,
   });
+  const { data: advertiserAdsData, isLoading: advertiserAdsLoading } =
+    useGetAdvertiserAdsQuery({
+      alias: advertiseralias,
+    });
 
   return (
     <div>
@@ -25,6 +33,10 @@ const AdvertiserDetailsContainer: React.FC = () => {
         <AdvertisersInfo
           advertiserData={advertiserData}
           isLoading={isLoading}
+        />
+        <AdvertiserAds
+          advertiserAdsData={advertiserAdsData}
+          advertiserAdsLoading={advertiserAdsLoading}
         />
         <DeleteAdvertiser
           advertiserData={advertiserData}

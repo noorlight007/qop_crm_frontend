@@ -40,6 +40,13 @@ export const AdvertisersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["AdvertisersDetails"],
     }),
+    getAdvertiserAds: builder.query({
+      query: ({ alias }) => ({
+        url: `/api/advertisers/${alias}/ads/`,
+        method: "GET",
+      }),
+      providesTags: ["AdvertisersDetails"],
+    }),
   }),
 });
 
@@ -49,4 +56,5 @@ export const {
   useAddAdvertiserMutation,
   useEditAdvertiserMutation,
   useDeleteAdvertiserMutation,
+  useGetAdvertiserAdsQuery,
 } = AdvertisersApi;

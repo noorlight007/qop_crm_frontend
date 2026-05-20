@@ -44,3 +44,29 @@ export interface DeleteAdvertiserModalProps {
   toggle: () => void;
   advertiserData: Advertiser | null;
 }
+
+export interface AdvertiserAdsData {
+  alias: string;
+  title: string;
+  image: string;
+  redirect_url: string;
+  placement: string;
+  is_active: boolean;
+  start_date: string;
+  end_date: string;
+  impressions: number;
+  clicks: number;
+  priority: number;
+}
+
+export type AdvertiserAdsListResponse = {
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
+  results?: AdvertiserAdsData[];
+};
+
+export interface AdvertiserAdsProps {
+  advertiserAdsData: AdvertiserAdsData[] | AdvertiserAdsListResponse | null;
+  advertiserAdsLoading: boolean;
+}

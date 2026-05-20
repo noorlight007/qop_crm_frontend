@@ -1,0 +1,189 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
+import {
+  AdvertiserAdsData,
+  AdvertiserAdsProps,
+} from "@/Types/SuperAdmin/Advertisers/AdvertisersTypes";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
+import { useEffect, useState } from "react";
+import { Edit, PlusCircle, Trash } from "react-feather";
+import { Button, Card, CardBody, CardHeader, Table } from "reactstrap";
+
+const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
+  advertiserAdsData,
+  advertiserAdsLoading,
+}) => {
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [fullscreenAlt, setFullscreenAlt] = useState<string>("");
+
+  const advertiserAdsDataResults = Array.isArray(advertiserAdsData)
+    ? advertiserAdsData
+    : (advertiserAdsData?.results ?? []);
+
+  useEffect(() => {
+    if (!fullscreenImage) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setFullscreenImage(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [fullscreenImage]);
+
+  const openFullscreenImage = (src: string, alt: string) => {
+    setFullscreenImage(src);
+    setFullscreenAlt(alt);
+  };
+
+  return (
+    <>
+      <Card>
+        <CardHeader className="d-flex justify-content-between align-items-center">
+          <h3>Ads</h3>
+          <Button color="primary">
+            <PlusCircle size={18} className="me-1" />
+            Add New Ad
+          </Button>
+        </CardHeader>
+        <CardBody>
+          <Table responsive>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Image</th>
+                <th>Redirect URL</th>
+                <th>Placement</th>
+                <th>Active</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Impressions</th>
+                <th>Clicks</th>
+                <th>Priority</th>
+                <th className="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {advertiserAdsLoading ? (
+                <tr>
+                  <td colSpan={11} className="text-center">
+                    <LoadingGrow />
+                  </td>
+                </tr>
+              ) : advertiserAdsDataResults.length > 0 ? (
+                advertiserAdsDataResults.map((ad: AdvertiserAdsData) => (
+                  <tr key={ad.alias}>
+                    <td>{ad.title}</td>
+                    <td>
+                      {ad.image && (
+                        <img
+                          src={ad.image}
+                          alt={ad.title}
+                          width="100"
+                          style={{ cursor: "zoom-in" }}
+                          onClick={() =>
+                            openFullscreenImage(ad.image, ad.title || "Ad")
+                          }
+                        />
+                      )}
+                    </td>
+                    <td className="text-truncate">
+                      <a
+                        className="text_decoration_hover"
+                        href={ad.redirect_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {ad.redirect_url.length > 25
+                          ? `${ad.redirect_url.slice(0, 25)}...`
+                          : ad.redirect_url}
+                      </a>
+                    </td>
+                    <td className="text-truncate">
+                      {formatChoiceFieldValue(ad.placement)}
+                    </td>
+                    <td>{ad.is_active ? "Yes" : "No"}</td>
+                    <td>{formatDateAndTime(ad.start_date)}</td>
+                    <td>{formatDateAndTime(ad.end_date)}</td>
+                    <td>{ad.impressions}</td>
+                    <td>{ad.clicks}</td>
+                    <td>{ad.priority}</td>
+                    <td className="text-center">
+                      <div className="d-flex justify-content-center gap-1">
+                        <Button color="primary" size="sm">
+                          <Edit size={16} />
+                        </Button>
+                        <Button color="danger" size="sm">
+                          <Trash size={16} />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={11} className="text-center">
+                    No ads found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
+        </CardBody>
+      </Card>
+
+      {fullscreenImage && (
+        <div
+          onClick={() => setFullscreenImage(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1050,
+            backgroundColor: "rgba(0,0,0,0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "zoom-out",
+          }}
+        >
+          <button
+            onClick={() => setFullscreenImage(null)}
+            style={{
+              position: "absolute",
+              top: 16,
+              right: 20,
+              background: "none",
+              border: "none",
+              color: "#fff",
+              fontSize: 32,
+              lineHeight: 1,
+              cursor: "pointer",
+              zIndex: 1060,
+            }}
+            aria-label="Close"
+          >
+            &times;
+          </button>
+          <img
+            src={fullscreenImage}
+            alt={fullscreenAlt || "Full size preview"}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              objectFit: "contain",
+              borderRadius: 8,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
+};
+
+export default AdvertiserAds;
