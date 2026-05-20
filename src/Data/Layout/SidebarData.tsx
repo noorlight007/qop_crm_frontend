@@ -99,7 +99,7 @@ const NetworkDirectorMenu: MenuItem[] = [
           {
             title: "Reports",
             type: "link",
-            path: "/network/director/reports",
+            path: "/network/director/cases/reports",
           },
           {
             title: "Tasks",
@@ -227,7 +227,7 @@ const NetworkComplianceMenu: MenuItem[] = [
           {
             title: "Reports",
             type: "link",
-            path: "/network/director/reports",
+            path: "/network/director/cases/reports",
           },
           {
             title: "Tasks",
@@ -351,7 +351,7 @@ const NetworkAdviserMenu: MenuItem[] = [
           {
             title: "Reports",
             type: "link",
-            path: "/network/adviser/reports",
+            path: "/network/adviser/cases/reports",
           },
           {
             title: "Tasks",
@@ -450,7 +450,7 @@ const OrganisationDirectorMenu: MenuItem[] = [
           {
             title: "Reports",
             type: "link",
-            path: "/organisation/director/reports",
+            path: "/organisation/director/cases/reports",
           },
           {
             title: "Tasks",
@@ -565,7 +565,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
           {
             title: "Reports",
             type: "link",
-            path: "/organisation/adviser/reports",
+            path: "/organisation/adviser/cases/reports",
           },
           {
             title: "Tasks",
@@ -665,7 +665,7 @@ const OrganisationAdminMenu: MenuItem[] = [
           {
             title: "Reports",
             type: "link",
-            path: "/organisation/admin/reports",
+            path: "/organisation/admin/cases/reports",
           },
           {
             title: "Tasks",
