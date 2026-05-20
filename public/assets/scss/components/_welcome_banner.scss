@@ -122,8 +122,8 @@
   top: 50%;
   transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
+  border: 1px solid rgba(8, 8, 8, 0.3);
+  color: var(--theme-default);
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -137,7 +137,7 @@
 
   &:hover {
     background: rgba(255, 255, 255, 0.4);
-    border-color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(1, 1, 1, 0.6);
   }
 
   svg {
@@ -145,6 +145,26 @@
     height: 18px;
     stroke-width: 2.5;
   }
+}
+
+.dark-only .welcomeCarouselBtn svg,
+body.dark-only .welcomeCarouselBtn svg,
+.dark .welcomeCarouselBtn svg,
+body.dark .welcomeCarouselBtn svg,
+[data-theme="dark"] .welcomeCarouselBtn svg {
+  color: var(--theme-default) !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+.dark-only .welcomeCarouselBtn svg *,
+body.dark-only .welcomeCarouselBtn svg *,
+.dark .welcomeCarouselBtn svg *,
+body.dark .welcomeCarouselBtn svg *,
+[data-theme="dark"] .welcomeCarouselBtn svg * {
+  color: var(--theme-default) !important;
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 .welcomeCarouselBtnPrev {
@@ -169,18 +189,18 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
+  background: color-mix(in srgb, var(--theme-default) 40%, transparent);
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.7);
+    background: color-mix(in srgb, var(--theme-default) 70%, transparent);
   }
 
   &.active {
-    background: rgba(255, 255, 255, 0.95);
+    background: color-mix(in srgb, var(--theme-default) 95%, transparent);
     width: 10px;
   }
 }

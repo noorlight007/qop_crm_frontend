@@ -1,3 +1,4 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import {
   useGetAdsQuery,
@@ -52,9 +53,15 @@ const WelcomeBanner: React.FC = () => {
 
   const FALLBACK_IMAGE_SRC = "/assets/images/dashboard-1/welcome-bg.png";
   const SLIDE_DURATION_MS = 360;
+  const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
 
   const getAdImageSrc = (index: number) => {
     return dashboardAds[index]?.image || FALLBACK_IMAGE_SRC;
+  };
+
+  const isSlideItemLoaded = (index: number) => !!imageLoaded[index];
+  const markImageLoaded = (index: number) => {
+    setImageLoaded((prev) => ({ ...prev, [index]: true }));
   };
 
   const getAdAlt = (index: number) => {
@@ -242,25 +249,54 @@ const WelcomeBanner: React.FC = () => {
                 }`}
                 style={{ transform: `translateX(${slideOffsetPct}%)` }}
               >
-                {slidePair.map((adIndex, i) => (
-                  <div className="welcomeSlideItem" key={`${adIndex}-${i}`}>
-                    <img
-                      src={getAdImageSrc(adIndex)}
-                      alt={getAdAlt(adIndex)}
-                      className="welcomeRightImage"
-                      onError={(e) => {
-                        const image = e.currentTarget;
-                        image.onerror = null;
-                        image.src = FALLBACK_IMAGE_SRC;
-                      }}
+                {slidePair.map((adIndex, i) => {
+                  const isLoaded = isSlideItemLoaded(adIndex);
+                  return (
+                    <div
+                      className="welcomeSlideItem"
+                      key={`${adIndex}-${i}`}
                       style={{
+                        position: "relative",
                         width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
+                        minHeight: "100%",
                       }}
-                    />
-                  </div>
-                ))}
+                    >
+                      {!isLoaded && (
+                        <div
+                          className="welcomeImageLoader"
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(255,255,255,0.85)",
+                            zIndex: 1,
+                          }}
+                        >
+                          <LoadingGrow />
+                        </div>
+                      )}
+                      <img
+                        src={getAdImageSrc(adIndex)}
+                        alt={getAdAlt(adIndex)}
+                        className="welcomeRightImage"
+                        onLoad={() => markImageLoaded(adIndex)}
+                        onError={(e) => {
+                          const image = e.currentTarget;
+                          image.onerror = null;
+                          image.src = FALLBACK_IMAGE_SRC;
+                        }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          opacity: isLoaded ? 1 : 0,
+                        }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
             {dashboardAds.length > 1 && (
@@ -317,25 +353,54 @@ const WelcomeBanner: React.FC = () => {
                 }`}
                 style={{ transform: `translateX(${slideOffsetPct}%)` }}
               >
-                {slidePair.map((adIndex, i) => (
-                  <div className="welcomeSlideItem" key={`${adIndex}-${i}`}>
-                    <img
-                      src={getAdImageSrc(adIndex)}
-                      alt={getAdAlt(adIndex)}
-                      className="welcomeRightImage"
-                      onError={(e) => {
-                        const image = e.currentTarget;
-                        image.onerror = null;
-                        image.src = FALLBACK_IMAGE_SRC;
-                      }}
+                {slidePair.map((adIndex, i) => {
+                  const isLoaded = isSlideItemLoaded(adIndex);
+                  return (
+                    <div
+                      className="welcomeSlideItem"
+                      key={`${adIndex}-${i}`}
                       style={{
+                        position: "relative",
                         width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
+                        minHeight: "100%",
                       }}
-                    />
-                  </div>
-                ))}
+                    >
+                      {!isLoaded && (
+                        <div
+                          className="welcomeImageLoader"
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(255,255,255,0.85)",
+                            zIndex: 1,
+                          }}
+                        >
+                          <LoadingGrow />
+                        </div>
+                      )}
+                      <img
+                        src={getAdImageSrc(adIndex)}
+                        alt={getAdAlt(adIndex)}
+                        className="welcomeRightImage"
+                        onLoad={() => markImageLoaded(adIndex)}
+                        onError={(e) => {
+                          const image = e.currentTarget;
+                          image.onerror = null;
+                          image.src = FALLBACK_IMAGE_SRC;
+                        }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          opacity: isLoaded ? 1 : 0,
+                        }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
             {dashboardAds.length > 1 && (
