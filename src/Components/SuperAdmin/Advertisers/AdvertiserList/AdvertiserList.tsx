@@ -21,7 +21,6 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   UncontrolledPopover,
 } from "reactstrap";
 import AddAdvertiserModal from "./Modal/AddAdvertiserModal";
@@ -98,7 +97,7 @@ const AdvertiserList: React.FC = () => {
     return (
       <Row className="py-5">
         <Col xs="12" className="text-center">
-          <Spinner color="primary" className="mb-3" />
+          <LoadingGrow />
         </Col>
       </Row>
     );
