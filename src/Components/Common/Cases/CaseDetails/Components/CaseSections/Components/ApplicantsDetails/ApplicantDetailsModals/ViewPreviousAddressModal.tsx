@@ -14,6 +14,7 @@ import { TbCirclePlus } from "react-icons/tb";
 import { Button, Modal, ModalBody, ModalHeader, Table } from "reactstrap";
 import AddPreviousAddressModal from "./AddPreviousAddressModal";
 import DeletePreviousAddressModal from "./DeletePreviousAddressModal";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 
 const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
   isOpen,
@@ -99,8 +100,8 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
                   <td>{addressData.city}</td>
                   <td>{addressData.county}</td>
                   <td>{addressData.country}</td>
-                  <td>{addressData.pre_effective_from}</td>
-                  <td>{addressData.pre_effective_to}</td>
+                  <td>{formatDate(addressData.pre_effective_from)}</td>
+                  <td>{formatDate(addressData.pre_effective_to)}</td>
                   <td>
                     {addressData.time_at_address_years} years,{" "}
                     {addressData.time_at_address_months} months

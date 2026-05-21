@@ -1,6 +1,7 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetFeesOutDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import getCurrencySign from "@/utils/currency";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -176,7 +177,7 @@ const FeeOutTable = () => {
                         )?.title || "-"}
                       </td>
                       <td className="text-center align-middle">
-                        {feeOut.feeDate || "-"}
+                        {formatDate(feeOut.feeDate) || "-"}
                       </td>{" "}
                       <td className="text-center align-middle">
                         {feeOut.notes || "-"}

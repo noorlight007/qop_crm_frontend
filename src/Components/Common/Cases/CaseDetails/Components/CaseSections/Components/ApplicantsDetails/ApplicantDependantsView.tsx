@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 import AddDependantFormModal from "./ApplicantDetailsModals/AddApplicantDependantsModal";
 import DeleteApplicantDependantModal from "./ApplicantDetailsModals/DeleteApplicantDependantModal";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 
 const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
   applicantAlias,
@@ -173,7 +174,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                           : formatChoiceFieldValue(dependant.relationship) ||
                             "-"}
                       </td>
-                      <td>{dependant.date_of_birth || "-"}</td>
+                      <td>{formatDate(dependant.date_of_birth) || "-"}</td>
                       <td>{calcAge(dependant.date_of_birth) || "0"} y</td>
 
                       <td>
