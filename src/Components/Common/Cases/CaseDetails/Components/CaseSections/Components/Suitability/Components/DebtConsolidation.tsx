@@ -237,7 +237,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
           <span className="d-inline-flex align-items-center gap-2 ms-1">
             £
             <Input
-              type="text"
+              type="number"
               value={balanceDraft}
               onChange={(e) => setBalanceDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -587,7 +587,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
                       <>
                         £
                         <Input
-                          type="textarea"
+                          type="number"
                           rows={3}
                           value={draft.estimated_cost_text}
                           autoFocus

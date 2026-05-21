@@ -75,6 +75,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const rateType = s?.loan_details?.interest_rate_type ?? "";
   const repaymentMethod = s?.loan_details?.repayment_method ?? "";
   const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
+  const productTerm = s?.loan_details?.product_term ?? "";
   const mortgageType = s?.loan_details?.mortgage_type ?? "";
   const interestRateType = s?.loan_details?.interest_rate_type ?? "";
   const dealEndDate =
@@ -129,6 +130,13 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const [isRepaymentMethodEditing, setIsRepaymentMethodEditing] =
     useState(false);
   const [repaymentMethodDraft, setRepaymentMethodDraft] = useState("");
+  const [isArrangementFeeNoteEditing, setIsArrangementFeeNoteEditing] =
+    useState(false);
+  const [arrangementFeeNoteDraft, setArrangementFeeNoteDraft] = useState("");
+  const [isErcWhyNoteEditing, setIsErcWhyNoteEditing] = useState(false);
+  const [ercWhyNoteDraft, setErcWhyNoteDraft] = useState("");
+  const [isOverpaymentEditing, setIsOverpaymentEditing] = useState(false);
+  const [overpaymentDraft, setOverpaymentDraft] = useState("");
 
   // ══════════════════════════════════════════════════════════
   // LOCAL DRAFT STATES
@@ -177,7 +185,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         <>
           The mortgage amount is less than what you currently have outstanding
           on your mortgage, this is because you are making an overpayment of{" "}
-          <span style={{ color: blue }}>{mortgageAmount}</span>.
+          <span style={{ color: blue }}>
+            {formValues.mortgage_amount_overpayment || mortgageAmount}
+          </span>
+          .
         </>
       ),
     },
@@ -378,6 +389,57 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const startRepaymentMethodEdit = () => {
     setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? "");
     setIsRepaymentMethodEditing(true);
+  };
+
+  const handleArrangementFeeNoteSave = () => {
+    onFormChange({
+      arrangement_fee_why_recommended_text: arrangementFeeNoteDraft,
+    });
+    setIsArrangementFeeNoteEditing(false);
+  };
+  const handleArrangementFeeNoteCancel = () => {
+    setArrangementFeeNoteDraft(
+      formValues.arrangement_fee_why_recommended_text ?? "",
+    );
+    setIsArrangementFeeNoteEditing(false);
+  };
+  const startArrangementFeeNoteEdit = () => {
+    setArrangementFeeNoteDraft(
+      formValues.arrangement_fee_why_recommended_text ?? "",
+    );
+    setIsArrangementFeeNoteEditing(true);
+  };
+
+  const handleErcWhyNoteSave = () => {
+    onFormChange({
+      early_repayment_charges_why_recommended_text: ercWhyNoteDraft,
+    });
+    setIsErcWhyNoteEditing(false);
+  };
+  const handleErcWhyNoteCancel = () => {
+    setErcWhyNoteDraft(
+      formValues.early_repayment_charges_why_recommended_text ?? "",
+    );
+    setIsErcWhyNoteEditing(false);
+  };
+  const startErcWhyNoteEdit = () => {
+    setErcWhyNoteDraft(
+      formValues.early_repayment_charges_why_recommended_text ?? "",
+    );
+    setIsErcWhyNoteEditing(true);
+  };
+
+  const handleOverpaymentSave = () => {
+    onFormChange({ mortgage_amount_overpayment: overpaymentDraft });
+    setIsOverpaymentEditing(false);
+  };
+  const handleOverpaymentCancel = () => {
+    setOverpaymentDraft(formValues.mortgage_amount_overpayment ?? "");
+    setIsOverpaymentEditing(false);
+  };
+  const startOverpaymentEdit = () => {
+    setOverpaymentDraft(formValues.mortgage_amount_overpayment ?? "");
+    setIsOverpaymentEditing(true);
   };
 
   // ══════════════════════════════════════════════════════════
@@ -736,7 +798,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 most suitable deal period for you.
               </p>
               I recommend a period of{" "}
-              <span style={{ color: blue }}>{mortgageTerm}</span> because{" "}
+              <span style={{ color: blue }}>{productTerm}</span> because{" "}
               {isInitialInterestRateEditing ? (
                 <span className="d-block w-100 mt-1">
                   <Input
@@ -922,6 +984,57 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   ))}
                 </DropdownMenu>
               </Dropdown>
+
+              {formValues.mortgage_amount_type === "LESS_THAN_OUTSTANDING" && (
+                <span className="d-block mt-2">
+                  {isOverpaymentEditing ? (
+                    <span className="d-block w-100 mt-1">
+                      <strong>£</strong>
+                      <Input
+                        type="text"
+                        value={overpaymentDraft}
+                        onChange={(e) => setOverpaymentDraft(e.target.value)}
+                        placeholder="Enter overpayment amount..."
+                        autoFocus
+                        className="w-100 p-1 mt-1"
+                      />
+                      <div className="d-flex gap-2 mt-2">
+                        <Button
+                          color="light"
+                          className="text-dark"
+                          size="sm"
+                          onClick={handleOverpaymentSave}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          color="light"
+                          className="text-dark"
+                          size="sm"
+                          onClick={handleOverpaymentCancel}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </span>
+                  ) : (
+                    <span
+                      className="d-inline text-success"
+                      style={{
+                        cursor: "pointer",
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                      }}
+                      onClick={startOverpaymentEdit}
+                      title="Click to edit"
+                    >
+                      {formValues.mortgage_amount_overpayment
+                        ? `Overpayment: £${formValues.mortgage_amount_overpayment}`
+                        : "click to set overpayment amount..."}
+                    </span>
+                  )}
+                </span>
+              )}
             </td>
           </tr>
 
@@ -931,6 +1044,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td>
               {isArrangementFeeEditing ? (
                 <>
+                  <strong>£</strong>
                   <Input
                     type="number"
                     value={arrangementFeeDraft ?? ""}
@@ -970,7 +1084,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   onClick={startArrangementFeeEdit}
                   title="Click to edit"
                 >
-                  {formValues.arrangement_fee || "＋ add arrangement fee"}
+                  {formValues.arrangement_fee
+                    ? `£${formValues.arrangement_fee.toFixed(2)}`
+                    : "＋ add arrangement fee"}
                 </span>
               )}
             </td>
@@ -1023,6 +1139,57 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   ))}
                 </DropdownMenu>
               </Dropdown>
+
+              {/* ── Arrangement Fee Note textarea ── */}
+              <span className="d-block mt-2">
+                {isArrangementFeeNoteEditing ? (
+                  <span className="d-block w-100 mt-1">
+                    <Input
+                      type="textarea"
+                      rows={5}
+                      value={arrangementFeeNoteDraft}
+                      onChange={(e) =>
+                        setArrangementFeeNoteDraft(e.target.value)
+                      }
+                      placeholder="Enter your note..."
+                      autoFocus
+                      className="w-100 p-1"
+                    />
+                    <div className="d-flex gap-2 mt-2">
+                      <Button
+                        color="light"
+                        className="text-dark"
+                        size="sm"
+                        onClick={handleArrangementFeeNoteSave}
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        color="light"
+                        className="text-dark"
+                        size="sm"
+                        onClick={handleArrangementFeeNoteCancel}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </span>
+                ) : (
+                  <span
+                    className="d-inline text-success"
+                    style={{
+                      cursor: "pointer",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                    }}
+                    onClick={startArrangementFeeNoteEdit}
+                    title="Click to edit"
+                  >
+                    {formValues.arrangement_fee_why_recommended_text ||
+                      "click to add note..."}
+                  </span>
+                )}
+              </span>
               <span className="mt-2 w-100">
                 <AdvisorNote>
                   (Where fees added, include the reason why)
@@ -1191,7 +1358,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   <span className="d-flex align-items-center gap-2 mt-1 flex-wrap">
                     <strong>£</strong>
                     <Input
-                      type="text"
+                      type="number"
                       value={maxErcDraft}
                       onChange={(e) => setMaxErcDraft(e.target.value)}
                       placeholder="e.g. 2500"
@@ -1236,7 +1403,6 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               </p>
             </td>
             <td>
-              {/* Why recommended column */}
               <Dropdown
                 isOpen={isErcWhyOptionOpen}
                 toggle={() => setIsErcWhyOptionOpen((p) => !p)}
@@ -1279,6 +1445,55 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   ))}
                 </DropdownMenu>
               </Dropdown>
+
+              {/* ── ERC Why Note textarea ── */}
+              <span className="d-block mt-2">
+                {isErcWhyNoteEditing ? (
+                  <span className="d-block w-100 mt-1">
+                    <Input
+                      type="textarea"
+                      rows={5}
+                      value={ercWhyNoteDraft}
+                      onChange={(e) => setErcWhyNoteDraft(e.target.value)}
+                      placeholder="Enter your note..."
+                      autoFocus
+                      className="w-100 p-1"
+                    />
+                    <div className="d-flex gap-2 mt-2">
+                      <Button
+                        color="light"
+                        className="text-dark"
+                        size="sm"
+                        onClick={handleErcWhyNoteSave}
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        color="light"
+                        className="text-dark"
+                        size="sm"
+                        onClick={handleErcWhyNoteCancel}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </span>
+                ) : (
+                  <span
+                    className="d-inline text-success"
+                    style={{
+                      cursor: "pointer",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                    }}
+                    onClick={startErcWhyNoteEdit}
+                    title="Click to edit"
+                  >
+                    {formValues.early_repayment_charges_why_recommended_text ||
+                      "click to add note..."}
+                  </span>
+                )}
+              </span>
             </td>
           </tr>
 

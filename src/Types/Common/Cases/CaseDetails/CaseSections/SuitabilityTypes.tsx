@@ -48,6 +48,10 @@ export interface SuitabilityData {
   shortened_product_transfer_expired_date: string | null;
   shortened_product_transfer_standard_variable_rate: string | null;
   product_transfer_recommended_was: string | null;
+  arrangement_fee_why_recommended_text: string | null;
+  early_repayment_charges_why_recommended_text: string | null;
+  mortgage_amount_overpayment: string | null;
+  product_transfer_expires_or_expired_type: string | null;
 }
 
 export interface RecommendationLetterProps {
