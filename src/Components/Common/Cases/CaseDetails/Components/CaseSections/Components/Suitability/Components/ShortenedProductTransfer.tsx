@@ -1,5 +1,6 @@
 import { ptCostOptions } from "@/Data/Cases/SuitabilityData";
 import { ShortenedProductTransferProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import React, { useState } from "react";
 import {
   Button,
@@ -127,7 +128,7 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
             onClick={startDealEndDateEdit}
             title="Click to edit"
           >
-            {formValues.shortened_product_transfer_expired_date ||
+            {formatDate(formValues.shortened_product_transfer_expired_date) ||
               "click to set date..."}
           </span>
         )}

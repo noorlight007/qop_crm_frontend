@@ -4,6 +4,7 @@ import {
   useUpdateUserDetailsMutation,
 } from "@/Redux/Reducers/UserProfileAndSettings/UserProfileApi";
 import { UserProfileData } from "@/Types/Common/UserProfile/UserProfileType";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";
@@ -37,16 +38,6 @@ const ProfileInfo: React.FC = () => {
   const [updateUserDetails] = useUpdateUserDetailsMutation();
 
   const userData = userProfileData as UserProfileData;
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
 
   // Get user initials
   const getInitials = () => {

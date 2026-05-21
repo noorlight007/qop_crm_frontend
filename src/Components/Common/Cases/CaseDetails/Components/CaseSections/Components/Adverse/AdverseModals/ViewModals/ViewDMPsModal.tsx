@@ -4,6 +4,7 @@ import {
   ViewDMPsModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import getCurrencySign from "@/utils/currency";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -53,20 +54,23 @@ const ViewDMPsModal: React.FC<ViewDMPsModalProps> = ({
                 <tr key={index}>
                   <td>{dmp.plan === "DIRECT" ? "Direct" : "3rd Party"}</td>
                   <td>{dmp.loan_company_name || "-"}</td>
-                  <td>{dmp.date_registered || "-"}</td>
+                  <td>{formatDate(dmp.date_registered) || "-"}</td>
                   <td>
                     {dmp.outstanding_balance
-                      ? `${getCurrencySign()}${parseFloat(dmp.outstanding_balance).toLocaleString(
-                          "en-GB",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )}`
+                      ? `${getCurrencySign()}${parseFloat(
+                          dmp.outstanding_balance,
+                        ).toLocaleString("en-GB", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}`
                       : "-"}
                   </td>
                   <td>{dmp.satisfied ? "Yes" : "No"}</td>
-                  <td>{dmp.satisfied ? dmp.date_satisfied || "-" : "-"}</td>
+                  <td>
+                    {dmp.satisfied
+                      ? formatDate(dmp.date_satisfied) || "-"
+                      : "-"}
+                  </td>
                 </tr>
               ))
             ) : (

@@ -1,5 +1,6 @@
 import { productTransferOptions } from "@/Data/Cases/SuitabilityData";
 import { ProductTransferProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import React, { useState } from "react";
 import {
   Button,
@@ -28,16 +29,26 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
   const s = suitability;
   const lender = s?.loan_details?.lender ?? "";
 
+  const expiryStatusOptions = [
+    { value: "EXPIRES", label: "expires" },
+    { value: "EXPIRED", label: "expired" },
+  ];
+
   // ── UI-only states ──
   const [isProductTransferOptionOpen, setIsProductTransferOptionOpen] =
     useState(false);
   const [isDealEndDateEditing, setIsDealEndDateEditing] = useState(false);
   const [isSvrRateEditing, setIsSvrRateEditing] = useState(false);
+  const [isExpiryStatusOpen, setIsExpiryStatusOpen] = useState(false);
 
   // ── Draft states ──
   const [dealEndDateDraft, setDealEndDateDraft] = useState("");
   const [svrRateDraft, setSvrRateDraft] = useState("");
 
+  const selectedExpiryStatus =
+    expiryStatusOptions.find(
+      (o) => o.value === formValues.product_transfer_expires_or_expired_type,
+    ) ?? null;
   // ── Derived from formValues ──
   const selectedProductTransferOption =
     productTransferOptions.find(
@@ -78,7 +89,41 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
 
       <p>
         Your current mortgage deal with{" "}
-        <strong style={{ color: blue }}>{lender}</strong> expires / expired on{" "}
+        <strong style={{ color: blue }}>{lender}</strong>{" "}
+        <Dropdown
+          isOpen={isExpiryStatusOpen}
+          toggle={() => setIsExpiryStatusOpen((p) => !p)}
+          className="d-inline"
+        >
+          <DropdownToggle
+            tag="span"
+            style={{
+              color: "#6a1b9a",
+              cursor: "pointer",
+              textDecoration: "underline dotted",
+            }}
+          >
+            {selectedExpiryStatus
+              ? selectedExpiryStatus.label
+              : "select expiry status..."}
+          </DropdownToggle>
+          <DropdownMenu>
+            {expiryStatusOptions.map((option) => (
+              <DropdownItem
+                key={option.value}
+                onClick={() =>
+                  onFormChange({
+                    product_transfer_expires_or_expired_type: option.value,
+                  })
+                }
+              >
+                <span className="me-1 fw-bolder">•</span>
+                {option.label}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>{" "}
+        on{" "}
         {isDealEndDateEditing ? (
           <span className="d-inline-flex align-items-center gap-2 ms-1">
             <Input
@@ -117,7 +162,8 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
             onClick={startDealEndDateEdit}
             title="Click to edit"
           >
-            {formValues.product_transfer_expired_date || "click to set date..."}
+            {formatDate(formValues.product_transfer_expired_date) ||
+              "click to set date..."}
           </span>
         )}
         . As there are no penalties for changing this mortgage product beyond

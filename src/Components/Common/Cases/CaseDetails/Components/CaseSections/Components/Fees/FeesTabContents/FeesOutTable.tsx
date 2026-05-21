@@ -198,6 +198,7 @@ const FeeOutTable = () => {
                             size="sm"
                             outline
                             className="removeFee"
+                             disabled={session?.user?.role === "APPLICANT"}
                             onClick={() => handleFeeDelete(feeOut)}
                           >
                             <i className="fa fa-trash"></i>

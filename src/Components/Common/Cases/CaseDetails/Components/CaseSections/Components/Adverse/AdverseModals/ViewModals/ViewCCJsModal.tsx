@@ -4,6 +4,7 @@ import {
   ViewCCJsModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import getCurrencySign from "@/utils/currency";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -52,16 +53,22 @@ const ViewCCJsModal: React.FC<ViewCCJsModalProps> = ({
                 <tr key={index}>
                   <td>
                     {ccj.amount
-                      ? `${getCurrencySign()}${parseFloat(ccj.amount).toLocaleString("en-GB", {
+                      ? `${getCurrencySign()}${parseFloat(
+                          ccj.amount,
+                        ).toLocaleString("en-GB", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}`
                       : "-"}
                   </td>
                   <td>{ccj.loan_company_name || "-"}</td>
-                  <td>{ccj.date_registered || "-"}</td>
+                  <td>{formatDate(ccj.date_registered) || "-"}</td>
                   <td>{ccj.has_satisfied ? "Yes" : "No"}</td>
-                  <td>{ccj.has_satisfied ? ccj.date_satisfied || "-" : "-"}</td>
+                  <td>
+                    {ccj.has_satisfied
+                      ? formatDate(ccj.date_satisfied) || "-"
+                      : "-"}
+                  </td>
                 </tr>
               ))
             ) : (

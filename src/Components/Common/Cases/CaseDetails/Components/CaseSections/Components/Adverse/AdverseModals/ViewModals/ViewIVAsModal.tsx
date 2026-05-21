@@ -4,6 +4,7 @@ import {
   ViewIVAsModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import getCurrencySign from "@/utils/currency";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -49,20 +50,23 @@ const ViewIVAsModal: React.FC<ViewIVAsModalProps> = ({
             {ivasData && ivasData.length > 0 ? (
               ivasData.map((iva: IVAItemProps, index: number) => (
                 <tr key={index}>
-                  <td>{iva.date_registered || "-"}</td>
+                  <td>{formatDate(iva.date_registered) || "-"}</td>
                   <td>
                     {iva.outstanding_balance
-                      ? `${getCurrencySign()}${parseFloat(iva.outstanding_balance).toLocaleString(
-                          "en-GB",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )}`
+                      ? `${getCurrencySign()}${parseFloat(
+                          iva.outstanding_balance,
+                        ).toLocaleString("en-GB", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}`
                       : "-"}
                   </td>
                   <td>{iva.satisfied ? "Yes" : "No"}</td>
-                  <td>{iva.satisfied ? iva.date_satisfied || "-" : "-"}</td>
+                  <td>
+                    {iva.satisfied
+                      ? formatDate(iva.date_satisfied) || "-"
+                      : "-"}
+                  </td>
                 </tr>
               ))
             ) : (
