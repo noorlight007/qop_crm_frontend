@@ -8,6 +8,7 @@ import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeInModal from "./FeesModals/AddFeeInModal";
 import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
 import EditFeeInModal from "./FeesModals/EditFeeInModal";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 
 const FeeInTable = () => {
   const { data: session } = useSession();
@@ -134,11 +135,11 @@ const FeeInTable = () => {
                   <th className="text-center" style={{ width: "15%" }}>
                     Method
                   </th>
-                  <th className="text-center" style={{ width: "25%" }}>
-                    Notes
-                  </th>
                   <th className="text-center" style={{ width: "15%" }}>
                     Date Received
+                  </th>{" "}
+                  <th className="text-center" style={{ width: "25%" }}>
+                    Notes
                   </th>
                   <th className="text-center" style={{ width: "5%" }}>
                     Actions
@@ -174,10 +175,10 @@ const FeeInTable = () => {
                           ?.title || "-"}
                       </td>
                       <td className="text-center align-middle">
-                        {feeIn.notes || "-"}
+                        {formatDate(feeIn.feeDate) || "-"}
                       </td>
                       <td className="text-center align-middle">
-                        {feeIn.feeDate || "-"}
+                        {feeIn.notes || "-"}
                       </td>
                       <td className="text-center align-middle">
                         <div className="d-flex justify-content-center align-items-center gap-2">

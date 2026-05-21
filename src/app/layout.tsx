@@ -183,11 +183,6 @@ export default async function RootLayout({
           />
           <meta name="apple-mobile-web-app-title" content="QOP CRM" />
 
-          {/* Security Headers */}
-          <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-          <meta httpEquiv="X-Frame-Options" content="DENY" />
-          <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
-
           {/* Geo Tags */}
           <meta name="geo.region" content="US" />
           <meta name="geo.placename" content="United States" />

@@ -157,7 +157,7 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg">
+    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <Form onSubmit={handleSubmit}>
         <ModalHeader toggle={toggle}>Add New Fee</ModalHeader>
         <ModalBody>
@@ -231,15 +231,12 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="feeDate">
-                  Date Received<span className="text-danger">*</span>
-                </Label>
+                <Label for="feeDate">Date Received</Label>
                 <Input
                   type="date"
                   id="feeDate"
                   value={feeData.feeDate}
                   onChange={(e) => handleInputChange("feeDate", e.target.value)}
-                  required
                 />
                 {errors.feeDate && (
                   <div className="text-danger">{errors.feeDate}</div>

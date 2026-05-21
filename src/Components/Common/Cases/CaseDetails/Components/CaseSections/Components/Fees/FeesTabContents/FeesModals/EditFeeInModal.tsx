@@ -255,15 +255,12 @@ const EditFeeInModal: FC<EditFeeModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="feeDate">
-                  Date Received<span className="text-danger">*</span>
-                </Label>
+                <Label for="feeDate">Date Received</Label>
                 <Input
                   type="date"
                   id="feeDate"
                   value={feeData.feeDate}
                   onChange={(e) => handleInputChange("feeDate", e.target.value)}
-                  required
                 />
                 {errors.feeDate && (
                   <div className="text-danger">{errors.feeDate}</div>

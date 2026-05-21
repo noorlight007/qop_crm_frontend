@@ -1,4 +1,5 @@
 import { MenuItem } from "@/Types/LayoutTypes";
+import { BiSolidMegaphone } from "react-icons/bi";
 import {
   FaBriefcase,
   FaCalculator,
@@ -6,6 +7,7 @@ import {
   FaNetworkWired,
   FaUsers,
 } from "react-icons/fa";
+import { TbReport } from "react-icons/tb";
 
 //SuperAdminMenu
 const SuperAdminMenu: MenuItem[] = [
@@ -42,6 +44,13 @@ const SuperAdminMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/super-admin/support-ticket",
       },
+      {
+        title: "Advertisers",
+        icon: <BiSolidMegaphone />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/super-admin/advertisers",
+      },
       // {
       //   title: "Login History",
       //   icon: <FaHistory />,
@@ -68,34 +77,34 @@ const NetworkDirectorMenu: MenuItem[] = [
         path: "/network/director/dashboard",
       },
       {
-        title: "Cases",
+        title: "Case Management",
         icon: "Paper",
         type: "sub",
         children: [
           {
             title: "All Cases",
             type: "link",
-            path: "/network/director/cases",
+            path: "/network/director/case-management/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/network/director/leads",
+            path: "/network/director/case-management/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/network/director/applicants",
+            path: "/network/director/case-management/applicants",
           },
           {
             title: "Reports",
             type: "link",
-            path: "/network/director/reports",
+            path: "/network/director/case-management/reports",
           },
           {
             title: "Tasks",
             type: "link",
-            path: "/network/director/tasks",
+            path: "/network/director/case-management/tasks",
           },
         ],
       },
@@ -114,12 +123,12 @@ const NetworkDirectorMenu: MenuItem[] = [
           {
             title: "Compliances",
             type: "link",
-            path: "/network/director/compliances",
+            path: "/network/director/users/compliances",
           },
           {
             title: "Advisers",
             type: "link",
-            path: "/network/director/advisers",
+            path: "/network/director/users/advisers",
           },
         ],
       },
@@ -149,6 +158,24 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/calculators/stamp-duty-calculator",
           },
+        ],
+      },
+      {
+        title: "Reports",
+        icon: <TbReport />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Mortgage Report",
+            type: "link",
+            path: "/network/director/reports/mortgage-report",
+          },
+          {
+            title: "Vulnerability Report",
+            type: "link",
+            path: "/network/director/reports/vulnerability-report",
+          }
         ],
       },
       {
@@ -183,34 +210,34 @@ const NetworkComplianceMenu: MenuItem[] = [
         path: "/network/director/dashboard",
       },
       {
-        title: "Cases",
+        title: "Case Management",
         icon: "Paper",
         type: "sub",
         children: [
           {
             title: "All Cases",
             type: "link",
-            path: "/network/director/cases",
+            path: "/network/director/case-management/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/network/director/leads",
+            path: "/network/director/case-management/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/network/director/applicants",
+            path: "/network/director/case-management/applicants",
           },
           {
             title: "Reports",
             type: "link",
-            path: "/network/director/reports",
+            path: "/network/director/case-management/reports",
           },
           {
             title: "Tasks",
             type: "link",
-            path: "/network/director/tasks",
+            path: "/network/director/case-management/tasks",
           },
         ],
       },
@@ -229,7 +256,7 @@ const NetworkComplianceMenu: MenuItem[] = [
           {
             title: "Advisers",
             type: "link",
-            path: "/network/director/advisers",
+            path: "/network/director/users/advisers",
           },
         ],
       },
@@ -259,6 +286,24 @@ const NetworkComplianceMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/calculators/stamp-duty-calculator",
           },
+        ],
+      },
+      {
+        title: "Reports",
+        icon: <TbReport />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Mortgage Report",
+            type: "link",
+            path: "/network/director/reports/mortgage-report",
+          },
+          {
+            title: "Vulnerability Report",
+            type: "link",
+            path: "/network/director/reports/vulnerability-report",
+          }
         ],
       },
       {
@@ -294,34 +339,34 @@ const NetworkAdviserMenu: MenuItem[] = [
         path: "/network/adviser/dashboard",
       },
       {
-        title: "Cases",
+        title: "Case Management",
         icon: "Paper",
         type: "sub",
         children: [
           {
             title: "All Cases",
             type: "link",
-            path: "/network/adviser/cases",
+            path: "/network/adviser/case-management/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/network/adviser/leads",
+            path: "/network/adviser/case-management/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/network/adviser/applicants",
+            path: "/network/adviser/case-management/applicants",
           },
           {
             title: "Reports",
             type: "link",
-            path: "/network/adviser/reports",
+            path: "/network/adviser/case-management/reports",
           },
           {
             title: "Tasks",
             type: "link",
-            path: "/network/adviser/tasks",
+            path: "/network/adviser/case-management/tasks",
           },
         ],
       },
@@ -393,34 +438,34 @@ const OrganisationDirectorMenu: MenuItem[] = [
         path: "/organisation/director/dashboard",
       },
       {
-        title: "Cases",
+        title: "Case Management",
         icon: "Paper",
         type: "sub",
         children: [
           {
             title: "All Cases",
             type: "link",
-            path: "/organisation/director/cases",
+            path: "/organisation/director/case-management/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/organisation/director/leads",
+            path: "/organisation/director/case-management/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/organisation/director/applicants",
+            path: "/organisation/director/case-management/applicants",
           },
           {
             title: "Reports",
             type: "link",
-            path: "/organisation/director/reports",
+            path: "/organisation/director/case-management/reports",
           },
           {
             title: "Tasks",
             type: "link",
-            path: "/organisation/director/tasks",
+            path: "/organisation/director/case-management/tasks",
           },
         ],
       },
@@ -432,17 +477,17 @@ const OrganisationDirectorMenu: MenuItem[] = [
           {
             title: "Advisers",
             type: "link",
-            path: "/organisation/director/advisers",
+            path: "/organisation/director/users/advisers",
           },
           {
             title: "Admins",
             type: "link",
-            path: "/organisation/director/admins",
+            path: "/organisation/director/users/admins",
           },
           {
             title: "Introducers",
             type: "link",
-            path: "/organisation/director/introducers",
+            path: "/organisation/director/users/introducers",
           },
         ],
       },
@@ -507,7 +552,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
         path: "/organisation/adviser/dashboard",
       },
       {
-        title: "Cases",
+        title: "Case Management",
         icon: "Paper",
         type: "sub",
         lanClass: "lan-3",
@@ -515,27 +560,27 @@ const OrganisationAdviserMenu: MenuItem[] = [
           {
             title: "All Cases",
             type: "link",
-            path: "/organisation/adviser/cases",
+            path: "/organisation/adviser/case-management/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/organisation/adviser/leads",
+            path: "/organisation/adviser/case-management/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/organisation/adviser/applicants",
+            path: "/organisation/adviser/case-management/applicants",
           },
           {
             title: "Reports",
             type: "link",
-            path: "/organisation/adviser/reports",
+            path: "/organisation/adviser/case-management/reports",
           },
           {
             title: "Tasks",
             type: "link",
-            path: "/organisation/adviser/tasks",
+            path: "/organisation/adviser/case-management/tasks",
           },
         ],
       },
@@ -606,7 +651,7 @@ const OrganisationAdminMenu: MenuItem[] = [
         path: "/organisation/admin/dashboard",
       },
       {
-        title: "Cases",
+        title: "Case Management",
         icon: "Activity",
         type: "link",
         lanClass: "lan-3",
@@ -615,27 +660,27 @@ const OrganisationAdminMenu: MenuItem[] = [
           {
             title: "All Cases",
             type: "link",
-            path: "/organisation/admin/cases",
+            path: "/organisation/admin/case-management/all-cases",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/organisation/admin/leads",
+            path: "/organisation/admin/case-management/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/organisation/admin/applicants",
+            path: "/organisation/admin/case-management/applicants",
           },
           {
             title: "Reports",
             type: "link",
-            path: "/organisation/admin/reports",
+            path: "/organisation/admin/case-management/reports",
           },
           {
             title: "Tasks",
             type: "link",
-            path: "/organisation/admin/tasks",
+            path: "/organisation/admin/case-management/tasks",
           },
         ],
       },
@@ -704,7 +749,7 @@ export {
   OrganisationAdminMenu,
   OrganisationAdviserMenu,
   OrganisationDirectorMenu,
-  SuperAdminMenu
+  SuperAdminMenu,
 };
 
 export const getMenuByRole = (
