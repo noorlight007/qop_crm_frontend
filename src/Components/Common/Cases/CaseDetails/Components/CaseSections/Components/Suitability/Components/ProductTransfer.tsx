@@ -1,5 +1,6 @@
 import { productTransferOptions } from "@/Data/Cases/SuitabilityData";
 import { ProductTransferProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import React, { useState } from "react";
 import {
   Button,
@@ -117,7 +118,7 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
             onClick={startDealEndDateEdit}
             title="Click to edit"
           >
-            {formValues.product_transfer_expired_date || "click to set date..."}
+            {formatDate(formValues.product_transfer_expired_date) || "click to set date..."}
           </span>
         )}
         . As there are no penalties for changing this mortgage product beyond

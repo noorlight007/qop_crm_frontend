@@ -1,6 +1,7 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetBankruptsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { ViewBankruptciesModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -25,10 +26,6 @@ const ViewBankruptciesModal: React.FC<ViewBankruptciesModalProps> = ({
     adverse_alias: adverseAlias,
   });
 
-  const formatDate = (date: string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString();
-  };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered size="lg">

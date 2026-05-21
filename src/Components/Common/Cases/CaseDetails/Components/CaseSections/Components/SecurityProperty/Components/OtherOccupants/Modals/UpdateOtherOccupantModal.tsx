@@ -125,7 +125,9 @@ const UpdateOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <FormGroup>
-            <Label for="full_name">Full Name*</Label>
+            <Label for="full_name">
+              Full Name <span className="text-danger">*</span>
+            </Label>
             <Input
               type="text"
               id="full_name"
@@ -137,7 +139,9 @@ const UpdateOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
             />
           </FormGroup>
           <FormGroup>
-            <Label for="date_of_birth">Date of Birth*</Label>
+            <Label for="date_of_birth">
+              Date of Birth <span className="text-danger">*</span>
+            </Label>
             <Input
               type="date"
               id="date_of_birth"

@@ -1,6 +1,7 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetFeesInDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import getCurrencySign from "@/utils/currency";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -8,7 +9,6 @@ import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeInModal from "./FeesModals/AddFeeInModal";
 import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
 import EditFeeInModal from "./FeesModals/EditFeeInModal";
-import { formatDate } from "@/utils/dateAndTimeFormatter";
 
 const FeeInTable = () => {
   const { data: session } = useSession();
@@ -186,6 +186,7 @@ const FeeInTable = () => {
                             color="primary"
                             size="sm"
                             outline
+                            disabled={session?.user?.role === "APPLICANT"}
                             onClick={() => handleFeeEdit(feeIn)}
                           >
                             <i className="fa fa-edit"></i>
@@ -195,6 +196,7 @@ const FeeInTable = () => {
                             size="sm"
                             outline
                             className="removeFee"
+                            disabled={session?.user?.role === "APPLICANT"}
                             onClick={() => handleFeeDelete(feeIn)}
                           >
                             <i className="fa fa-trash"></i>

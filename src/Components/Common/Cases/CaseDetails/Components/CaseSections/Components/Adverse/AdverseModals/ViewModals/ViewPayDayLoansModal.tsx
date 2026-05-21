@@ -4,6 +4,7 @@ import {
   ViewPayDayLoansModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import getCurrencySign from "@/utils/currency";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -52,22 +53,21 @@ const ViewPayDayLoansModal: React.FC<ViewPayDayLoansModalProps> = ({
                 <tr key={index}>
                   <td>
                     {loan.loan_amount
-                      ? `${getCurrencySign()}${parseFloat(loan.loan_amount).toLocaleString(
-                          "en-GB",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )}`
+                      ? `${getCurrencySign()}${parseFloat(
+                          loan.loan_amount,
+                        ).toLocaleString("en-GB", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}`
                       : "-"}
                   </td>
-                  <td>{loan.loan_date || "-"}</td>
+                  <td>{formatDate(loan.loan_date) || "-"}</td>
                   <td>
                     {loan.has_the_pay_day_loan_been_repaid ? "Yes" : "No"}
                   </td>
                   <td>
                     {loan.has_the_pay_day_loan_been_repaid
-                      ? loan.date_repaid || "-"
+                      ? formatDate(loan.date_repaid) || "-"
                       : "-"}
                   </td>
                   <td>{loan.lender_name || "-"}</td>

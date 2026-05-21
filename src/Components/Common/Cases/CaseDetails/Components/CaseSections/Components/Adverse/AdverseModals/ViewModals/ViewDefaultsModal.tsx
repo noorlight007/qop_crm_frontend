@@ -1,6 +1,8 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetDefaultsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { ViewDefaultsModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import getCurrencySign from "@/utils/currency";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -24,18 +26,6 @@ const ViewDefaultsModal: React.FC<ViewDefaultsModalProps> = ({
     case_alias: casealias,
     adverse_alias: adverseAlias,
   });
-
-  const formatDate = (date: string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString();
-  };
-
-  const formatAmount = (amount: string) => {
-    return new Intl.NumberFormat("en-GB", {
-      style: "currency",
-      currency: "GBP",
-    }).format(Number(amount));
-  };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered size="xl">
@@ -65,7 +55,10 @@ const ViewDefaultsModal: React.FC<ViewDefaultsModalProps> = ({
               <tbody>
                 {data.map((item: any, index: number) => (
                   <tr key={index}>
-                    <td>{formatAmount(item.amount)}</td>
+                    <td>
+                      {getCurrencySign()}
+                      {item.amount}
+                    </td>
                     <td>{item.loan_company_name || "-"}</td>
                     <td>{formatDate(item.date_registered)}</td>
                     <td>

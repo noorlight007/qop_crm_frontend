@@ -1,5 +1,6 @@
 import { useGetPropertyRepossessedQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { ViewPropertiesRepossessedModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -44,8 +45,8 @@ const ViewPropertiesRepossessedModal: React.FC<
               {data?.map((item: any, index: number) => (
                 <tr key={index}>
                   <td>{item.lender || "-"}</td>
-                  <td>{item.date_of_registration || "-"}</td>
-                  <td>{item.date_of_satisfaction || "-"}</td>
+                  <td>{formatDate(item.date_of_registration) || "-"}</td>
+                  <td>{formatDate(item.date_of_satisfaction) || "-"}</td>
                 </tr>
               ))}
               {!data?.length && (

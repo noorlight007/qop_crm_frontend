@@ -91,7 +91,7 @@ export const DependantsTable: React.FC = () => {
                   <tr key={o.alias || i} className="text-center">
                     <td>{i + 1}</td>
                     <td className="text-start">{o.full_name || "-"}</td>
-                    <td>{o.date_of_birth || "-"}</td>
+                    <td>{formatDate(o.date_of_birth) || "-"}</td>
                     <td>
                       {calculateAge(o.date_of_birth)
                         ? `${calculateAge(o.date_of_birth)} y`
