@@ -33,17 +33,29 @@ const initialForm: AddAdFormState = {
 
 const getErrorMessage = (err: any) => {
   if (!err) return "Something went wrong";
+
   if (typeof err === "string") return err;
+
   const data = err?.data ?? err;
+
   if (typeof data === "string") return data;
   if (typeof data?.detail === "string") return data.detail;
   if (typeof data?.message === "string") return data.message;
 
-  try {
-    return JSON.stringify(data);
-  } catch {
-    return "Something went wrong";
+  // Get first error message only
+  if (typeof data === "object") {
+    const firstValue = Object.values(data)[0];
+
+    if (Array.isArray(firstValue)) {
+      return firstValue[0];
+    }
+
+    if (typeof firstValue === "string") {
+      return firstValue;
+    }
   }
+
+  return "Something went wrong";
 };
 
 const toIsoStringOrNull = (value: string) => {

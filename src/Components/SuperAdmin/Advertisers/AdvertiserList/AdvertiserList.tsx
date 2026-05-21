@@ -116,25 +116,6 @@ const AdvertiserList: React.FC = () => {
     );
   }
 
-  if (!advertisers.length) {
-    const hasSearch = Boolean(debouncedSearch);
-    return (
-      <Row className="py-5">
-        <Col xs="12" className="text-center">
-          <div className="text-muted">
-            <FaSearch size={48} className="mb-3 opacity-50" />
-            <h5 className="mb-1">No advertisers found</h5>
-            <p className="mb-0">
-              {hasSearch
-                ? `No advertisers match “${debouncedSearch}”.`
-                : "Create an advertiser to get started."}
-            </p>
-          </div>
-        </Col>
-      </Row>
-    );
-  }
-
   return (
     <>
       <Row>
@@ -185,76 +166,88 @@ const AdvertiserList: React.FC = () => {
       {isFetching ? <LoadingGrow /> : null}
 
       <Row className="mt-4 g-4">
-        {advertisers.map((advertiser) => (
-          <Col xs="12" md="4" xl="3" key={advertiser.alias}>
-            <Card className="h-100 border-0 shadow-lg rounded-4 overflow-hidden mb-0 bg-white">
-              <CardBody className="p-4 d-flex flex-column">
-                <div className="d-flex align-items-start justify-content-between gap-3">
-                  <div className="d-flex align-items-center gap-3 flex-grow-1 overflow-hidden">
-                    <div className="rounded-circle bg-light-primary d-flex align-items-center justify-content-center img-40 img-h-40 flex-shrink-0">
-                      <span className="fw-bold text-primary text-uppercase">
-                        {getInitials(
-                          advertiser.company_name || advertiser.alias,
-                        )}
-                      </span>
-                    </div>
-
-                    <div className="flex-grow-1 overflow-hidden ">
-                      <Link
-                        href={`/super-admin/advertisers/${advertiser.alias}`}
-                        className="mb-1 fw-bold text-dark w-100 text_decoration_hover"
-                      >
-                        {advertiser.company_name || "Not provided"}
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-top pt-3 mt-3 w-100">
-                  <div className="d-flex align-items-start gap-3 mb-3">
-                    <div className="rounded-circle bg-light-primary d-flex align-items-center justify-content-center img-40 img-h-40 flex-shrink-0">
-                      <FaEnvelope className="text-primary" />
-                    </div>
-
-                    <div className="flex-grow-1 overflow-hidden text-truncate">
-                      <small className="text-muted d-block mb-1">Email</small>
-                      {advertiser.contact_email ? (
-                        advertiser.contact_email
-                      ) : (
-                        <small className="text-muted">Not provided</small>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="d-flex align-items-start gap-3">
-                    <div className="rounded-circle bg-light-primary d-flex align-items-center justify-content-center img-40 img-h-40 flex-shrink-0">
-                      <FaGlobe className="text-primary" />
-                    </div>
-
-                    <div className="flex-grow-1 overflow-hidden">
-                      <small className="text-muted d-block mb-1 text-truncate">
-                        Website
-                      </small>
-                      {advertiser.website ? (
-                        <a
-                          className="fw-medium text-dark text-decoration-none text-truncate d-block w-100"
-                          href={toAbsoluteUrl(advertiser.website)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={advertiser.website}
-                        >
-                          {advertiser.website}
-                        </a>
-                      ) : (
-                        <small className="text-muted">Not provided</small>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
+        {advertisers.length === 0 ? (
+          <Col xs="12" className="text-center">
+            <div className="text-muted">
+              <FaSearch size={48} className="mb-3 opacity-50" />
+              <h5 className="mb-1">No advertisers found</h5>
+              <p className="mb-0">
+                Try adjusting your search or create a new advertiser.
+              </p>
+            </div>
           </Col>
-        ))}
+        ) : (
+          advertisers.map((advertiser) => (
+            <Col xs="12" md="4" xl="3" key={advertiser.alias}>
+              <Card className="h-100 border-0 shadow-lg rounded-4 overflow-hidden mb-0 bg-white">
+                <CardBody className="p-4 d-flex flex-column">
+                  <div className="d-flex align-items-start justify-content-between gap-3">
+                    <div className="d-flex align-items-center gap-3 flex-grow-1 overflow-hidden">
+                      <div className="rounded-circle bg-light-primary d-flex align-items-center justify-content-center img-40 img-h-40 flex-shrink-0">
+                        <span className="fw-bold text-primary text-uppercase">
+                          {getInitials(
+                            advertiser.company_name || advertiser.alias,
+                          )}
+                        </span>
+                      </div>
+
+                      <div className="flex-grow-1 overflow-hidden ">
+                        <Link
+                          href={`/super-admin/advertisers/${advertiser.alias}`}
+                          className="mb-1 fw-bold text-dark w-100 text_decoration_hover"
+                        >
+                          {advertiser.company_name || "Not provided"}
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-top pt-3 mt-3 w-100">
+                    <div className="d-flex align-items-start gap-3 mb-3">
+                      <div className="rounded-circle bg-light-primary d-flex align-items-center justify-content-center img-40 img-h-40 flex-shrink-0">
+                        <FaEnvelope className="text-primary" />
+                      </div>
+
+                      <div className="flex-grow-1 overflow-hidden text-truncate">
+                        <small className="text-muted d-block mb-1">Email</small>
+                        {advertiser.contact_email ? (
+                          advertiser.contact_email
+                        ) : (
+                          <small className="text-muted">Not provided</small>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-start gap-3">
+                      <div className="rounded-circle bg-light-primary d-flex align-items-center justify-content-center img-40 img-h-40 flex-shrink-0">
+                        <FaGlobe className="text-primary" />
+                      </div>
+
+                      <div className="flex-grow-1 overflow-hidden">
+                        <small className="text-muted d-block mb-1 text-truncate">
+                          Website
+                        </small>
+                        {advertiser.website ? (
+                          <a
+                            className="fw-medium text-dark text-decoration-none text-truncate d-block w-100"
+                            href={toAbsoluteUrl(advertiser.website)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={advertiser.website}
+                          >
+                            {advertiser.website}
+                          </a>
+                        ) : (
+                          <small className="text-muted">Not provided</small>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+          ))
+        )}
 
         {totalPages > 1 ? (
           <Col xs="12">
