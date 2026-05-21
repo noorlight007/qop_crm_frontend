@@ -86,7 +86,7 @@ const Suitability: React.FC = () => {
     repayment_status_type: null,
     max_erc: null,
     email: null,
-    address:null,
+    address: null,
     outstanding_balance: null,
     interest_rate_type: null,
     repayment_method_type: null,
@@ -98,6 +98,10 @@ const Suitability: React.FC = () => {
     shortened_product_transfer_expired_date: null,
     shortened_product_transfer_standard_variable_rate: null,
     product_transfer_recommended_was: null,
+    arrangement_fee_why_recommended_text: null,
+    early_repayment_charges_why_recommended_text: null,
+    mortgage_amount_overpayment: null,
+    product_transfer_expires_or_expired_type: null,
   });
 
   // Pre-populate from API response
@@ -179,6 +183,13 @@ const Suitability: React.FC = () => {
           formValues.shortened_product_transfer_standard_variable_rate,
         product_transfer_recommended_was:
           formValues.product_transfer_recommended_was,
+        arrangement_fee_why_recommended_text:
+          formValues.arrangement_fee_why_recommended_text,
+        early_repayment_charges_why_recommended_text:
+          formValues.early_repayment_charges_why_recommended_text,
+        mortgage_amount_overpayment: formValues.mortgage_amount_overpayment,
+        product_transfer_expires_or_expired_type:
+          formValues.product_transfer_expires_or_expired_type,
       };
 
       const response = await updateSuitability({
