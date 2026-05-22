@@ -1,9 +1,10 @@
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
 import {
   useGetAppranceQuery,
   useUpdateAppearanceMutation,
-} from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { useEffect, useState } from "react";
-import { Edit } from "react-feather";
+} from '@/Redux/Reducers/Appearance/AppearanceApi';
+import { useEffect, useState } from 'react';
+import { Edit } from 'react-feather';
 import {
   Button,
   Card,
@@ -17,14 +18,14 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-} from "reactstrap";
+} from 'reactstrap';
 
 const About: React.FC = () => {
-  const { data: appearanceData } = useGetAppranceQuery(undefined);
+  const { data: appearanceData, isLoading } = useGetAppranceQuery(undefined);
   const [updateAbout, { isLoading: isUpdatingAbout }] =
     useUpdateAppearanceMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [aboutValue, setAboutValue] = useState("");
+  const [aboutValue, setAboutValue] = useState('');
 
   useEffect(() => {
     if (appearanceData?.about) {
@@ -45,57 +46,63 @@ const About: React.FC = () => {
 
   return (
     <Card>
-      <CardHeader className="d-flex justify-content-between align-items-center">
+      <CardHeader className='d-flex justify-content-between align-items-center'>
         <h4>About</h4>
         <Button
-          color="primary"
-          size="sm"
+          color='primary'
+          size='sm'
           disabled={isUpdatingAbout}
           onClick={toggleModal}
         >
-          <Edit className="me-1" size={14} />
+          <Edit className='me-1' size={14} />
           Edit
         </Button>
       </CardHeader>
       <CardBody>
-        {appearanceData?.about ? (
+        {isLoading ? (
+          <div>
+            <LoadingGrow />
+          </div>
+        ) : appearanceData?.about ? (
           appearanceData.about
         ) : (
-          <p className="text-muted text-center">No about information available.</p>
+          <p className='text-muted text-center'>
+            No about information available.
+          </p>
         )}
       </CardBody>
 
-      <Modal isOpen={isModalOpen} toggle={toggleModal} size="lg" centered>
+      <Modal isOpen={isModalOpen} toggle={toggleModal} size='lg' centered>
         <ModalHeader toggle={toggleModal}>
-          <h2 className="text-primary">Update About Information</h2>
+          <h2 className='text-primary'>Update About Information</h2>
         </ModalHeader>
         <ModalBody>
           <Form>
             <FormGroup>
-              <Label for="aboutInput" className="fw-semibold">
+              <Label for='aboutInput' className='fw-semibold'>
                 About
               </Label>
               <Input
-                id="aboutInput"
-                type="textarea"
+                id='aboutInput'
+                type='textarea'
                 value={aboutValue}
                 onChange={(e) => setAboutValue(e.target.value)}
-                placeholder="Enter about information"
+                placeholder='Enter about information'
                 rows={10}
               />
             </FormGroup>
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggleModal}>
+          <Button color='secondary' onClick={toggleModal}>
             Cancel
           </Button>
           <Button
-            color="primary"
+            color='primary'
             onClick={handleUpdateAbout}
             disabled={isUpdatingAbout}
           >
-            {isUpdatingAbout ? "Updating..." : "Update"}
+            {isUpdatingAbout ? 'Updating...' : 'Update'}
           </Button>
         </ModalFooter>
       </Modal>
