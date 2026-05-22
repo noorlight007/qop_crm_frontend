@@ -1,14 +1,14 @@
-import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useEditAdvertiserAdMutation } from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
+import { useEditAdvertiserAdMutation } from '@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi';
 import {
   AdvertiserAdsData,
   AdvertiserAdsProps,
-} from "@/Types/SuperAdmin/Advertisers/AdvertisersTypes";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
-import formatChoiceFieldValue from "@/utils/formatters";
-import { useEffect, useState } from "react";
-import { Edit, PlusCircle, Trash } from "react-feather";
-import { toast } from "react-toastify";
+} from '@/Types/SuperAdmin/Advertisers/AdvertisersTypes';
+import { formatDateAndTime } from '@/utils/dateAndTimeFormatter';
+import formatChoiceFieldValue from '@/utils/formatters';
+import { useEffect, useState } from 'react';
+import { Edit, PlusCircle, Trash } from 'react-feather';
+import { toast } from 'react-toastify';
 import {
   Button,
   Card,
@@ -20,11 +20,11 @@ import {
   PaginationLink,
   Row,
   Table,
-} from "reactstrap";
-import Swal from "sweetalert2";
-import AddNewAdModal from "../Modals/AddNewAdModal";
-import DeleteAdModal from "../Modals/DeleteAdModal";
-import EditAdModal from "../Modals/EditAdModal";
+} from 'reactstrap';
+import Swal from 'sweetalert2';
+import AddNewAdModal from '../Modals/AddNewAdModal';
+import DeleteAdModal from '../Modals/DeleteAdModal';
+import EditAdModal from '../Modals/EditAdModal';
 
 const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   advertiserAdsData,
@@ -35,7 +35,7 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   onPageChange,
 }) => {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
-  const [fullscreenAlt, setFullscreenAlt] = useState<string>("");
+  const [fullscreenAlt, setFullscreenAlt] = useState<string>('');
   const [isAddAdModalOpen, setIsAddAdModalOpen] = useState(false);
   const [isEditAdModalOpen, setIsEditAdModalOpen] = useState(false);
   const [isDeleteAdModalOpen, setIsDeleteAdModalOpen] = useState(false);
@@ -53,13 +53,13 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         setFullscreenImage(null);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [fullscreenImage]);
 
   const openFullscreenImage = (src: string, alt: string) => {
@@ -87,13 +87,13 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
         payload: { is_active: !ad.is_active },
       }).unwrap();
       Swal.fire({
-        icon: "success",
-        title: `Ad has been ${ad.is_active ? "deactivated" : "activated"}.`,
+        icon: 'success',
+        title: `Ad has been ${ad.is_active ? 'deactivated' : 'activated'}.`,
         showConfirmButton: false,
         timer: 1500,
       });
     } catch (error: any) {
-      toast.error("Failed to toggle active status", error);
+      toast.error('Failed to toggle active status', error);
     }
   };
 
@@ -117,18 +117,18 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   return (
     <>
       <Card>
-        <CardHeader className="d-flex justify-content-between align-items-center">
+        <CardHeader className='d-flex justify-content-between align-items-center'>
           <h3>Ads</h3>
-          <Button color="primary" onClick={toggleAddAdModal}>
-            <PlusCircle size={18} className="me-1" />
+          <Button color='primary' onClick={toggleAddAdModal}>
+            <PlusCircle size={18} className='me-1' />
             Add New Ad
           </Button>
         </CardHeader>
         <CardBody>
           <Table responsive>
             <thead>
-              <tr className="text-center">
-                <th className="text-start">Title</th>
+              <tr className='text-center'>
+                <th className='text-start'>Title</th>
                 <th>Image</th>
                 <th>Redirect URL</th>
                 <th>Placement</th>
@@ -144,52 +144,52 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
             <tbody>
               {advertiserAdsLoading ? (
                 <tr>
-                  <td colSpan={11} className="text-center">
+                  <td colSpan={11} className='text-center'>
                     <LoadingGrow />
                   </td>
                 </tr>
               ) : advertiserAdsDataResults.length > 0 ? (
                 advertiserAdsDataResults.map((ad: AdvertiserAdsData) => (
-                  <tr key={ad.alias} className="align-middle text-center">
-                    <td className="text-start">{ad.title}</td>
+                  <tr key={ad.alias} className='align-middle text-center'>
+                    <td className='text-start'>{ad.title}</td>
                     <td>
                       {ad.image && (
                         <img
                           src={ad.image}
                           alt={ad.title}
-                          width="100"
-                          height="50"
-                          style={{ cursor: "zoom-in" }}
+                          width='100'
+                          height='50'
+                          style={{ cursor: 'zoom-in' }}
                           onClick={() =>
-                            openFullscreenImage(ad.image, ad.title || "Ad")
+                            openFullscreenImage(ad.image, ad.title || 'Ad')
                           }
                         />
                       )}
                     </td>
-                    <td className="text-truncate">
+                    <td className='text-truncate'>
                       <a
-                        className="text_decoration_hover"
+                        className='text_decoration_hover'
                         href={ad.redirect_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        target='_blank'
+                        rel='noopener noreferrer'
                       >
                         {ad.redirect_url.length > 25
                           ? `${ad.redirect_url.slice(0, 25)}...`
                           : ad.redirect_url}
                       </a>
                     </td>
-                    <td className="text-truncate">
+                    <td className='text-truncate'>
                       {formatChoiceFieldValue(ad.placement)}
                     </td>
                     <td>
                       <Button
-                        color={ad.is_active ? "success" : "secondary"}
-                        size="sm"
+                        color={ad.is_active ? 'success' : 'danger'}
+                        size='sm'
                         outline={!ad.is_active}
                         onClick={() => handleToggleActive(ad)}
                         disabled={isStatusUpdating}
                       >
-                        {ad.is_active ? "Active" : "Inactive"}
+                        {ad.is_active ? 'Active' : 'Inactive'}
                       </Button>
                     </td>
                     <td>{formatDateAndTime(ad.start_date)}</td>
@@ -197,18 +197,18 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                     <td>{ad.impressions}</td>
                     <td>{ad.clicks}</td>
                     <td>{ad.priority}</td>
-                    <td className="text-center">
-                      <div className="d-flex justify-content-center gap-1">
+                    <td className='text-center'>
+                      <div className='d-flex justify-content-center gap-1'>
                         <Button
-                          color="primary"
-                          size="sm"
+                          color='primary'
+                          size='sm'
                           onClick={() => openEditAdModal(ad)}
                         >
                           <Edit size={16} />
                         </Button>
                         <Button
-                          color="danger"
-                          size="sm"
+                          color='danger'
+                          size='sm'
                           onClick={() => openDeleteAdModal(ad)}
                         >
                           <Trash size={16} />
@@ -219,7 +219,7 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={11} className="text-center">
+                  <td colSpan={11} className='text-center'>
                     No ads found.
                   </td>
                 </tr>
@@ -227,19 +227,19 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
             </tbody>
           </Table>
 
-          <Row className="mt-3 align-items-center">
+          <Row className='mt-3 align-items-center'>
             <Col sm={6}>
-              <div className="text-muted">
+              <div className='text-muted'>
                 Showing {advertiserAdsDataResults.length} entries
-                {totalCount ? ` of ${totalCount}` : ""}
+                {totalCount ? ` of ${totalCount}` : ''}
               </div>
             </Col>
-            <Col sm={6} className="text-end">
+            <Col sm={6} className='text-end'>
               {!isPaginationDisabled
                 ? (() => {
                     const leadsPerPage = 5;
                     return (
-                      <Pagination className="d-flex justify-content-end p-2">
+                      <Pagination className='d-flex justify-content-end p-2'>
                         <PaginationItem disabled={currentPage === 1}>
                           <PaginationLink
                             first
@@ -351,44 +351,44 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
         <div
           onClick={() => setFullscreenImage(null)}
           style={{
-            position: "fixed",
+            position: 'fixed',
             inset: 0,
             zIndex: 1050,
-            backgroundColor: "rgba(0,0,0,0.85)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "zoom-out",
+            backgroundColor: 'rgba(0,0,0,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'zoom-out',
           }}
         >
           <button
             onClick={() => setFullscreenImage(null)}
             style={{
-              position: "absolute",
+              position: 'absolute',
               top: 16,
               right: 20,
-              background: "none",
-              border: "none",
-              color: "#fff",
+              background: 'none',
+              border: 'none',
+              color: '#fff',
               fontSize: 32,
               lineHeight: 1,
-              cursor: "pointer",
+              cursor: 'pointer',
               zIndex: 1060,
             }}
-            aria-label="Close"
+            aria-label='Close'
           >
             &times;
           </button>
           <img
             src={fullscreenImage}
-            alt={fullscreenAlt || "Full size preview"}
+            alt={fullscreenAlt || 'Full size preview'}
             onClick={(e) => e.stopPropagation()}
             style={{
-              maxWidth: "90vw",
-              maxHeight: "90vh",
-              objectFit: "contain",
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              objectFit: 'contain',
               borderRadius: 8,
-              boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+              boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
             }}
           />
         </div>
