@@ -132,7 +132,7 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                 <th>Image</th>
                 <th>Redirect URL</th>
                 <th>Placement</th>
-                <th>Active</th>
+                <th>Current Status</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Impressions</th>
