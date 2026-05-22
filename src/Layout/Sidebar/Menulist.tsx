@@ -3,7 +3,7 @@ import { getMenuByRole } from "@/Data/Layout/SidebarData";
 import { useAppSelector } from "@/Redux/Hooks";
 import { MenuListType } from "@/Types/LayoutTypes";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +15,7 @@ const Menulist: React.FC<MenuListType> = ({
 }) => {
   const { pinedMenu } = useAppSelector((state) => state.layout);
   const pathname = usePathname();
+  const router = useRouter()
   const { t } = useTranslation("common");
   const [initialLoad, setInitialLoad] = useState(true);
   const { data: session } = useSession();
@@ -60,7 +61,8 @@ const Menulist: React.FC<MenuListType> = ({
 
     // Navigate if it's a link and it doesn't have children (collapse takes precedence)
     if (item.path && !hasChildren) {
-      window.location.href = item.path;
+      // window.location.href = item.path;
+      router.push(item.path)
     }
   };
 

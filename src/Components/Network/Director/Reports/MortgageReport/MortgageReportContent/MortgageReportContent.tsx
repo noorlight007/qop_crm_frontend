@@ -1,18 +1,10 @@
-import {
-  caseCategories,
-  dateFilters,
-  insuranceCaseStages,
-  mortgageStages,
-  reportCategories,
-  reportTypes,
-} from "@/Data/Common/FilterChoiceFields";
+import { dateFilters } from "@/Data/Common/FilterChoiceFields";
 import {
   useGetNetworkDirectorMortgageReportsMutation,
   useGetNetworkDirectorMortgageReportsViewQuery,
 } from "@/Redux/Reducers/Network/Director/Reports/NetworkDirectorMortgageReportsApi/NetworkDirectorMortgageReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaShoppingBag } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -409,7 +401,7 @@ const MortgageReportContent: React.FC = () => {
                     </>
                   )}
 
-                  <Col md={6} lg={3} className="mb-3">
+                  {/* <Col md={6} lg={3} className="mb-3">
                     <FormGroup>
                       <Label className="fw-semibold text-dark">
                         <i className="fa fa-tag me-2 text-success"></i>
@@ -511,7 +503,7 @@ const MortgageReportContent: React.FC = () => {
                         ))}
                       </Input>
                     </FormGroup>
-                  </Col>
+                  </Col> */}
                 </Row>
                 {/* Report Data Table Section */}
                 <Row className="mt-4">

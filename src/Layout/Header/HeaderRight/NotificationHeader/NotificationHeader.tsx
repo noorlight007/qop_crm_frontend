@@ -293,7 +293,7 @@ const NotificationHeader = () => {
 
         socket.onopen = () => {
           connectedAtLeastOnce = true;
-          console.log("Notification socket connected");
+          // console.log("Notification socket connected");
         };
 
         socket.onmessage = (event) => {

@@ -1,6 +1,7 @@
 import DynamicFavicon from "@/CommonComponent/DynamicFavicon";
 import DynamicTitle from "@/CommonComponent/DynamicTitle";
 import SessionWrapper from "@/CommonComponent/SessionWrapper";
+import { NavigationHistoryProvider } from "@/context/NavigationHistoryContext";
 import NoSsr from "@/utils/NoSsr";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
@@ -217,17 +218,19 @@ export default async function RootLayout({
           {/* <script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAjeJEPREBQFvAIqDSZliF0WjQrCld-Mh0'></script> */}
         </head>
         <body suppressHydrationWarning={true} className={`${nunito.variable}`}>
-          <NoSsr>
-            <SessionWrapper session={session}>
-              <MainProvider>
-                <ProgressBar />
-                <DynamicFavicon />
-                <DynamicTitle />
-                {children}
-              </MainProvider>
-              <ToastContainer />
-            </SessionWrapper>
-          </NoSsr>
+          <NavigationHistoryProvider>
+            <NoSsr>
+              <SessionWrapper session={session}>
+                <MainProvider>
+                  <ProgressBar />
+                  <DynamicFavicon />
+                  <DynamicTitle />
+                  {children}
+                </MainProvider>
+                <ToastContainer />
+              </SessionWrapper>
+            </NoSsr>
+          </NavigationHistoryProvider>
         </body>
       </html>
     </I18nProvider>

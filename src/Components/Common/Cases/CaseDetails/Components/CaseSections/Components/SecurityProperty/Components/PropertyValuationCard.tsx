@@ -70,7 +70,12 @@ const PropertyValuationCard: FC = () => {
               {!(purchasePrice === 0 && estimatedValue !== 0) && (
                 <Col sm={6} className="mb-2">
                   <FormGroup>
-                    <Label for="property_value">Property Purchase Price</Label>
+                    <Label for="property_value">
+                      Property Purchase Price
+                      <small className="text-muted text-warning">
+                        (This is Read-Only Field)
+                      </small>
+                    </Label>
                     <InputGroup>
                       <InputGroupText>{getCurrencySign()}</InputGroupText>
                       <Input
@@ -90,6 +95,9 @@ const PropertyValuationCard: FC = () => {
                 <FormGroup>
                   <Label for="estimated_valuation">
                     Property Estimated Valuation
+                    <small className="text-muted text-warning">
+                      (This is Read-Only Field)
+                    </small>
                   </Label>
                   <InputGroup>
                     <InputGroupText>{getCurrencySign()}</InputGroupText>

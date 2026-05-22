@@ -4,8 +4,10 @@ import { useGetOrgApplicantListQuery } from "@/Redux/Reducers/Common/Organisatio
 import { OrgApplicantInfo } from "@/Types/Common/Organisations/OrgApplicantType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { User } from "react-feather";
 import { FaEdit, FaInfoCircle, FaSearch, FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import {
@@ -253,17 +255,35 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
                 applicants.map((item: OrgApplicantInfo) => (
                   <tr key={item.alias} className="text-center">
                     <td className="text-start">
-                      <span
-                        className="text_decoration_hover"
-                        onClick={() => toggleViewModal(item)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {item?.name ? (
-                          item?.name
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </span>
+                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                        <span
+                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          {item?.profile_image ? (
+                            <Image
+                              src={item.profile_image as string}
+                              alt="Profile"
+                              width={35}
+                              height={35}
+                              className="rounded-circle"
+                            />
+                          ) : (
+                            <User size={30} className="text-primary" />
+                          )}
+                        </span>
+                        <span
+                          className="text_decoration_hover"
+                          onClick={() => toggleViewModal(item)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {item?.name ? (
+                            item?.name
+                          ) : (
+                            <small className="text-muted">Not Available</small>
+                          )}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       {item?.email ? (
