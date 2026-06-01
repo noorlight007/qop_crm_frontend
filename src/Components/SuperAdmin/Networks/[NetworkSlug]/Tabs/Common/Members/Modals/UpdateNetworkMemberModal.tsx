@@ -280,7 +280,7 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
                 <Input
                   id="joining_date"
                   name="joining_date"
-                  type="text"
+                  type="date"
                   value={(formData as any)?.joining_date ?? ""}
                   onChange={handleChange}
                 />

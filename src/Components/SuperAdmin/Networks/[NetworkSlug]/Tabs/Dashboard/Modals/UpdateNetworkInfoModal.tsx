@@ -1,9 +1,9 @@
-import { useUpdateNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { UpdateNetworkInfoModalProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { useUpdateNetworkMutation } from '@/Redux/Reducers/SuperAdmin/Networks/NetworksApi';
+import { UpdateNetworkInfoModalProps } from '@/Types/SuperAdmin/Networks/NetworkTypes';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Col,
@@ -16,7 +16,7 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
-} from "reactstrap";
+} from 'reactstrap';
 
 const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
   isOpen,
@@ -27,23 +27,21 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
   const router = useRouter();
   const [formData, setFormData] = useState({
     network: {
-      name: "",
-      email: "",
-      primary_mobile: "",
-      other_contact: "",
-      website: "",
-      contact_person: "",
-      license_no: "",
+      name: '',
+      email: '',
+      primary_mobile: '',
+      other_contact: '',
+      website: '',
+      contact_person: '',
+      license_no: '',
     },
   });
-
-  console.log("Network Data in Modal:", networkData);
 
   // API validation errors keyed by dot-notated field paths
   const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [oldName, setOldName] = useState("");
+  const [oldName, setOldName] = useState('');
   // Rtk hooks
   const [updateNetwork, { isLoading: isUpdating }] = useUpdateNetworkMutation();
 
@@ -52,16 +50,16 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
     if (networkData && isOpen) {
       setFormData({
         network: {
-          name: networkData?.network?.name ?? "",
-          email: networkData?.network?.email ?? "",
-          primary_mobile: networkData?.network?.primary_mobile ?? "",
-          other_contact: networkData?.network?.other_contact ?? "",
-          website: networkData?.network?.website ?? "",
-          contact_person: networkData?.network?.contact_person ?? "",
-          license_no: networkData?.network?.license_no ?? "",
+          name: networkData?.network?.name ?? '',
+          email: networkData?.network?.email ?? '',
+          primary_mobile: networkData?.network?.primary_mobile ?? '',
+          other_contact: networkData?.network?.other_contact ?? '',
+          website: networkData?.network?.website ?? '',
+          contact_person: networkData?.network?.contact_person ?? '',
+          license_no: networkData?.network?.license_no ?? '',
         },
       });
-      setOldName(networkData?.network?.name ?? "");
+      setOldName(networkData?.network?.name ?? '');
     }
   }, [networkData, isOpen]);
 
@@ -78,7 +76,7 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
     if (files && files.length > 0) {
-      if (name === "network.license_image") {
+      if (name === 'network.license_image') {
         setProfileImage(files[0]);
       }
     }
@@ -92,20 +90,20 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
 
       // Build original network values to compare against
       const originalNetwork = {
-        name: networkData?.network?.name ?? "",
-        email: networkData?.network?.email ?? "",
-        primary_mobile: networkData?.network?.primary_mobile ?? "",
-        other_contact: networkData?.network?.other_contact ?? "",
-        website: networkData?.network?.website ?? "",
-        contact_person: networkData?.network?.contact_person ?? "",
-        license_no: networkData?.network?.license_no ?? "",
+        name: networkData?.network?.name ?? '',
+        email: networkData?.network?.email ?? '',
+        primary_mobile: networkData?.network?.primary_mobile ?? '',
+        other_contact: networkData?.network?.other_contact ?? '',
+        website: networkData?.network?.website ?? '',
+        contact_person: networkData?.network?.contact_person ?? '',
+        license_no: networkData?.network?.license_no ?? '',
       } as Record<string, string>;
 
       // Append only changed text fields
       let hasChanges = false;
       Object.entries(formData.network).forEach(([key, value]) => {
-        const orig = String(originalNetwork[key] ?? "");
-        const next = String(value ?? "");
+        const orig = String(originalNetwork[key] ?? '');
+        const next = String(value ?? '');
         if (next !== orig) {
           formDataToSend.append(`network.${key}`, next);
           hasChanges = true;
@@ -114,13 +112,13 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
 
       // Append file only if selected
       if (profileImage) {
-        formDataToSend.append("network.license_image", profileImage);
+        formDataToSend.append('network.license_image', profileImage);
         hasChanges = true;
       }
 
       // If nothing changed, avoid calling the API
       if (!hasChanges) {
-        toast.info("No changes detected.");
+        toast.info('No changes detected.');
         return;
       }
       // Use RTK Query mutation
@@ -129,40 +127,40 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
         payload: formDataToSend,
       }).unwrap();
       if (response) {
-        toast.success("Network updated successfully!");
+        toast.success('Network updated successfully!');
         // clear previous API errors on success
         setApiErrors({});
         // Redirect if name changed
         if (formData.network.name !== oldName) {
-          router.push("/admin/networks");
+          router.push('/admin/networks');
           toast.warning(
-            "Due to the name change, redirected to the Networks page.",
+            'Due to the name change, redirected to the Networks page.',
           );
         } else {
           toggle();
         }
       }
     } catch (error: any) {
-      console.error("Update network error:", error);
+      console.error('Update network error:', error);
 
       const flattenErrors = (
         value: any,
-        prefix = "",
+        prefix = '',
       ): Array<{ field: string; messages: string[] }> => {
         const out: Array<{ field: string; messages: string[] }> = [];
 
         const pushMessages = (fieldPath: string, msgs: any) => {
           if (msgs == null) return;
-          if (typeof msgs === "string")
+          if (typeof msgs === 'string')
             out.push({ field: fieldPath, messages: [msgs] });
           else if (Array.isArray(msgs))
             out.push({
               field: fieldPath,
               messages: msgs.map((m) =>
-                typeof m === "string" ? m : JSON.stringify(m),
+                typeof m === 'string' ? m : JSON.stringify(m),
               ),
             });
-          else if (typeof msgs === "object") {
+          else if (typeof msgs === 'object') {
             Object.entries(msgs).forEach(([k, v]) => {
               const next = fieldPath ? `${fieldPath}.${k}` : k;
               out.push(...flattenErrors(v, next));
@@ -170,7 +168,7 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
           } else out.push({ field: fieldPath, messages: [String(msgs)] });
         };
 
-        if (value && typeof value === "object" && !Array.isArray(value)) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
           Object.entries(value).forEach(([k, v]) => {
             const next = prefix ? `${prefix}.${k}` : k;
             out.push(...flattenErrors(v, next));
@@ -179,196 +177,196 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
         }
 
         if (prefix) pushMessages(prefix, value);
-        else if (Array.isArray(value) || typeof value === "string")
-          pushMessages("error", value);
+        else if (Array.isArray(value) || typeof value === 'string')
+          pushMessages('error', value);
 
         return out;
       };
 
       const source =
-        error?.data && typeof error.data === "object" ? error.data : error;
+        error?.data && typeof error.data === 'object' ? error.data : error;
       const flattened = flattenErrors(source);
       if (flattened.length) {
         const map: Record<string, string[]> = {};
         flattened.forEach((entry) => {
-          const field = entry.field || "error";
+          const field = entry.field || 'error';
           map[field] = map[field]
             ? [...map[field], ...entry.messages]
             : [...entry.messages];
-          toast.error(`${entry.messages.join(", ")}`);
+          toast.error(`${entry.messages.join(', ')}`);
         });
         setApiErrors(map);
         return;
       }
 
       const fallback =
-        error?.message ?? "Failed to update network. Please try again.";
+        error?.message ?? 'Failed to update network. Please try again.';
       toast.error(fallback);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
+    <Modal isOpen={isOpen} toggle={toggle} size='lg' centered>
       <ModalHeader toggle={toggle}>
-        <h2 className="text-primary">Update Network Details</h2>
+        <h2 className='text-primary'>Update Network Details</h2>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <Row>
-            <Col md="6">
+            <Col md='6'>
               <FormGroup>
-                <Label for="name">Network Name</Label>
+                <Label for='name'>Network Name</Label>
                 <Input
-                  type="text"
-                  id="name"
-                  name="name"
+                  type='text'
+                  id='name'
+                  name='name'
                   value={formData.network.name}
                   onChange={handleInputChange}
                   required
                 />
-                {apiErrors["network.name"] ? (
-                  <div className="text-danger small mt-1">
-                    {apiErrors["network.name"].join(", ")}
+                {apiErrors['network.name'] ? (
+                  <div className='text-danger small mt-1'>
+                    {apiErrors['network.name'].join(', ')}
                   </div>
                 ) : null}
               </FormGroup>
             </Col>
-            <Col md="6">
+            <Col md='6'>
               <FormGroup>
-                <Label for="email">Email</Label>
+                <Label for='email'>Email</Label>
                 <Input
-                  type="email"
-                  id="email"
-                  name="email"
+                  type='email'
+                  id='email'
+                  name='email'
                   value={formData.network.email}
                   onChange={handleInputChange}
                   required
                 />
-                {apiErrors["network.email"] ? (
-                  <div className="text-danger small mt-1">
-                    {apiErrors["network.email"].join(", ")}
+                {apiErrors['network.email'] ? (
+                  <div className='text-danger small mt-1'>
+                    {apiErrors['network.email'].join(', ')}
                   </div>
                 ) : null}
               </FormGroup>
             </Col>
-            <Col md="6">
+            <Col md='6'>
               <FormGroup>
-                <Label for="primary_mobile">Primary Phone</Label>
+                <Label for='primary_mobile'>Primary Phone</Label>
                 <Input
-                  type="text"
-                  id="primary_mobile"
-                  name="primary_mobile"
+                  type='text'
+                  id='primary_mobile'
+                  name='primary_mobile'
                   value={formData.network.primary_mobile}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.primary_mobile"] ? (
-                  <div className="text-danger small mt-1">
-                    {apiErrors["network.primary_mobile"].join(", ")}
+                {apiErrors['network.primary_mobile'] ? (
+                  <div className='text-danger small mt-1'>
+                    {apiErrors['network.primary_mobile'].join(', ')}
                   </div>
                 ) : null}
               </FormGroup>
             </Col>
-            <Col md="6">
+            <Col md='6'>
               <FormGroup>
-                <Label for="website">
-                  Website{" "}
-                  <span style={{ fontSize: "0.7rem", color: "#f39c12" }}>
+                <Label for='website'>
+                  Website{' '}
+                  <span style={{ fontSize: '0.7rem', color: '#f39c12' }}>
                     (Example: https://yourdomain.com)
                   </span>
                 </Label>
                 <Input
-                  type="url"
-                  id="website"
-                  name="website"
+                  type='url'
+                  id='website'
+                  name='website'
                   value={formData.network.website}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.website"] ? (
-                  <div className="text-danger small mt-1">
-                    {apiErrors["network.website"].join(", ")}
+                {apiErrors['network.website'] ? (
+                  <div className='text-danger small mt-1'>
+                    {apiErrors['network.website'].join(', ')}
                   </div>
                 ) : null}
               </FormGroup>
             </Col>
-            <Col md="6">
+            <Col md='6'>
               <FormGroup>
-                <Label for="contact_person">Contact Person</Label>
+                <Label for='contact_person'>Contact Person</Label>
                 <Input
-                  type="text"
-                  id="contact_person"
-                  name="contact_person"
+                  type='text'
+                  id='contact_person'
+                  name='contact_person'
                   value={formData.network.contact_person}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.contact_person"] ? (
-                  <div className="text-danger small mt-1">
-                    {apiErrors["network.contact_person"].join(", ")}
+                {apiErrors['network.contact_person'] ? (
+                  <div className='text-danger small mt-1'>
+                    {apiErrors['network.contact_person'].join(', ')}
                   </div>
                 ) : null}
               </FormGroup>
             </Col>
-            <Col md="6">
+            <Col md='6'>
               <FormGroup>
-                <Label for="other_contact">Other Contact</Label>
+                <Label for='other_contact'>Other Contact</Label>
                 <Input
-                  type="text"
-                  id="other_contact"
-                  name="other_contact"
+                  type='text'
+                  id='other_contact'
+                  name='other_contact'
                   value={formData.network.other_contact}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.other_contact"] ? (
-                  <div className="text-danger small mt-1">
-                    {apiErrors["network.other_contact"].join(", ")}
+                {apiErrors['network.other_contact'] ? (
+                  <div className='text-danger small mt-1'>
+                    {apiErrors['network.other_contact'].join(', ')}
                   </div>
                 ) : null}
               </FormGroup>
             </Col>
           </Row>
           <Row>
-            <Col md="12">
+            <Col md='12'>
               <FormGroup>
-                <Label for="license_no">License Number</Label>
+                <Label for='license_no'>License Number</Label>
                 <Input
-                  type="text"
-                  id="license_no"
-                  name="license_no"
+                  type='text'
+                  id='license_no'
+                  name='license_no'
                   value={formData.network.license_no}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.license_no"] ? (
-                  <div className="text-danger small mt-1">
-                    {apiErrors["network.license_no"].join(", ")}
+                {apiErrors['network.license_no'] ? (
+                  <div className='text-danger small mt-1'>
+                    {apiErrors['network.license_no'].join(', ')}
                   </div>
                 ) : null}
               </FormGroup>
             </Col>
             {/* License Image Upload */}
-            <Col md="6">
+            <Col md='6'>
               <FormGroup>
-                <Label for="network.license_image">License Image</Label>
+                <Label for='network.license_image'>License Image</Label>
                 <Input
-                  type="file"
-                  id="network.license_image"
-                  name="network.license_image"
-                  accept="image/*"
+                  type='file'
+                  id='network.license_image'
+                  name='network.license_image'
+                  accept='image/*'
                   onChange={handleFileChange}
                 />
               </FormGroup>
             </Col>
-            <Col md="6">
+            <Col md='6'>
               {networkData?.network.license_image ? (
-                <div className="d-flex justify-content-center mt-2">
+                <div className='d-flex justify-content-center mt-2'>
                   <Image
                     src={networkData.network.license_image}
-                    alt="License Image"
+                    alt='License Image'
                     width={100}
                     height={80}
-                    className="rounded-2 w-50 border border-success"
+                    className='rounded-2 w-50 border border-success'
                   />
                 </div>
               ) : (
-                <div className="text-center mt-2 fw-medium opacity-50">
+                <div className='text-center mt-2 fw-medium opacity-50'>
                   <h6>Image not available</h6>
                 </div>
               )}
@@ -376,11 +374,11 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
           </Row>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggle}>
+          <Button color='secondary' onClick={toggle}>
             Cancel
           </Button>
-          <Button color="primary" disabled={isUpdating}>
-            {isUpdating ? "Saving..." : "Save Changes"}
+          <Button color='primary' disabled={isUpdating}>
+            {isUpdating ? 'Saving...' : 'Save Changes'}
           </Button>
         </ModalFooter>
       </Form>
