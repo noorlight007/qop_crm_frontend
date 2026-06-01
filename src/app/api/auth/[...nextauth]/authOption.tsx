@@ -59,8 +59,9 @@ export const authoption: NextAuthOptions = {
     strategy: "jwt",
     // Auto logout after 12 hours.
     // NOTE: access tokens may still be short-lived; API layer refreshes them on 401.
-    maxAge: 12 * 60 * 60, // 12 hours
-    updateAge: 60 * 60, // re-issue session cookie at most once/hour while active
+    maxAge:  2*60, // for testing
+    // maxAge: 12 * 60 * 60, // 12 hours
+    // updateAge: 60 * 60, // re-issue session cookie at most once/hour while active
   },
   pages: {
     signIn: "/auth/login",
