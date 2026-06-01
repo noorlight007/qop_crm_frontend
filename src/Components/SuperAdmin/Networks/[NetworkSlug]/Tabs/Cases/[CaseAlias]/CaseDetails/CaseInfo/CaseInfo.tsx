@@ -1,27 +1,22 @@
-import ApplicantEditAccessModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/ApplicantEditAccessModal";
-import CopyCaseModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/CopyCaseModal";
-import ViewJointApplicantModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/ViewJointApplicantModal";
-import DeleteCaseModal from "@/Components/Common/Cases/Modals/DeleteCaseModal";
-import ApplicantInvitationModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/ApplicantInvitationModal";
-import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
-import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi";
-import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
-import { useUpdateNetworkCaseMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkCasesApi";
+import ApplicantEditAccessModal from '@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/ApplicantEditAccessModal';
+import CopyCaseModal from '@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/CopyCaseModal';
+import ViewJointApplicantModal from '@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/ViewJointApplicantModal';
+import DeleteCaseModal from '@/Components/Common/Cases/Modals/DeleteCaseModal';
+import ApplicantInvitationModal from '@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/ApplicantInvitationModal';
+import { useDownloadApplicantInfoMutation } from '@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo';
+import { useDownloadDIPCertificateMutation } from '@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi';
+import { useDownloadFactFindMutation } from '@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi';
+import { useUpdateNetworkCaseMutation } from '@/Redux/Reducers/SuperAdmin/Networks/NetworkCasesApi';
 import {
   CaseInfoPrpos,
   NetworkCaseProps,
-} from "@/Types/Common/Cases/CaseTypes";
-import getCurrencySign from "@/utils/currency";
-import formatChoiceFieldValue from "@/utils/formatters";
-import { useSession } from "next-auth/react";
-import { ChangeEvent, useEffect, useState } from "react";
-import {
-  FaArrowLeft,
-  FaArrowRight,
-  FaChevronDown,
-  FaTrash,
-} from "react-icons/fa";
-import { FiSettings } from "react-icons/fi";
+} from '@/Types/Common/Cases/CaseTypes';
+import getCurrencySign from '@/utils/currency';
+import formatChoiceFieldValue from '@/utils/formatters';
+import { useSession } from 'next-auth/react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { FaArrowLeft, FaChevronDown, FaTrash } from 'react-icons/fa';
+import { FiSettings } from 'react-icons/fi';
 import {
   TbCircleArrowUp,
   TbCopy,
@@ -29,8 +24,8 @@ import {
   TbMailShare,
   TbUserPlus,
   TbUserShield,
-} from "react-icons/tb";
-import { toast } from "react-toastify";
+} from 'react-icons/tb';
+import { toast } from 'react-toastify';
 import {
   Button,
   ButtonGroup,
@@ -45,9 +40,9 @@ import {
   Input,
   Row,
   Spinner,
-} from "reactstrap";
-import AddNetworkJointApplicantModal from "../../../Modals/AddNetworkJointApplicantModal";
-import UpdateNetworkCaseModal from "../Modals/UpdateNetworkCaseModal";
+} from 'reactstrap';
+import AddNetworkJointApplicantModal from '../../../Modals/AddNetworkJointApplicantModal';
+import UpdateNetworkCaseModal from '../Modals/UpdateNetworkCaseModal';
 
 const CaseInfo: React.FC<NetworkCaseProps> = ({
   caseInfo,
@@ -74,11 +69,12 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
     useState(false);
   const [isApplicantEditAccessModalOpen, setIsApplicantEditAccessModalOpen] =
     useState(false);
-  console.log("CaseInfo Rendered with networkSlug:", networkSlug);
+
+  // console.log("CaseInfo Rendered with networkSlug:", networkSlug);
 
   // Inline notes editing state
   const [isEditingNotes, setIsEditingNotes] = useState(false);
-  const [notesDraft, setNotesDraft] = useState<string>("");
+  const [notesDraft, setNotesDraft] = useState<string>('');
   const [localNotes, setLocalNotes] = useState<string | null>(
     caseInfo?.notes || null,
   );
@@ -130,18 +126,18 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
 
   // Notes editing handlers
   const handleEditNotes = () => {
-    setNotesDraft(caseInfo?.notes || "");
+    setNotesDraft(caseInfo?.notes || '');
     setIsEditingNotes(true);
   };
 
   const handleCancelEditNotes = () => {
     setIsEditingNotes(false);
-    setNotesDraft(caseInfo?.notes || "");
+    setNotesDraft(caseInfo?.notes || '');
   };
 
   const handleSaveNotes = async () => {
     if (!caseInfo) {
-      toast.error("Case information is not available.");
+      toast.error('Case information is not available.');
       return;
     }
     try {
@@ -152,17 +148,17 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
         payload,
       });
       if ((res as any).data) {
-        toast.success("Notes updated successfully.");
+        toast.success('Notes updated successfully.');
         setIsEditingNotes(false);
         setLocalNotes(notesDraft);
       } else {
         const errorMessage =
-          (res as any)?.error?.data?.detail || "Failed to update notes.";
+          (res as any)?.error?.data?.detail || 'Failed to update notes.';
         toast.error(errorMessage);
       }
     } catch (error) {
-      console.error("Error updating notes:", error);
-      toast.error("Failed to update notes. Please try again.");
+      console.error('Error updating notes:', error);
+      toast.error('Failed to update notes. Please try again.');
     }
   };
 
@@ -181,7 +177,7 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
         case_alias: caseInfo?.alias,
       }).unwrap();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
       link.download = `applicants-info(${caseInfo?.name}).pdf`;
       document.body.appendChild(link);
@@ -189,7 +185,7 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      toast.error("Failed to download report. Please try again.");
+      toast.error('Failed to download report. Please try again.');
     }
   };
 
@@ -199,7 +195,7 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
         case_alias: caseInfo?.alias,
       }).unwrap();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
       link.download = `fact-find(${caseInfo?.name}).pdf`;
       document.body.appendChild(link);
@@ -207,7 +203,7 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      toast.error("Failed to download report. Please try again.");
+      toast.error('Failed to download report. Please try again.');
     }
   };
 
@@ -217,7 +213,7 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
         case_alias: caseInfo?.alias,
       }).unwrap();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
       link.download = `dip(${caseInfo?.name}).pdf`;
       document.body.appendChild(link);
@@ -225,144 +221,144 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      toast.error("Failed to download report. Please try again.");
+      toast.error('Failed to download report. Please try again.');
     }
   };
 
   return (
-    <Col sm="12">
+    <Col sm='12'>
       <Card>
-        <CardHeader className="d-flex justify-content-between">
-          <h3 className="mb-2">
-            <span className="text-primary">{caseInfo?.name}</span>
+        <CardHeader className='d-flex justify-content-between'>
+          <h3 className='mb-2'>
+            <span className='text-primary'>{caseInfo?.name}</span>
           </h3>
-          <div className="d-flex align-items-center gap-2">
-            <Button color="secondary" onClick={() => window.history.back()}>
-              <FaArrowLeft className="me-1" />
+          <div className='d-flex align-items-center gap-2'>
+            <Button color='secondary' onClick={() => window.history.back()}>
+              <FaArrowLeft className='me-1' />
               Previous page
             </Button>
             <ButtonGroup>
               <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-                <DropdownToggle color="primary">
-                  <FiSettings className="me-1" />
+                <DropdownToggle color='primary'>
+                  <FiSettings className='me-1' />
                   <span>Actions</span>
-                  <FaChevronDown className="ms-1" />
+                  <FaChevronDown className='ms-1' />
                 </DropdownToggle>
                 <DropdownMenu
                   style={{
-                    width: "200px",
+                    width: '200px',
                   }}
                 >
                   <DropdownItem
                     onClick={() => openUpdateCaseModal(caseInfo!)}
                     disabled={!caseInfo}
-                    className="opacity-100 py-3"
+                    className='opacity-100 py-3'
                   >
-                    <TbCircleArrowUp size="16" className="me-1" />
+                    <TbCircleArrowUp size='16' className='me-1' />
                     <span>Update Case</span>
                   </DropdownItem>
                   <DropdownItem
                     onClick={() => {
                       toggleApplicantInvitationModal();
                     }}
-                    className="opacity-100 py-3"
+                    className='opacity-100 py-3'
                   >
-                    <TbMailShare size="16" className="me-1" />
+                    <TbMailShare size='16' className='me-1' />
                     Client Invitation
                   </DropdownItem>
                   <DropdownItem
                     onClick={toggleApplicantEditAccessModal}
-                    className="opacity-100 py-3"
+                    className='opacity-100 py-3'
                   >
-                    <TbUserShield size="16" className="me-1" />
+                    <TbUserShield size='16' className='me-1' />
                     Applicant Edit Access
                   </DropdownItem>
                   <DropdownItem
-                    className="opacity-100 py-3"
+                    className='opacity-100 py-3'
                     onClick={toggleCopyCaseModal}
                   >
-                    <TbCopy size="16" className="me-1" />
+                    <TbCopy size='16' className='me-1' />
                     Copy Case
                   </DropdownItem>
                   <DropdownItem
-                    className="opacity-100 py-3"
+                    className='opacity-100 py-3'
                     onClick={handleDownloadApplicantInfo}
                     disabled={isApplicantsInfoLoading}
                     toggle={false}
                   >
                     {isApplicantsInfoLoading ? (
                       <>
-                        <Spinner size="sm" className="me-1" />
+                        <Spinner size='sm' className='me-1' />
                         Downloading...
                       </>
                     ) : (
                       <>
-                        <TbDownload size="16" className="me-1" />
+                        <TbDownload size='16' className='me-1' />
                         Download Applicants Info
                       </>
                     )}
                   </DropdownItem>
-                  {caseInfo?.case_stage !== "ENQUIRY" && (
+                  {caseInfo?.case_stage !== 'ENQUIRY' && (
                     <DropdownItem
-                      className="opacity-100 py-3"
+                      className='opacity-100 py-3'
                       onClick={handleDownloadFactFind}
                       disabled={isFactFindDownloading}
                       toggle={false}
                     >
                       {isFactFindDownloading ? (
                         <>
-                          <Spinner size="sm" className="me-1" />
+                          <Spinner size='sm' className='me-1' />
                           Downloading...
                         </>
                       ) : (
                         <>
-                          <TbDownload size="16" className="me-1" />
+                          <TbDownload size='16' className='me-1' />
                           Download Fact Find
                         </>
                       )}
                     </DropdownItem>
                   )}
-                  {caseInfo?.case_category === "MORTGAGE" &&
-                    (caseInfo?.case_stage === "DECISION_IN_PRINCIPLE" ||
-                      caseInfo?.case_stage === "FULL_MORTGAGE_APPLICATION" ||
-                      caseInfo?.case_stage === "SUBMISSION" ||
-                      caseInfo?.case_stage === "OFFER_FROM_BANK" ||
-                      caseInfo?.case_stage === "LEGAL" ||
-                      caseInfo?.case_stage === "COMPLETION" ||
-                      caseInfo?.case_stage === "FUTURE_OPPORTUNITY" ||
-                      caseInfo?.case_stage === "NOT_PROCEED") && (
+                  {caseInfo?.case_category === 'MORTGAGE' &&
+                    (caseInfo?.case_stage === 'DECISION_IN_PRINCIPLE' ||
+                      caseInfo?.case_stage === 'FULL_MORTGAGE_APPLICATION' ||
+                      caseInfo?.case_stage === 'SUBMISSION' ||
+                      caseInfo?.case_stage === 'OFFER_FROM_BANK' ||
+                      caseInfo?.case_stage === 'LEGAL' ||
+                      caseInfo?.case_stage === 'COMPLETION' ||
+                      caseInfo?.case_stage === 'FUTURE_OPPORTUNITY' ||
+                      caseInfo?.case_stage === 'NOT_PROCEED') && (
                       <DropdownItem
-                        className="opacity-100 py-3"
+                        className='opacity-100 py-3'
                         onClick={handleDownloadDIPCertificate}
                         disabled={isDIPCertificateDownloading}
                         toggle={false}
                       >
                         {isDIPCertificateDownloading ? (
                           <>
-                            <Spinner size="sm" className="me-1" />
+                            <Spinner size='sm' className='me-1' />
                             Downloading...
                           </>
                         ) : (
                           <>
-                            <TbDownload size="16" className="me-1" />
+                            <TbDownload size='16' className='me-1' />
                             Download DIP PDF
                           </>
                         )}
                       </DropdownItem>
                     )}
                   {((session?.user?.is_network &&
-                    (session?.user?.role === "DIRECTOR" ||
-                      session?.user?.role === "COMPLIANCE")) ||
+                    (session?.user?.role === 'DIRECTOR' ||
+                      session?.user?.role === 'COMPLIANCE')) ||
                     (!session?.user?.is_network &&
-                      session?.user?.role === "DIRECTOR")) && (
+                      session?.user?.role === 'DIRECTOR')) && (
                     <>
                       <DropdownItem divider />
                       <DropdownItem
                         onClick={() => openDeleteCaseModal(caseInfo!)}
                         disabled={!caseInfo}
-                        className="text-danger opacity-100 py-3"
+                        className='text-danger opacity-100 py-3'
                       >
-                        <FaTrash size="16" className="me-1" />
+                        <FaTrash size='16' className='me-1' />
                         Delete Case
                       </DropdownItem>
                     </>
@@ -373,58 +369,58 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
           </div>
         </CardHeader>
 
-        <Row className="px-3 mt-3">
+        <Row className='px-3 mt-3'>
           {/* Applicant Card */}
           <Col sm={12} md={4}>
-            <Card className="shadow">
-              <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Applicant</h6>
+            <Card className='shadow'>
+              <CardBody className='pt-2 border-3 rounded-3 border-b-primary'>
+                <CardHeader className='pt-0 pb-1 m-0 text-center'>
+                  <h6 className='fw-bold'>Applicant</h6>
                 </CardHeader>
                 {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
+                  <Row className='pt-2'>
+                    <Col xs='12' className='text-center'>
                       <Spinner
-                        animation="border"
-                        role="status"
-                        color="primary"
+                        animation='border'
+                        role='status'
+                        color='primary'
                       />
                     </Col>
                   </Row>
                 ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
-                      <h6 className="pt-1">
-                        <span className="small">Name:</span>{" "}
-                        <strong className="small">
+                  <Row className='pt-2'>
+                    <Col xs='12'>
+                      <h6 className='pt-1'>
+                        <span className='small'>Name:</span>{' '}
+                        <strong className='small'>
                           {displayLeadUser?.title
                             ? formatChoiceFieldValue(displayLeadUser.title)
-                            : ""}{" "}
-                          {displayLeadUser?.first_name}{" "}
-                          {displayLeadUser?.middle_name}{" "}
+                            : ''}{' '}
+                          {displayLeadUser?.first_name}{' '}
+                          {displayLeadUser?.middle_name}{' '}
                           {displayLeadUser?.last_name}
                         </strong>
                       </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Email:</span>{" "}
+                      <h6 className='pt-1'>
+                        <span className='small'>Email:</span>{' '}
                         <strong>
                           <small>{displayLeadUser?.email}</small>
                         </strong>
                       </h6>
-                      <h6 className="pt-1">
+                      <h6 className='pt-1'>
                         {displayLeadUser?.phone ? (
                           <>
-                            <span className="small">Phone:</span>{" "}
+                            <span className='small'>Phone:</span>{' '}
                             <strong>
-                              <span className="text-dark small">
+                              <span className='text-dark small'>
                                 {displayLeadUser?.phone}
                               </span>
                             </strong>
                           </>
                         ) : (
                           <>
-                            <span className="small">Phone:</span>{" "}
-                            <small className="text-muted">Not Found</small>
+                            <span className='small'>Phone:</span>{' '}
+                            <small className='text-muted'>Not Found</small>
                           </>
                         )}
                       </h6>
@@ -436,65 +432,65 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
           </Col>
           {/* Joint Applicants Card */}
           <Col sm={12} md={4}>
-            <Card className="shadow">
-              <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center position-relative">
-                  <h6 className="fw-bold">Joint Applicants</h6>
+            <Card className='shadow'>
+              <CardBody className='pt-2 border-3 rounded-3 border-b-primary'>
+                <CardHeader className='pt-0 pb-1 m-0 text-center position-relative'>
+                  <h6 className='fw-bold'>Joint Applicants</h6>
                   <Button
-                    color="primary"
-                    size="xs"
-                    className="position-absolute"
+                    color='primary'
+                    size='xs'
+                    className='position-absolute'
                     onClick={toggleAddJointApplicantModal}
                     style={{
-                      top: "30%",
-                      right: "0px",
-                      transform: "translateY(-50%)",
+                      top: '30%',
+                      right: '0px',
+                      transform: 'translateY(-50%)',
                     }}
                   >
-                    <TbUserPlus size="16" />
+                    <TbUserPlus size='16' />
                   </Button>
                 </CardHeader>
                 {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
+                  <Row className='pt-2'>
+                    <Col xs='12' className='text-center'>
                       <Spinner
-                        animation="border"
-                        role="status"
-                        color="primary"
+                        animation='border'
+                        role='status'
+                        color='primary'
                       />
                     </Col>
                   </Row>
                 ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
+                  <Row className='pt-2'>
+                    <Col xs='12'>
                       {jointApplicantInfo && jointApplicantInfo.length > 0 ? (
                         <ul
                           style={{
-                            listStyleType: "disc",
-                            paddingLeft: "20px",
-                            height: "55px",
-                            overflowY: "auto",
+                            listStyleType: 'disc',
+                            paddingLeft: '20px',
+                            height: '55px',
+                            overflowY: 'auto',
                           }}
-                          className="text-primary"
+                          className='text-primary'
                         >
                           {jointApplicantInfo.map((jointApplicant, index) => (
                             <li key={index}>
                               <strong
-                                className="small text_decoration_hover"
+                                className='small text_decoration_hover'
                                 onClick={() =>
                                   openViewJointApplicantModal(
                                     jointApplicant,
                                     index,
                                   )
                                 }
-                                style={{ cursor: "pointer" }}
+                                style={{ cursor: 'pointer' }}
                               >
                                 {jointApplicant?.customer?.title
                                   ? formatChoiceFieldValue(
                                       jointApplicant.customer.title,
-                                    ) + " "
-                                  : " "}
-                                {jointApplicant?.customer?.first_name}{" "}
+                                    ) + ' '
+                                  : ' '}
+                                {jointApplicant?.customer?.first_name}{' '}
                                 {jointApplicant?.customer?.middle_name && (
                                   <>{jointApplicant.customer.middle_name} </>
                                 )}
@@ -504,8 +500,8 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
                           ))}
                         </ul>
                       ) : (
-                        <div className="text-center py-3 mt-2">
-                          <h6 className="text-muted">
+                        <div className='text-center py-3 mt-2'>
+                          <h6 className='text-muted'>
                             <em>No Joint Applicants</em>
                           </h6>
                         </div>
@@ -519,36 +515,36 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
 
           {/* Case Info Card */}
           <Col sm={12} md={4}>
-            <Card className="shadow">
-              <CardBody className="pt-2 border-3 rounded-3 border-b-primary ">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Case Info</h6>
+            <Card className='shadow'>
+              <CardBody className='pt-2 border-3 rounded-3 border-b-primary '>
+                <CardHeader className='pt-0 pb-1 m-0 text-center'>
+                  <h6 className='fw-bold'>Case Info</h6>
                 </CardHeader>
                 {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
+                  <Row className='pt-2'>
+                    <Col xs='12' className='text-center'>
                       <Spinner
-                        animation="border"
-                        role="status"
-                        color="primary"
+                        animation='border'
+                        role='status'
+                        color='primary'
                       />
                     </Col>
                   </Row>
                 ) : (
-                  <Row className="pt-2">
+                  <Row className='pt-2'>
                     <Col
-                      xs="12"
+                      xs='12'
                       style={{
-                        height: "55px",
-                        overflowY: "auto",
+                        height: '55px',
+                        overflowY: 'auto',
                       }}
                     >
-                      <h6 className="pt-1">
-                        <span className="small">Case Category:</span>{" "}
-                        <strong className="small">
+                      <h6 className='pt-1'>
+                        <span className='small'>Case Category:</span>{' '}
+                        <strong className='small'>
                           {caseInfo?.case_category
                             ? formatChoiceFieldValue(caseInfo.case_category)
-                            : "N/A"}
+                            : 'N/A'}
                           {/* {caseInfo?.case_category === "MORTGAGE" &&
                             ((caseInfo?.application_type &&
                               String(caseInfo.application_type).trim() !==
@@ -582,13 +578,13 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
                         </strong>
                       </h6>
 
-                      <h6 className="pt-1">
-                        <span className="small">Case Stage:</span>{" "}
-                        <strong className="small rounded-1 px-1 bg-secondary text-white">
+                      <h6 className='pt-1'>
+                        <span className='small'>Case Stage:</span>{' '}
+                        <strong className='small rounded-1 px-1 bg-secondary text-white'>
                           {caseInfo?.case_stage ? (
                             formatChoiceFieldValue(caseInfo.case_stage)
                           ) : (
-                            <small className="text-muted">Not Found</small>
+                            <small className='text-muted'>Not Found</small>
                           )}
                         </strong>
                       </h6>
@@ -600,60 +596,60 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
           </Col>
         </Row>
 
-        <Row className="px-3 mt-3">
+        <Row className='px-3 mt-3'>
           {/* Assigned Advisor Card */}
           <Col sm={12} md={6}>
-            <Card className="shadow">
-              <CardBody className="pt-2 border-3 rounded-3 border-b-secondary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Assigned Adviser</h6>
+            <Card className='shadow'>
+              <CardBody className='pt-2 border-3 rounded-3 border-b-secondary'>
+                <CardHeader className='pt-0 pb-1 m-0 text-center'>
+                  <h6 className='fw-bold'>Assigned Adviser</h6>
                 </CardHeader>
                 {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
-                      <Spinner animation="border" role="status" color="info" />
+                  <Row className='pt-2'>
+                    <Col xs='12' className='text-center'>
+                      <Spinner animation='border' role='status' color='info' />
                     </Col>
                   </Row>
                 ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
+                  <Row className='pt-2'>
+                    <Col xs='12'>
                       {caseInfo?.assigned_user ? (
                         <>
-                          <h6 className="pt-1">
-                            <span className="small">Name:</span>{" "}
-                            <strong className="small">
+                          <h6 className='pt-1'>
+                            <span className='small'>Name:</span>{' '}
+                            <strong className='small'>
                               {caseInfo?.assigned_user?.title
                                 ? formatChoiceFieldValue(
                                     caseInfo.assigned_user.title,
                                   )
-                                : ""}{" "}
-                              {caseInfo?.assigned_user?.first_name}{" "}
-                              {caseInfo?.assigned_user?.middle_name}{" "}
+                                : ''}{' '}
+                              {caseInfo?.assigned_user?.first_name}{' '}
+                              {caseInfo?.assigned_user?.middle_name}{' '}
                               {caseInfo?.assigned_user?.last_name}
                             </strong>
                           </h6>
-                          <h6 className="pt-1">
-                            <span className="small">Email:</span>{" "}
+                          <h6 className='pt-1'>
+                            <span className='small'>Email:</span>{' '}
                             <strong>
                               <small>{caseInfo?.assigned_user?.email}</small>
                             </strong>
                           </h6>
-                          <h6 className="pt-1">
-                            <span className="small">Phone:</span>{" "}
-                            <strong className="small">
+                          <h6 className='pt-1'>
+                            <span className='small'>Phone:</span>{' '}
+                            <strong className='small'>
                               {caseInfo?.assigned_user?.phone ? (
                                 formatChoiceFieldValue(
                                   caseInfo.assigned_user?.phone,
                                 )
                               ) : (
-                                <small className="text-muted">Not Found</small>
+                                <small className='text-muted'>Not Found</small>
                               )}
                             </strong>
                           </h6>
                         </>
                       ) : (
-                        <div className="text-center py-3 mt-2">
-                          <h6 className="text-muted">
+                        <div className='text-center py-3 mt-2'>
+                          <h6 className='text-muted'>
                             <em>Not Assigned Yet</em>
                           </h6>
                         </div>
@@ -667,48 +663,48 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
 
           {/* Created By Card */}
           <Col sm={12} md={6}>
-            <Card className="shadow">
-              <CardBody className="pt-2 border-3 rounded-3 border-b-secondary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Created By</h6>
+            <Card className='shadow'>
+              <CardBody className='pt-2 border-3 rounded-3 border-b-secondary'>
+                <CardHeader className='pt-0 pb-1 m-0 text-center'>
+                  <h6 className='fw-bold'>Created By</h6>
                 </CardHeader>
                 {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
+                  <Row className='pt-2'>
+                    <Col xs='12' className='text-center'>
                       <Spinner
-                        animation="border"
-                        role="status"
-                        color="secondary"
+                        animation='border'
+                        role='status'
+                        color='secondary'
                       />
                     </Col>
                   </Row>
                 ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
-                      <h6 className="pt-1">
-                        <span className="small">Name:</span>{" "}
-                        <strong className="small">
+                  <Row className='pt-2'>
+                    <Col xs='12'>
+                      <h6 className='pt-1'>
+                        <span className='small'>Name:</span>{' '}
+                        <strong className='small'>
                           {caseInfo?.created_by?.title
                             ? formatChoiceFieldValue(caseInfo.created_by.title)
-                            : ""}{" "}
-                          {caseInfo?.created_by?.first_name}{" "}
-                          {caseInfo?.created_by?.middle_name}{" "}
+                            : ''}{' '}
+                          {caseInfo?.created_by?.first_name}{' '}
+                          {caseInfo?.created_by?.middle_name}{' '}
                           {caseInfo?.created_by?.last_name}
                         </strong>
                       </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Email:</span>{" "}
+                      <h6 className='pt-1'>
+                        <span className='small'>Email:</span>{' '}
                         <strong>
                           <small>{caseInfo?.created_by?.email}</small>
                         </strong>
                       </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Phone:</span>{" "}
-                        <strong className="small">
+                      <h6 className='pt-1'>
+                        <span className='small'>Phone:</span>{' '}
+                        <strong className='small'>
                           {caseInfo?.created_by?.phone ? (
                             formatChoiceFieldValue(caseInfo.created_by?.phone)
                           ) : (
-                            <small className="text-muted">Not Found</small>
+                            <small className='text-muted'>Not Found</small>
                           )}
                         </strong>
                       </h6>
@@ -719,28 +715,28 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
             </Card>
           </Col>
         </Row>
-        <Row className="px-3 mt-3">
-          <Col sm="12">
-            <Card className="shadow">
-              <CardBody className="pt-2">
-                <div className="d-flex gap-4">
+        <Row className='px-3 mt-3'>
+          <Col sm='12'>
+            <Card className='shadow'>
+              <CardBody className='pt-2'>
+                <div className='d-flex gap-4'>
                   {/* LEFT SIDE: Property Details */}
-                  <div className="flex-fill w-50 pt-3">
+                  <div className='flex-fill w-50 pt-3'>
                     <h6
-                      className="text-uppercase fw-bold text-primary mb-3"
-                      style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                      className='text-uppercase fw-bold text-primary mb-3'
+                      style={{ fontSize: '11px', letterSpacing: '0.5px' }}
                     >
                       Property Details
                     </h6>
 
-                    <div className="p-3 bg-light rounded mb-3">
-                      <small className="text-muted d-block fw-500 mb-2">
+                    <div className='p-3 bg-light rounded mb-3'>
+                      <small className='text-muted d-block fw-500 mb-2'>
                         Property Address
                       </small>
-                      <p className="m-0 text-dark fw-500">
+                      <p className='m-0 text-dark fw-500'>
                         {(() => {
                           const pd = caseInfo?.property_details;
-                          if (!pd) return "N/A";
+                          if (!pd) return 'N/A';
                           const countryFormatted = pd.country
                             ? formatChoiceFieldValue(pd.country)
                             : pd.country;
@@ -757,70 +753,70 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
                             (v) =>
                               v !== null &&
                               v !== undefined &&
-                              String(v).trim() !== "",
+                              String(v).trim() !== '',
                           );
                           return parts.length ? (
-                            parts.join(", ")
+                            parts.join(', ')
                           ) : (
-                            <span className="text-muted">Not available</span>
+                            <span className='text-muted'>Not available</span>
                           );
                         })()}
                       </p>
                     </div>
 
                     <Row>
-                      <Col md="6" className="mb-3">
-                        <div className="p-3 bg-light rounded">
-                          <small className="text-muted d-block fw-500 mb-2">
+                      <Col md='6' className='mb-3'>
+                        <div className='p-3 bg-light rounded'>
+                          <small className='text-muted d-block fw-500 mb-2'>
                             Property Value
                           </small>
-                          <p className="m-0 text-dark fw-500">
+                          <p className='m-0 text-dark fw-500'>
                             {caseInfo?.property_valuation ? (
                               `${getCurrencySign()}${caseInfo.property_valuation}`
                             ) : (
-                              <span className="text-muted">Not available</span>
+                              <span className='text-muted'>Not available</span>
                             )}
                           </p>
                         </div>
                       </Col>
-                      <Col md="6" className="mb-3">
-                        <div className="p-3 bg-light rounded">
-                          <small className="text-muted d-block fw-500 mb-2">
+                      <Col md='6' className='mb-3'>
+                        <div className='p-3 bg-light rounded'>
+                          <small className='text-muted d-block fw-500 mb-2'>
                             Purchase Price
                           </small>
-                          <p className="m-0 text-dark fw-500">
+                          <p className='m-0 text-dark fw-500'>
                             {caseInfo?.purchase_price ? (
                               `${getCurrencySign()}${caseInfo.purchase_price}`
                             ) : (
-                              <span className="text-muted">Not available</span>
+                              <span className='text-muted'>Not available</span>
                             )}
                           </p>
                         </div>
                       </Col>
-                      <Col md="6" className="mb-3">
-                        <div className="p-3 bg-light rounded">
-                          <small className="text-muted d-block fw-500 mb-2">
+                      <Col md='6' className='mb-3'>
+                        <div className='p-3 bg-light rounded'>
+                          <small className='text-muted d-block fw-500 mb-2'>
                             Loan Amount
                           </small>
-                          <p className="m-0 text-dark fw-500">
+                          <p className='m-0 text-dark fw-500'>
                             {caseInfo?.loan_amount ? (
                               `${getCurrencySign()}${caseInfo.loan_amount}`
                             ) : (
-                              <span className="text-muted">Not available</span>
+                              <span className='text-muted'>Not available</span>
                             )}
                           </p>
                         </div>
                       </Col>
-                      <Col md="6" className="mb-3">
-                        <div className="p-3 bg-light rounded">
-                          <small className="text-muted d-block fw-500 mb-2">
+                      <Col md='6' className='mb-3'>
+                        <div className='p-3 bg-light rounded'>
+                          <small className='text-muted d-block fw-500 mb-2'>
                             Lender
                           </small>
-                          <p className="m-0 text-dark fw-500 text-truncate">
+                          <p className='m-0 text-dark fw-500 text-truncate'>
                             {caseInfo?.lender ? (
                               formatChoiceFieldValue(caseInfo.lender)
                             ) : (
-                              <span className="text-muted">Not available</span>
+                              <span className='text-muted'>Not available</span>
                             )}
                           </p>
                         </div>
@@ -829,55 +825,55 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
                   </div>
 
                   {/* RIGHT SIDE: Notes + Application & Mortgage Details */}
-                  <div className="flex-fill w-50 pt-3">
+                  <div className='flex-fill w-50 pt-3'>
                     {/* Notes Section */}
                     <h6
-                      className="text-uppercase fw-bold text-primary mb-3 position-relative"
-                      style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                      className='text-uppercase fw-bold text-primary mb-3 position-relative'
+                      style={{ fontSize: '11px', letterSpacing: '0.5px' }}
                     >
                       Notes
                       <Button
-                        color="primary"
-                        size="sm"
-                        className="position-absolute"
+                        color='primary'
+                        size='sm'
+                        className='position-absolute'
                         onClick={handleEditNotes}
                         style={{
-                          top: "50%",
-                          right: "0px",
-                          transform: "translateY(-50%)",
+                          top: '50%',
+                          right: '0px',
+                          transform: 'translateY(-50%)',
                         }}
                         disabled={isLoading}
                       >
-                        <i className="fa-solid fa-pen-to-square me-1" />
+                        <i className='fa-solid fa-pen-to-square me-1' />
                         Edit
                       </Button>
                     </h6>
                     <div
-                      className="p-3 bg-light rounded mb-3 overflow-auto border-l-primary border-2"
-                      style={{ height: "140px" }}
+                      className='p-3 bg-light rounded mb-3 overflow-auto border-l-primary border-2'
+                      style={{ height: '140px' }}
                     >
                       {isEditingNotes ? (
                         <>
                           <Input
-                            type="textarea"
+                            type='textarea'
                             value={notesDraft}
                             onChange={(e: ChangeEvent<HTMLInputElement>) =>
                               setNotesDraft(e.target.value)
                             }
                             rows={3}
                           />
-                          <div className="mt-2 text-end">
+                          <div className='mt-2 text-end'>
                             <Button
-                              color="primary"
-                              size="sm"
+                              color='primary'
+                              size='sm'
                               onClick={handleSaveNotes}
                               disabled={isUpdatingNotes}
                             >
-                              {isUpdatingNotes ? <Spinner size="sm" /> : "Save"}
-                            </Button>{" "}
+                              {isUpdatingNotes ? <Spinner size='sm' /> : 'Save'}
+                            </Button>{' '}
                             <Button
-                              color="secondary"
-                              size="sm"
+                              color='secondary'
+                              size='sm'
                               onClick={handleCancelEditNotes}
                               disabled={isUpdatingNotes}
                             >
@@ -887,13 +883,13 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
                         </>
                       ) : (
                         <p
-                          className="m-0 text-dark"
-                          style={{ whiteSpace: "pre-wrap" }}
+                          className='m-0 text-dark'
+                          style={{ whiteSpace: 'pre-wrap' }}
                         >
                           {localNotes ? (
                             localNotes
                           ) : (
-                            <span className="text-muted">
+                            <span className='text-muted'>
                               No notes available
                             </span>
                           )}
@@ -903,36 +899,36 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
 
                     {/* Application & Mortgage Details Section */}
                     <h6
-                      className="text-uppercase fw-bold text-primary mb-3"
-                      style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                      className='text-uppercase fw-bold text-primary mb-3'
+                      style={{ fontSize: '11px', letterSpacing: '0.5px' }}
                     >
                       Application & Mortgage Details
                     </h6>
                     <Row>
-                      <Col md="6" className="mb-3">
-                        <div className="p-3 bg-light rounded">
-                          <small className="text-muted d-block fw-500 mb-2">
+                      <Col md='6' className='mb-3'>
+                        <div className='p-3 bg-light rounded'>
+                          <small className='text-muted d-block fw-500 mb-2'>
                             Application Type
                           </small>
-                          <p className="m-0 text-dark fw-500">
+                          <p className='m-0 text-dark fw-500'>
                             {caseInfo?.application_type ? (
                               formatChoiceFieldValue(caseInfo.application_type)
                             ) : (
-                              <span className="text-muted">Not available</span>
+                              <span className='text-muted'>Not available</span>
                             )}
                           </p>
                         </div>
                       </Col>
-                      <Col md="6" className="mb-3">
-                        <div className="p-3 bg-light rounded">
-                          <small className="text-muted d-block fw-500 mb-2">
+                      <Col md='6' className='mb-3'>
+                        <div className='p-3 bg-light rounded'>
+                          <small className='text-muted d-block fw-500 mb-2'>
                             Mortgage Type
                           </small>
-                          <p className="m-0 text-dark fw-500">
+                          <p className='m-0 text-dark fw-500'>
                             {caseInfo?.mortgage_type ? (
                               formatChoiceFieldValue(caseInfo.mortgage_type)
                             ) : (
-                              <span className="text-muted">Not available</span>
+                              <span className='text-muted'>Not available</span>
                             )}
                           </p>
                         </div>

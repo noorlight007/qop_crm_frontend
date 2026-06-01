@@ -1,27 +1,29 @@
-import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
+import { useAppDispatch, useAppSelector } from '@/Redux/Hooks';
+import { basicTabIndicator } from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice';
+import { useUpdateSectionCompleteStatusMutation } from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi';
 import {
   useDownloadSuitabilityPdfMutation,
   useGetSuitabilityQuery,
   useUpdateSuitabilityMutation,
-} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
-import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
-import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { Button, Container } from "reactstrap";
-import DebtConsolidation from "./Components/DebtConsolidation";
-import HighLoanToValue from "./Components/HighLoanToValue";
-import IslamicMortgage from "./Components/IslamicMortgage";
-import LendingIntoRetirement from "./Components/LendingIntoRetirement";
-import ProductTransfer from "./Components/ProductTransfer";
-import RecommendationLetter from "./Components/RecommendationLetter";
+} from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi';
+import { useGetSingleCaseQuery } from '@/Redux/Reducers/Common/Cases/CasesApi';
+import { SuitabilityData } from '@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes';
+import { getNextTabNav } from '@/utils/Helper/nextTabUtils';
+import { useParams } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
+import { Button, Container } from 'reactstrap';
+import DebtConsolidation, {
+  DebtConsolidationHandle,
+} from './Components/DebtConsolidation';
+import HighLoanToValue from './Components/HighLoanToValue';
+import IslamicMortgage from './Components/IslamicMortgage';
+import LendingIntoRetirement from './Components/LendingIntoRetirement';
+import ProductTransfer from './Components/ProductTransfer';
+import RecommendationLetter from './Components/RecommendationLetter';
 
-const Divider = () => <hr className="my-4" />;
+const Divider = () => <hr className='my-4' />;
 
 /* ═══════════════════════════════════════════════════════════════
    MAIN COMPONENT
@@ -29,7 +31,7 @@ const Divider = () => <hr className="my-4" />;
 const Suitability: React.FC = () => {
   const { casealias } = useParams();
   const dispatch = useAppDispatch();
-  const [submitting, setSubmitting] = useState<"save" | "next" | null>(null);
+  const [submitting, setSubmitting] = useState<'save' | 'next' | null>(null);
 
   const { data: caseData, isLoading: isCaseLoading } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -49,11 +51,11 @@ const Suitability: React.FC = () => {
     useDownloadSuitabilityPdfMutation();
 
   const [formValues, setFormValues] = useState<SuitabilityData>({
-    lender_text: "",
-    initial_interest_rate_text: "",
-    initial_interest_rate_deal_period_text: "",
-    mortgage_term_text: "",
-    repayment_method_recommended_text: "",
+    lender_text: '',
+    initial_interest_rate_text: '',
+    initial_interest_rate_deal_period_text: '',
+    mortgage_term_text: '',
+    repayment_method_recommended_text: '',
     mortgage_amount_type: null,
     arrangement_fee_type: null,
     early_repayment_charges_reason: null,
@@ -67,19 +69,19 @@ const Suitability: React.FC = () => {
     portability_reason: null,
     home_insurance: null,
     residential_mortgages_type: null,
-    additional_risk_warnings_text: "",
-    debts_explanation: "",
-    financial_goal: "",
-    consolidation_proceed_reason: "",
+    additional_risk_warnings_text: '',
+    debts_explanation: '',
+    financial_goal: '',
+    consolidation_proceed_reason: '',
     debt_cost_comparison: null,
     new_lender_not_recommended_reason: null,
     islamic_mortgages_purchase_plan: null,
-    home_purchase_plan: "",
-    why_was_this_recommended_to_you: "",
-    what_does_this_mean: "",
-    why_was_this_recommended: "",
+    home_purchase_plan: '',
+    why_was_this_recommended_to_you: '',
+    what_does_this_mean: '',
+    why_was_this_recommended: '',
     product_transfer_reason: null,
-    product_transfer_recommended: "",
+    product_transfer_recommended: '',
     arrangement_fee: null,
     lending_into_retirement_type: null,
     overpayment_type: null,
@@ -111,15 +113,26 @@ const Suitability: React.FC = () => {
     }
   }, [suitability]);
 
+  const debtConsolidationRef = useRef<DebtConsolidationHandle | null>(null);
+
   const handleFormChange = (updates: Partial<SuitabilityData>) => {
     setFormValues((prev) => ({ ...prev, ...updates }));
   };
 
   const handleSave = async (
-    action: "save" | "next" = "save",
+    action: 'save' | 'next' = 'save',
   ): Promise<boolean> => {
     setSubmitting(action);
     try {
+      // Persist debt consolidation table entries first (if present)
+      try {
+        // safe-guard: call child save if component is mounted
+        // eslint-disable-next-line no-unused-expressions
+        debtConsolidationRef.current?.saveDebtSummaryRecommendations &&
+          (await debtConsolidationRef.current?.saveDebtSummaryRecommendations());
+      } catch (err) {
+        console.error('DebtConsolidation bulk save failed:', err);
+      }
       const payload = {
         lender_text: formValues.lender_text,
         initial_interest_rate_text: formValues.initial_interest_rate_text,
@@ -198,7 +211,7 @@ const Suitability: React.FC = () => {
       }).unwrap();
 
       if (response) {
-        toast.success("Suitability updated successfully");
+        toast.success('Suitability updated successfully');
         try {
           await updateSectionCompleteStatus({
             case_alias: casealias,
@@ -206,13 +219,13 @@ const Suitability: React.FC = () => {
           });
           return true;
         } catch (err) {
-          console.error("Failed to update section complete status:", err);
+          console.error('Failed to update section complete status:', err);
         }
         return false;
       }
     } catch (err) {
-      console.error("Save error:", err);
-      toast.error("Failed to save changes");
+      console.error('Save error:', err);
+      toast.error('Failed to save changes');
       return false;
     } finally {
       setSubmitting(null);
@@ -233,12 +246,12 @@ const Suitability: React.FC = () => {
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
     } else {
-      toast.warning("This is the last tab.");
+      toast.warning('This is the last tab.');
     }
   };
 
   const handleSaveAndNext = async () => {
-    const success = await handleSave("next");
+    const success = await handleSave('next');
     if (success) {
       handleNextTab();
     }
@@ -252,43 +265,43 @@ const Suitability: React.FC = () => {
         case_alias: casealias,
       }).unwrap();
       const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", `suitability-${casealias}.pdf`);
+      link.setAttribute('download', `suitability-${casealias}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Download error:", err);
-      toast.error("Failed to download PDF");
+      console.error('Download error:', err);
+      toast.error('Failed to download PDF');
     }
   };
 
   return (
-    <Container fluid className="py-4 px-2 px-md-4">
-      <div className="d-flex justify-content-between mb-3 p-3 bg-light rounded">
-        <h5 className="text-body mb-0 fw-bold">Download Suitability Letter</h5>
+    <Container fluid className='py-4 px-2 px-md-4'>
+      <div className='d-flex justify-content-between mb-3 p-3 bg-light rounded'>
+        <h5 className='text-body mb-0 fw-bold'>Download Suitability Letter</h5>
         <Button
-          color="primary"
+          color='primary'
           onClick={handleDownloadPdf}
           disabled={isDownloadingPdf}
         >
           {isDownloadingPdf ? (
             <>
-              <span className="spinner-border spinner-border-sm me-2" />
+              <span className='spinner-border spinner-border-sm me-2' />
               Downloading...
             </>
           ) : (
             <>
-              <i className="fa fa-file-pdf-o me-2" />
+              <i className='fa fa-file-pdf-o me-2' />
               Download PDF
             </>
           )}
         </Button>
       </div>
       <Divider />
-      <div className="suitability-letter">
+      <div className='suitability-letter'>
         <RecommendationLetter
           caseData={caseData}
           suitability={suitability}
@@ -299,6 +312,7 @@ const Suitability: React.FC = () => {
           <>
             <Divider />
             <DebtConsolidation
+              ref={debtConsolidationRef}
               caseData={caseData}
               suitability={suitability}
               formValues={formValues}
@@ -360,43 +374,43 @@ const Suitability: React.FC = () => {
           </>
         )}
         {/* ── Footer ── */}
-        <div className="mt-5 pt-3 border-top text-center">
-          <small className="text-muted">
+        <div className='mt-5 pt-3 border-top text-center'>
+          <small className='text-muted'>
             This letter is generated as part of your mortgage advice record.
             Please retain it for your records.
           </small>
         </div>
       </div>
       <Divider />
-      <div className="d-flex justify-content-end mt-4 gap-2">
+      <div className='d-flex justify-content-end mt-4 gap-2'>
         <Button
-          color="primary"
-          onClick={() => handleSave("save")}
+          color='primary'
+          onClick={() => handleSave('save')}
           disabled={isUpdatingSuitability}
         >
-          {isUpdatingSuitability && submitting === "save" ? (
+          {isUpdatingSuitability && submitting === 'save' ? (
             <>
-              <span className="spinner-border spinner-border-sm me-2" />
+              <span className='spinner-border spinner-border-sm me-2' />
               Saving...
             </>
           ) : (
-            "Save Changes"
+            'Save Changes'
           )}
         </Button>
 
         <Button
-          type="button"
-          color="secondary"
+          type='button'
+          color='secondary'
           disabled={isUpdatingSuitability}
           onClick={handleSaveAndNext}
         >
-          {isUpdatingSuitability && submitting === "next" ? (
+          {isUpdatingSuitability && submitting === 'next' ? (
             <>
-              <span className="spinner-border spinner-border-sm me-2" />
+              <span className='spinner-border spinner-border-sm me-2' />
               Saving...
             </>
           ) : (
-            "Save & Next"
+            'Save & Next'
           )}
         </Button>
       </div>
