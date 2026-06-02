@@ -1,7 +1,7 @@
-import apiClient from "@/services/api-client";
-import formatChoiceFieldValue from "@/utils/formatters";
-import { NextAuthOptions, User as NextAuthUser } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import apiClient from '@/services/api-client';
+import formatChoiceFieldValue from '@/utils/formatters';
+import { NextAuthOptions, User as NextAuthUser } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 // Extend NextAuth's user type to include the JWT token
 interface UserWithToken extends NextAuthUser {
@@ -14,7 +14,7 @@ interface UserWithToken extends NextAuthUser {
 }
 
 // TypeScript Declaration Module for Custom Session and User Properties
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session {
     user: {
       id: number;
@@ -56,16 +56,15 @@ declare module "next-auth" {
 
 export const authoption: NextAuthOptions = {
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     // Auto logout after 12 hours.
     // NOTE: access tokens may still be short-lived; API layer refreshes them on 401.
-    maxAge:  2*60, // for testing
-    // maxAge: 12 * 60 * 60, // 12 hours
+    maxAge: 12 * 60 * 60, // 12 hours
     // updateAge: 60 * 60, // re-issue session cookie at most once/hour while active
   },
   pages: {
-    signIn: "/auth/login",
-    signOut: "/auth/login",
+    signIn: '/auth/login',
+    signOut: '/auth/login',
   },
   trustHost: true,
   cookies: {
@@ -73,9 +72,9 @@ export const authoption: NextAuthOptions = {
       name: `next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
         // Extract base domain for subdomain support
         // If you're on app.example.com, this sets .example.com
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || undefined,
@@ -84,42 +83,42 @@ export const authoption: NextAuthOptions = {
   },
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
+      id: 'credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-        userAgent: { label: "User Agent", type: "text" },
-        subdomain: { label: "Subdomain", type: "text" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+        userAgent: { label: 'User Agent', type: 'text' },
+        subdomain: { label: 'Subdomain', type: 'text' },
       },
       async authorize(credentials) {
         try {
           if (!credentials) {
-            throw new Error("No credentials provided");
+            throw new Error('No credentials provided');
           }
 
           const result = await apiClient.post(
-            "/auth/jwt/create/",
+            '/auth/jwt/create/',
             {
               email: credentials.email,
               password: credentials.password,
             },
             {
               headers: {
-                "Content-Type": "application/json",
-                "X-Device-Info": credentials.userAgent || "",
-                "X-TENANT-SUBDOMAIN": credentials.subdomain || "",
+                'Content-Type': 'application/json',
+                'X-Device-Info': credentials.userAgent || '',
+                'X-TENANT-SUBDOMAIN': credentials.subdomain || '',
               },
             },
           );
           // console.log("TEST::", result.data);
 
           const profileResponse = result?.data?.access
-            ? await apiClient.get("/auth/user-profile/", {
+            ? await apiClient.get('/auth/user-profile/', {
                 headers: {
                   Authorization: `JWT ${result.data.access}`,
-                  "Content-Type": "application/json",
-                  "X-TENANT-SUBDOMAIN": credentials.subdomain || "",
+                  'Content-Type': 'application/json',
+                  'X-TENANT-SUBDOMAIN': credentials.subdomain || '',
                 },
               })
             : null;
@@ -128,26 +127,26 @@ export const authoption: NextAuthOptions = {
           if (profileResponse?.data) {
             const userData = profileResponse.data || {};
             const fullName = `${
-              userData.title ? formatChoiceFieldValue(userData.title) + " " : ""
-            }${userData.first_name || ""}${
-              userData.middle_name ? " " + userData.middle_name : ""
-            }${userData.last_name ? " " + userData.last_name : ""}`.trim();
+              userData.title ? formatChoiceFieldValue(userData.title) + ' ' : ''
+            }${userData.first_name || ''}${
+              userData.middle_name ? ' ' + userData.middle_name : ''
+            }${userData.last_name ? ' ' + userData.last_name : ''}`.trim();
 
             return {
-              id: userData.id || "default_id",
+              id: userData.id || 'default_id',
               name: fullName || credentials.email,
               email: credentials.email,
               profile_image: userData.profile_image || null,
               is_network: userData.is_network || false,
               subdomain: credentials.subdomain || null,
-              role: result.data.role || "",
+              role: result.data.role || '',
               accessToken: result.data.access,
               refreshToken: result.data.refresh,
             };
           }
           return null;
         } catch (error) {
-          throw new Error("Invalid email or password.");
+          throw new Error('Invalid email or password.');
         }
       },
     }),
@@ -180,7 +179,7 @@ export const authoption: NextAuthOptions = {
       }
 
       // Handle session updates (when update() is called)
-      if (trigger === "update" && session) {
+      if (trigger === 'update' && session) {
         if (session.name) {
           token.name = session.name;
         }
