@@ -52,7 +52,7 @@ const UserLogin = () => {
     }
   }, [session, router]);
 
-  // if (session) return null;
+  if (session) return null;
   return (
     <Container fluid className='p-0'>
       <Row className='m-0'>
