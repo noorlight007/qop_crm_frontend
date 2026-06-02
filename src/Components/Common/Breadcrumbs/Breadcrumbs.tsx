@@ -4,7 +4,7 @@ import { BreadcrumbsProps } from '@/Types/BreadcrumbsType';
 import { getDashboardHomeUrl } from '@/utils/RedirectPaths';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { TbArrowBarToLeft, TbArrowBarToRight } from 'react-icons/tb';
+import { TbArrowBarToLeft, TbArrowBarToRight, TbReload } from 'react-icons/tb';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,7 +20,8 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   items,
 }) => {
   const { data: session } = useSession();
-  const { back, forward, canGoBack, canGoForward } = useNavigationHistory();
+  const { back, forward, canGoBack, canGoForward, reload } =
+    useNavigationHistory();
 
   return (
     <Container fluid>
@@ -32,12 +33,13 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
         <Col sm='6'>
           <Breadcrumb className='justify-content-sm-end align-items-center'>
             {/* Back / Forward buttons */}
-            <div className='d-flex gap-1 me-2 pe-2 border-end border-2'>
+            <div className='d-flex gap-2 me-2 pe-2 border-end border-2'>
               <Button
                 color='secondary'
                 size='sm'
                 onClick={back}
                 disabled={!canGoBack}
+                title='Go back'
                 aria-label='Go back'
                 className='rounded-circle'
               >
@@ -48,10 +50,21 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                 size='sm'
                 onClick={forward}
                 disabled={!canGoForward}
+                title='Go forward'
                 aria-label='Go forward'
                 className='rounded-circle'
               >
                 <TbArrowBarToRight style={{ marginBottom: '2px' }} />
+              </Button>
+              <Button
+                color='secondary'
+                size='sm'
+                onClick={reload}
+                title='Reload page'
+                aria-label='Reload page'
+                className='rounded-circle'
+              >
+                <TbReload style={{ marginBottom: '2px' }} />
               </Button>
             </div>
 

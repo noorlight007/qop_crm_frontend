@@ -1,10 +1,10 @@
-import { getSession, signOut } from "next-auth/react";
+import { getSession, signOut } from 'next-auth/react';
 
 const clearAuthCookies = () => {
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
 
   const hostname = window.location.hostname;
-  const inferredBaseDomain = hostname.split(".").slice(-2).join(".");
+  const inferredBaseDomain = hostname.split('.').slice(-2).join('.');
   const configuredDomain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
 
   const domainCandidates = new Set<string>();
@@ -12,22 +12,22 @@ const clearAuthCookies = () => {
   if (inferredBaseDomain) domainCandidates.add(`.${inferredBaseDomain}`);
   if (configuredDomain) {
     domainCandidates.add(
-      configuredDomain.startsWith(".")
+      configuredDomain.startsWith('.')
         ? configuredDomain
         : `.${configuredDomain}`,
     );
   }
 
   const cookiesToClear = [
-    "next-auth.session-token",
-    "__Secure-next-auth.session-token",
-    "next-auth.csrf-token",
-    "__Host-next-auth.csrf-token",
-    "next-auth.callback-url",
-    "__Secure-next-auth.callback-url",
-    "next-auth.pkce.code_verifier",
-    "next-auth.state",
-    "next-auth.nonce",
+    'next-auth.session-token',
+    '__Secure-next-auth.session-token',
+    'next-auth.csrf-token',
+    '__Host-next-auth.csrf-token',
+    'next-auth.callback-url',
+    '__Secure-next-auth.callback-url',
+    'next-auth.pkce.code_verifier',
+    'next-auth.state',
+    'next-auth.nonce',
   ];
 
   cookiesToClear.forEach((cookieName) => {
@@ -43,12 +43,12 @@ export const logOut = async () => {
   let accessToken: string | null = null;
   let refreshToken: string | null = null;
 
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     try {
-      accessToken = localStorage.getItem("token");
-      refreshToken = localStorage.getItem("refreshToken");
+      accessToken = localStorage.getItem('token');
+      refreshToken = localStorage.getItem('refreshToken');
     } catch (e) {
-      console.error("Error reading localStorage during logout", e);
+      console.error('Error reading localStorage during logout', e);
     }
   } else {
     try {
@@ -56,49 +56,68 @@ export const logOut = async () => {
       accessToken = session?.user?.accessToken ?? null;
       refreshToken = session?.user?.refreshToken ?? null;
     } catch (e) {
-      console.error("Error reading session during logout", e);
+      console.error('Error reading session during logout', e);
+    }
+  }
+
+  // Extract subdomain for the logout request
+  let subdomain = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || '';
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      const parts = hostname.split('.');
+      if (
+        parts.length > 2 ||
+        (parts.length === 2 && parts[1] === 'localhost')
+      ) {
+        const extractedSubdomain = parts[0];
+        if (extractedSubdomain && extractedSubdomain !== 'www') {
+          subdomain = extractedSubdomain;
+        }
+      }
     }
   }
 
   if (refreshToken) {
     try {
       const formData = new FormData();
-      formData.append("refresh", refreshToken);
+      formData.append('refresh', refreshToken);
 
       const headers: Record<string, string> = {};
       if (accessToken) headers.Authorization = `JWT ${accessToken}`;
+      headers['X-TENANT-SUBDOMAIN'] = subdomain;
 
       await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout/`, {
-        method: "POST",
+        method: 'POST',
         headers,
         body: formData,
       }).catch((error) => {
-        console.error("Logout API call failed:", error);
+        console.error('Logout API call failed:', error);
       });
     } catch (e) {
-      console.error("Error calling logout API", e);
+      console.error('Error calling logout API', e);
     }
   }
 
   // Clear HttpOnly NextAuth cookies first (server-side) via NextAuth endpoint.
   // Important: `signOut()` relies on NextAuth CSRF cookie.
   try {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       await signOut({ redirect: false });
     }
   } catch (e) {
-    console.error("Error during signOut", e);
+    console.error('Error during signOut', e);
   }
 
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       sessionStorage.clear();
 
       clearAuthCookies();
     } catch (e) {
-      console.error("Error clearing storage/cookies during logout", e);
+      console.error('Error clearing storage/cookies during logout', e);
     }
 
     window.location.href = `${window.location.origin}/auth/login`;

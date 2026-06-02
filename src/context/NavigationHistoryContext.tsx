@@ -1,6 +1,6 @@
-"use client";
-import { usePathname, useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+'use client';
+import { usePathname, useRouter } from 'next/navigation';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 // module-level — never resets between renders
 const historyStack: string[] = [];
@@ -12,6 +12,7 @@ const NavigationHistoryContext = createContext({
   canGoForward: false,
   back: () => {},
   forward: () => {},
+  reload: () => {},
 });
 
 export function NavigationHistoryProvider({
@@ -63,9 +64,13 @@ export function NavigationHistoryProvider({
     router.push(historyStack[cursor]);
   };
 
+  const reload = () => {
+    window.location.reload();
+  };
+
   return (
     <NavigationHistoryContext.Provider
-      value={{ canGoBack, canGoForward, back, forward }}
+      value={{ canGoBack, canGoForward, back, forward, reload }}
     >
       {children}
     </NavigationHistoryContext.Provider>
