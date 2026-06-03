@@ -1,4 +1,4 @@
-import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
 import {
   priorityColorMap,
   statusColorMap,
@@ -8,15 +8,15 @@ import {
   supportTicketStatusFilters,
   supportTicketTypeFilters,
   ticketTypeColorMap,
-} from "@/Data/SupportTicket/SupportTicketData";
+} from '@/Data/SupportTicket/SupportTicketData';
 import {
   useGetNetworkFilterListQuery,
   useGetOrganisationFilterListQuery,
-} from "@/Redux/Reducers/Common/CommonFilters/CommonFiltersApi";
+} from '@/Redux/Reducers/Common/CommonFilters/CommonFiltersApi';
 import {
   useFetchSupportTicketQuery,
   useUpdateSupportTicketMutation,
-} from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
+} from '@/Redux/Reducers/Common/SupportTicket/SupportTicketApi';
 import {
   Priority,
   SupportTicketFilters,
@@ -24,22 +24,22 @@ import {
   SupportTicketProps,
   TicketStatus,
   TicketType,
-} from "@/Types/Common/SupportTicket/SupportTicketTypes";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
-import formatChoiceFieldValue from "@/utils/formatters";
-import { getSupportTicketUrl } from "@/utils/RedirectPaths";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import React, { useEffect, useMemo, useState } from "react";
+} from '@/Types/Common/SupportTicket/SupportTicketTypes';
+import { formatDateAndTime } from '@/utils/dateAndTimeFormatter';
+import formatChoiceFieldValue from '@/utils/formatters';
+import { getSupportTicketUrl } from '@/utils/RedirectPaths';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   FaCheck,
   FaChevronDown,
   FaInfoCircle,
   FaRegQuestionCircle,
   FaSearch,
-} from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
-import { toast } from "react-toastify";
+} from 'react-icons/fa';
+import { TbCirclePlus } from 'react-icons/tb';
+import { toast } from 'react-toastify';
 import {
   Badge,
   Button,
@@ -60,17 +60,17 @@ import {
   Row,
   Table,
   UncontrolledPopover,
-} from "reactstrap";
-import Swal from "sweetalert2";
-import AddSupportTicketModal from "./Modals/AddSupportTicketModal";
-import DeleteSupportTicketModal from "./Modals/DeleteSupportTicketModal";
-import UpdateSupportTicketModal from "./Modals/UpdateSuppotTicketModal";
+} from 'reactstrap';
+import Swal from 'sweetalert2';
+import AddSupportTicketModal from './Modals/AddSupportTicketModal';
+import DeleteSupportTicketModal from './Modals/DeleteSupportTicketModal';
+import UpdateSupportTicketModal from './Modals/UpdateSuppotTicketModal';
 
 const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const { data: session } = useSession();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -83,10 +83,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     ticket_type: [],
     status: [],
     priority: [],
-    network: "",
-    organisation: "",
-    created_by: "",
-    is_removed: initialIsRemoved ?? "",
+    network: '',
+    organisation: '',
+    created_by: '',
+    is_removed: initialIsRemoved ?? '',
   };
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -95,8 +95,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
 
-  const [selectedNetwork, setSelectedNetwork] = useState("");
-  const [selectedOrganisation, setSelectedOrganisation] = useState("");
+  const [selectedNetwork, setSelectedNetwork] = useState('');
+  const [selectedOrganisation, setSelectedOrganisation] = useState('');
   const [ticketTypeDropdownOpen, setTicketTypeDropdownOpen] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
@@ -115,11 +115,11 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
           search: debouncedSearch || undefined,
           page: currentPage,
           ticket_type: filters.ticket_type.length
-            ? filters.ticket_type.join(",")
+            ? filters.ticket_type.join(',')
             : undefined,
-          status: filters.status.length ? filters.status.join(",") : undefined,
+          status: filters.status.length ? filters.status.join(',') : undefined,
           priority: filters.priority.length
-            ? filters.priority.join(",")
+            ? filters.priority.join(',')
             : undefined,
           network: filters.network || undefined,
           organisation: filters.organisation || undefined,
@@ -161,9 +161,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     );
 
   const [ticketData, setTicketData] = useState<Partial<SupportTicketFormData>>({
-    ticket_type: "",
-    subject: "",
-    message: "",
+    ticket_type: '',
+    subject: '',
+    message: '',
     files: [],
   });
 
@@ -204,10 +204,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
         payload: { status: newStatus },
       }).unwrap();
 
-      Swal.fire("Success", "Status Updated Successfully!", "success");
+      Swal.fire('Success', 'Status Updated Successfully!', 'success');
     } catch (error) {
-      console.error("Failed to update status:", error);
-      toast.error("Failed to update status. Please try again.");
+      console.error('Failed to update status:', error);
+      toast.error('Failed to update status. Please try again.');
     }
   };
 
@@ -268,84 +268,84 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   return (
     <Row>
       <Col>
-        <Card className="shadow-sm">
+        <Card className='shadow-sm'>
           <CardBody>
-            <Row className="d-flex justify-content-between align-items-center py-4">
-              <Col md="3" xs="12">
+            <Row className='d-flex justify-content-between align-items-center py-4'>
+              <Col md='3' xs='12'>
                 <div
-                  className="btn-group ms-2 bg-secondary"
-                  role="group"
-                  aria-label="Show tickets filter"
+                  className='btn-group ms-2 bg-secondary'
+                  role='group'
+                  aria-label='Show tickets filter'
                   style={{
                     padding: 3,
                     borderRadius: 999,
                   }}
                 >
                   <Button
-                    size="sm"
-                    color={!filters.created_by ? "primary" : ""}
-                    className={`rounded-pill px-3 py-1 ${!filters.created_by ? "" : "text-white"}`}
-                    style={{ borderRadius: 999, padding: "6px 14px" }}
-                    onClick={() => handleFilterChange("created_by", "")}
+                    size='sm'
+                    color={!filters.created_by ? 'primary' : ''}
+                    className={`rounded-pill px-3 py-1 ${!filters.created_by ? '' : 'text-white'}`}
+                    style={{ borderRadius: 999, padding: '6px 14px' }}
+                    onClick={() => handleFilterChange('created_by', '')}
                     aria-pressed={!filters.created_by}
-                    type="button"
+                    type='button'
                   >
                     All Tickets
                   </Button>
 
                   <Button
-                    size="sm"
+                    size='sm'
                     color={
                       filters.created_by === String(session?.user?.id)
-                        ? "primary"
-                        : ""
+                        ? 'primary'
+                        : ''
                     }
-                    className={`rounded-pill px-3 py-1 ${filters.created_by === String(session?.user?.id) ? "" : "text-white"}`}
-                    style={{ borderRadius: 999, padding: "6px 14px" }}
+                    className={`rounded-pill px-3 py-1 ${filters.created_by === String(session?.user?.id) ? '' : 'text-white'}`}
+                    style={{ borderRadius: 999, padding: '6px 14px' }}
                     onClick={() =>
                       handleFilterChange(
-                        "created_by",
-                        String(session?.user?.id) || "",
+                        'created_by',
+                        String(session?.user?.id) || '',
                       )
                     }
                     aria-pressed={
                       filters.created_by === String(session?.user?.id)
                     }
-                    type="button"
+                    type='button'
                   >
                     My Tickets
                   </Button>
                 </div>
               </Col>
-              <Col md={3} xs="12">
-                <InputGroup className="position-relative">
+              <Col md={3} xs='12'>
+                <InputGroup className='position-relative'>
                   <FaSearch
-                    className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
-                    style={{ zIndex: 10, pointerEvents: "none" }}
+                    className='position-absolute top-50 start-0 translate-middle-y ms-2 text-primary'
+                    style={{ zIndex: 10, pointerEvents: 'none' }}
                   />
                   <Input
-                    type="text"
-                    placeholder="Search... "
+                    type='text'
+                    placeholder='Search... '
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
                       setCurrentPage(1);
                     }}
-                    style={{ padding: "10px 27px 10px 25px" }}
-                    className="rounded-end-1"
+                    style={{ padding: '10px 27px 10px 25px' }}
+                    className='rounded-end-1'
                   />
                   <FaInfoCircle
-                    id="ticketSearchSuggestion"
-                    className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
-                    style={{ cursor: "pointer", zIndex: 10 }}
+                    id='ticketSearchSuggestion'
+                    className='position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6'
+                    style={{ cursor: 'pointer', zIndex: 10 }}
                   />
 
                   <UncontrolledPopover
-                    placement="right"
-                    target="ticketSearchSuggestion"
-                    trigger="hover"
+                    placement='right'
+                    target='ticketSearchSuggestion'
+                    trigger='hover'
                   >
-                    <PopoverBody className="bg-white rounded text-dark p-3 small">
+                    <PopoverBody className='bg-white rounded text-dark p-3 small'>
                       🔍 You can search using Ticket ID, Creator's Name,
                       Creator's Email Address or Phone Number.
                     </PopoverBody>
@@ -353,26 +353,26 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                 </InputGroup>
               </Col>
               <Col
-                md="3"
-                xs="12"
-                className="d-flex justify-content-end mt-sm-0 mt-2"
+                md='3'
+                xs='12'
+                className='d-flex justify-content-end mt-sm-0 mt-2'
               >
                 <Button
-                  color="secondary"
+                  color='secondary'
                   onClick={toggleFilterIcon}
-                  className="me-2"
+                  className='me-2'
                 >
                   {filterIcon ? (
-                    <i className="fa-solid fa-filter-circle-xmark"></i>
+                    <i className='fa-solid fa-filter-circle-xmark'></i>
                   ) : (
-                    <i className="fa-solid fa-filter"></i>
+                    <i className='fa-solid fa-filter'></i>
                   )}
                 </Button>
-                {session?.user?.role !== "SUPER_ADMIN" && (
+                {session?.user?.role !== 'SUPER_ADMIN' && (
                   <Button
-                    color="primary"
+                    color='primary'
                     onClick={toggleModal}
-                    className="d-flex justify-content-center align-items-center gap-1"
+                    className='d-flex justify-content-center align-items-center gap-1'
                   >
                     <TbCirclePlus size={18} />
                     <span>Create Support Ticket</span>
@@ -382,8 +382,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
             </Row>
 
             {filterIcon && (
-              <Card className="shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3">
-                <Row className="justify-content-center g-3">
+              <Card className='shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3'>
+                <Row className='justify-content-center g-3'>
                   <Col>
                     <Label>Select Ticket Type</Label>
                     <Dropdown
@@ -391,17 +391,17 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       toggle={() => setTicketTypeDropdownOpen((prev) => !prev)}
                     >
                       <DropdownToggle
-                        tag="button"
-                        type="button"
-                        className="form-select py-1 w-100 text-start"
+                        tag='button'
+                        type='button'
+                        className='form-select py-1 w-100 text-start'
                       >
-                        <span className="text-truncate pe-4 d-block">
+                        <span className='text-truncate pe-4 d-block'>
                           {filters.ticket_type.length
                             ? `Selected (${filters.ticket_type.length})`
-                            : "All Ticket Types"}
+                            : 'All Ticket Types'}
                         </span>
                       </DropdownToggle>
-                      <DropdownMenu className="w-100">
+                      <DropdownMenu className='w-100'>
                         {supportTicketTypeFilters.map((opt) => {
                           const checked = filters.ticket_type.includes(
                             opt.value,
@@ -410,14 +410,14 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                             <DropdownItem
                               key={opt.value}
                               toggle={false}
-                              className="d-flex align-items-center gap-2 fs-6"
+                              className='d-flex align-items-center gap-2 fs-6'
                               style={{ opacity: 1 }}
                               onClick={() => toggleTicketTypeValue(opt.value)}
                             >
                               <Input
-                                type="checkbox"
+                                type='checkbox'
                                 checked={checked}
-                                className="border-primary"
+                                className='border-primary'
                                 readOnly
                               />
                               <span>{opt.label}</span>
@@ -434,31 +434,31 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       toggle={() => setStatusDropdownOpen((prev) => !prev)}
                     >
                       <DropdownToggle
-                        tag="button"
-                        type="button"
-                        className="form-select py-1 w-100 text-start"
+                        tag='button'
+                        type='button'
+                        className='form-select py-1 w-100 text-start'
                       >
-                        <span className="text-truncate pe-4 d-block">
+                        <span className='text-truncate pe-4 d-block'>
                           {filters.status.length
                             ? `Selected (${filters.status.length})`
-                            : "All Statuses"}
+                            : 'All Statuses'}
                         </span>
                       </DropdownToggle>
-                      <DropdownMenu className="w-100">
+                      <DropdownMenu className='w-100'>
                         {supportTicketStatusFilters.map((opt) => {
                           const checked = filters.status.includes(opt.value);
                           return (
                             <DropdownItem
                               key={opt.value}
                               toggle={false}
-                              className="d-flex align-items-center gap-2 fs-6"
+                              className='d-flex align-items-center gap-2 fs-6'
                               style={{ opacity: 1 }}
                               onClick={() => toggleStatusValue(opt.value)}
                             >
                               <Input
-                                type="checkbox"
+                                type='checkbox'
                                 checked={checked}
-                                className="border-primary"
+                                className='border-primary'
                                 readOnly
                               />
                               <span>{opt.label}</span>
@@ -476,31 +476,31 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       toggle={() => setPriorityDropdownOpen((prev) => !prev)}
                     >
                       <DropdownToggle
-                        tag="button"
-                        type="button"
-                        className="form-select py-1 w-100 text-start"
+                        tag='button'
+                        type='button'
+                        className='form-select py-1 w-100 text-start'
                       >
-                        <span className="text-truncate pe-4 d-block">
+                        <span className='text-truncate pe-4 d-block'>
                           {filters.priority.length
                             ? `Selected (${filters.priority.length})`
-                            : "All Priorities"}
+                            : 'All Priorities'}
                         </span>
                       </DropdownToggle>
-                      <DropdownMenu className="w-100">
+                      <DropdownMenu className='w-100'>
                         {supportTicketPriorityFilters.map((opt) => {
                           const checked = filters.priority.includes(opt.value);
                           return (
                             <DropdownItem
                               key={opt.value}
                               toggle={false}
-                              className="d-flex align-items-center gap-2 fs-6"
+                              className='d-flex align-items-center gap-2 fs-6'
                               style={{ opacity: 1 }}
                               onClick={() => togglePriorityValue(opt.value)}
                             >
                               <Input
-                                type="checkbox"
+                                type='checkbox'
                                 checked={checked}
-                                className="border-primary"
+                                className='border-primary'
                                 readOnly
                               />
                               <span>{opt.label}</span>
@@ -510,24 +510,24 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       </DropdownMenu>
                     </Dropdown>
                   </Col>
-                  {userRole === "SUPER_ADMIN" && (
+                  {userRole === 'SUPER_ADMIN' && (
                     <>
                       <Col>
                         <Label>Select Network</Label>
                         <Input
-                          type="select"
-                          id="networkFilter"
-                          className="py-1 pe-4 text-truncate"
+                          type='select'
+                          id='networkFilter'
+                          className='py-1 pe-4 text-truncate'
                           value={filters.network}
                           onChange={(e) => {
                             const networkValue = e.target.value;
-                            handleFilterChange("network", networkValue);
+                            handleFilterChange('network', networkValue);
                             setSelectedNetwork(networkValue);
-                            handleFilterChange("organisation", "");
-                            setSelectedOrganisation("");
+                            handleFilterChange('organisation', '');
+                            setSelectedOrganisation('');
                           }}
                         >
-                          <option value="">All Networks</option>
+                          <option value=''>All Networks</option>
                           {(Array.isArray(networkList)
                             ? networkList
                             : (networkList?.results ?? [])
@@ -544,23 +544,23 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       <Col>
                         <Label>Select Organisation</Label>
                         <Input
-                          type="select"
-                          id="organisationFilter"
-                          className="py-1 pe-4 text-truncate"
+                          type='select'
+                          id='organisationFilter'
+                          className='py-1 pe-4 text-truncate'
                           value={filters.organisation}
                           onChange={(e) => {
                             const orgValue = e.target.value;
-                            handleFilterChange("organisation", orgValue);
+                            handleFilterChange('organisation', orgValue);
                             setSelectedOrganisation(orgValue);
                           }}
                           disabled={!selectedNetwork || orgListLoading}
                         >
-                          <option value="">
+                          <option value=''>
                             {!selectedNetwork
-                              ? "Select a Network first"
+                              ? 'Select a Network first'
                               : orgListLoading
-                                ? "Loading organisations..."
-                                : "All Organisations"}
+                                ? 'Loading organisations...'
+                                : 'All Organisations'}
                           </option>
                           {(Array.isArray(orgList)
                             ? orgList
@@ -582,16 +582,16 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <Label>Clear All Filters</Label>
                     <Button
                       outline
-                      color="danger"
-                      className="w-100 d-flex justify-content-center align-items-center gap-1"
+                      color='danger'
+                      className='w-100 d-flex justify-content-center align-items-center gap-1'
                       onClick={() => {
                         setFilters(defaultFilters);
-                        setSelectedNetwork("");
-                        setSelectedOrganisation("");
+                        setSelectedNetwork('');
+                        setSelectedOrganisation('');
                         setCurrentPage(1);
                       }}
                     >
-                      <i className="fa-solid fa-xmark"></i>Clear
+                      <i className='fa-solid fa-xmark'></i>Clear
                     </Button>
                   </Col>
                 </Row>
@@ -600,29 +600,29 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
             <Row>
               <Table hover responsive>
-                <thead className="thead-light">
-                  <tr className="text-center">
+                <thead className='thead-light'>
+                  <tr className='text-center'>
                     <th>Ticket ID</th>
                     <th>Ticket Type</th>
                     <th>
-                      Status{" "}
+                      Status{' '}
                       <FaRegQuestionCircle
-                        id="statusInfoIcon"
-                        className="text-primary"
-                        style={{ cursor: "pointer" }}
+                        id='statusInfoIcon'
+                        className='text-primary'
+                        style={{ cursor: 'pointer' }}
                       />
                       <>
                         <UncontrolledPopover
-                          placement="right"
-                          target="statusInfoIcon"
-                          trigger="hover"
-                          popperClassName="status-popover"
+                          placement='right'
+                          target='statusInfoIcon'
+                          trigger='hover'
+                          popperClassName='status-popover'
                         >
-                          <PopoverBody className="bg-white rounded p-3 small">
+                          <PopoverBody className='bg-white rounded p-3 small'>
                             {statusOptions.map((status) => (
                               <div
                                 key={status.value}
-                                className="d-flex align-items-start mb-2"
+                                className='d-flex align-items-start mb-2'
                               >
                                 <span
                                   className={`me-2 text-${statusColorMap[status.value]}`}
@@ -634,7 +634,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                     className={`text-${statusColorMap[status.value]}`}
                                   >
                                     {status.label}:
-                                  </strong>{" "}
+                                  </strong>{' '}
                                   {status.description}
                                 </div>
                               </div>
@@ -645,7 +645,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     </th>
                     <th>Priority</th>
                     <th>Files</th>
-                    {session?.user?.role === "SUPER_ADMIN" && (
+                    {session?.user?.role === 'SUPER_ADMIN' && (
                       <>
                         <th>Network</th>
                         <th>Organisation</th>
@@ -659,23 +659,23 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                 <tbody>
                   {isLoading || isFetching ? (
                     <tr>
-                      <td colSpan={12} className="text-center">
-                        <div className="d-flex justify-content-center align-items-center">
+                      <td colSpan={12} className='text-center'>
+                        <div className='d-flex justify-content-center align-items-center'>
                           <LoadingGrow />
                         </div>
                       </td>
                     </tr>
                   ) : tickets.length > 0 ? (
                     tickets.map((ticket: any) => (
-                      <tr key={ticket.alias} className="text-center">
-                        <td className="text-truncate">
+                      <tr key={ticket.alias} className='text-center'>
+                        <td className='text-truncate'>
                           <Link
                             href={getSupportTicketUrl(
                               ticket.alias,
                               session?.user?.role as string,
                               session?.user?.is_network,
                             )}
-                            className="text_decoration_hover"
+                            className='text_decoration_hover'
                           >
                             {ticket.ticket_id}
                           </Link>
@@ -685,7 +685,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                             color={
                               ticketTypeColorMap[
                                 ticket?.ticket_type as TicketType
-                              ] ?? "dark"
+                              ] ?? 'dark'
                             }
                           >
                             {formatChoiceFieldValue(ticket.ticket_type)}
@@ -693,38 +693,38 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </td>
                         <td>
                           {ticket.status ? (
-                            userRole === "SUPER_ADMIN" ? (
+                            userRole === 'SUPER_ADMIN' ? (
                               <Dropdown
                                 isOpen={dropdownOpen[ticket.alias] || false}
                                 toggle={() => toggleDropdown(ticket.alias)}
                               >
                                 <DropdownToggle
-                                  tag="span"
-                                  style={{ cursor: "pointer" }}
+                                  tag='span'
+                                  style={{ cursor: 'pointer' }}
                                   caret={false}
                                 >
                                   <Badge
                                     color={
                                       statusColorMap[
                                         ticket?.status as TicketStatus
-                                      ] ?? "dark"
+                                      ] ?? 'dark'
                                     }
-                                    className="d-flex justify-content-center align-items-center gap-1 px-1"
-                                    style={{ cursor: "pointer" }}
+                                    className='d-flex justify-content-center align-items-center gap-1 px-1'
+                                    style={{ cursor: 'pointer' }}
                                   >
                                     {renderStatusIcon(
                                       ticket?.status as TicketStatus,
                                     )}
-                                    <span style={{ marginTop: "2.5px" }}>
+                                    <span style={{ marginTop: '2.5px' }}>
                                       {formatChoiceFieldValue(ticket?.status)}
                                     </span>
                                     <FaChevronDown size={10} />
                                   </Badge>
                                 </DropdownToggle>
                                 <DropdownMenu
-                                  className="shadow-sm py-2"
-                                  container="body"
-                                  style={{ minWidth: "160px", zIndex: 1050 }}
+                                  className='shadow-sm py-2'
+                                  container='body'
+                                  style={{ minWidth: '160px', zIndex: 1050 }}
                                 >
                                   {statusOptions.map((option) => {
                                     const isActive =
@@ -732,7 +732,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                     const colorClass =
                                       statusColorMap[
                                         option.value as TicketStatus
-                                      ] || "secondary";
+                                      ] || 'secondary';
 
                                     return (
                                       <DropdownItem
@@ -743,23 +743,23 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                             option.value,
                                           )
                                         }
-                                        className="d-flex align-items-center gap-3 px-3 py-2"
+                                        className='d-flex align-items-center gap-3 px-3 py-2'
                                         active={isActive}
                                       >
                                         <span
                                           className={`rounded-circle bg-${colorClass}`}
                                           style={{
-                                            width: "8px",
-                                            height: "8px",
+                                            width: '8px',
+                                            height: '8px',
                                           }}
                                         />
                                         <span
-                                          className={isActive ? "fw-bold" : ""}
+                                          className={isActive ? 'fw-bold' : ''}
                                         >
                                           {option.label}
                                         </span>
                                         {isActive && (
-                                          <span className="ms-auto">
+                                          <span className='ms-auto'>
                                             <FaCheck />
                                           </span>
                                         )}
@@ -773,20 +773,21 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                 color={
                                   statusColorMap[
                                     ticket?.status as TicketStatus
-                                  ] ?? "dark"
+                                  ] ?? 'dark'
                                 }
-                                className="d-flex justify-content-center align-items-center gap-1"
                               >
-                                {renderStatusIcon(
-                                  ticket?.status as TicketStatus,
-                                )}{" "}
-                                <span style={{ marginTop: "2.5px" }}>
+                                <span>
+                                  {renderStatusIcon(
+                                    ticket?.status as TicketStatus,
+                                  )}
+                                </span>{' '}
+                                <span>
                                   {formatChoiceFieldValue(ticket?.status)}
                                 </span>
                               </Badge>
                             )
                           ) : (
-                            <small className="text-muted">Not Found</small>
+                            <small className='text-muted'>Not Found</small>
                           )}
                         </td>
 
@@ -797,13 +798,13 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                 color={
                                   priorityColorMap[
                                     ticket?.priority as Priority
-                                  ] ?? "dark"
+                                  ] ?? 'dark'
                                 }
                               >
                                 {formatChoiceFieldValue(ticket?.priority)}
                               </Badge>
                             ) : (
-                              <small className="text-text-muted">
+                              <small className='text-text-muted'>
                                 Not Founds
                               </small>
                             )}
@@ -813,21 +814,21 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                           {ticket.files.length > 0 ? (
                             <div>{ticket.files.length} file(s)</div>
                           ) : (
-                            <span className="text-muted">No files</span>
+                            <span className='text-muted'>No files</span>
                           )}
                         </td>
-                        {session?.user?.role === "SUPER_ADMIN" && (
+                        {session?.user?.role === 'SUPER_ADMIN' && (
                           <>
-                            <td className="text-truncate">
+                            <td className='text-truncate'>
                               {ticket.network || (
-                                <small className="text-muted">
+                                <small className='text-muted'>
                                   Not Specified
                                 </small>
                               )}
                             </td>
-                            <td className="text-truncate">
+                            <td className='text-truncate'>
                               {ticket.organisation || (
-                                <small className="text-muted">
+                                <small className='text-muted'>
                                   Not Specified
                                 </small>
                               )}
@@ -835,12 +836,12 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                           </>
                         )}
                         <td>
-                          <p className="m-0">
-                            {ticket.created_by?.name || "Unknown User"}
+                          <p className='m-0'>
+                            {ticket.created_by?.name || 'Unknown User'}
                           </p>
                           <p
-                            className="m-0 opacity-75"
-                            style={{ fontSize: "9px" }}
+                            className='m-0 opacity-75'
+                            style={{ fontSize: '9px' }}
                           >
                             {ticket.created_by?.email}
                           </p>
@@ -848,27 +849,27 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         <td>{formatDateAndTime(ticket.created_at)}</td>
 
                         <td>
-                          <div className="d-flex justify-content-center gap-2 align-items-center">
+                          <div className='d-flex justify-content-center gap-2 align-items-center'>
                             <Button
-                              color="secondary"
-                              size="sm"
-                              title="View Ticket"
+                              color='secondary'
+                              size='sm'
+                              title='View Ticket'
                               disabled={
-                                session?.user?.role !== "SUPER_ADMIN" &&
-                                ticket?.status === "CLOSED"
+                                session?.user?.role !== 'SUPER_ADMIN' &&
+                                ticket?.status === 'CLOSED'
                               }
                               onClick={() => openUpdateModal(ticket)}
                             >
-                              <i className="icon-pencil-alt"></i>
+                              <i className='icon-pencil-alt'></i>
                             </Button>
                             <Button
-                              color="danger"
-                              size="sm"
-                              title="Mark as Resolved"
+                              color='danger'
+                              size='sm'
+                              title='Mark as Resolved'
                               disabled={ticket.is_resolved}
                               onClick={() => openDeleteModal(ticket)}
                             >
-                              <i className="icon-trash"></i>
+                              <i className='icon-trash'></i>
                             </Button>
                           </div>
                         </td>
@@ -876,7 +877,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={12} className="text-center">
+                      <td colSpan={12} className='text-center'>
                         No support tickets available.
                       </td>
                     </tr>
@@ -886,22 +887,22 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
             </Row>
 
             <Row>
-              <div className="d-flex justify-content-between align-items-center p-3">
-                <div className="px-2">
-                  <p className="text-primary">
-                    Showing{" "}
+              <div className='d-flex justify-content-between align-items-center p-3'>
+                <div className='px-2'>
+                  <p className='text-primary'>
+                    Showing{' '}
                     {totalCount === 0
-                      ? "0"
-                      : (currentPage - 1) * ticketsPerPage + 1}{" "}
-                    to{" "}
+                      ? '0'
+                      : (currentPage - 1) * ticketsPerPage + 1}{' '}
+                    to{' '}
                     {tickets.length === 0
                       ? 0
                       : (currentPage - 1) * ticketsPerPage +
-                        tickets.length}{" "}
+                        tickets.length}{' '}
                     of {totalCount} Tickets
                   </p>
                 </div>
-                <Pagination className="d-flex justify-content-end p-2">
+                <Pagination className='d-flex justify-content-end p-2'>
                   <PaginationItem disabled={currentPage === 1}>
                     <PaginationLink first onClick={() => setCurrentPage(1)} />
                   </PaginationItem>
