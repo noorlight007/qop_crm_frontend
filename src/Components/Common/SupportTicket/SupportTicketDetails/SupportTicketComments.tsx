@@ -52,6 +52,7 @@ const SupportTicketComments: React.FC = () => {
   const [deleteComment, { isLoading: isDeleteLoading }] =
     useDeleteSupportTicketCommentMutation();
 
+  // Comment state
   const [newComment, setNewComment] = useState('');
   const [replyTo, setReplyTo] = useState<number | null>(null);
   const [replyText, setReplyText] = useState<{ [key: number]: string }>({});
@@ -62,14 +63,22 @@ const SupportTicketComments: React.FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
 
+  // Reply edit/delete state
+  const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
+  const [editReplyText, setEditReplyText] = useState<{ [key: string]: string }>(
+    {},
+  );
+  const [deleteReplyModalOpen, setDeleteReplyModalOpen] = useState(false);
+  const [replyToDelete, setReplyToDelete] = useState<string | null>(null);
+
   const isLocked =
     session?.user?.role !== 'SUPER_ADMIN' && ticketDetails?.status === 'CLOSED';
 
+  // ─── File handlers ───────────────────────────────────────────────────────────
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isLocked) return;
-    if (e.target.files) {
-      setSelectedFiles(Array.from(e.target.files));
-    }
+    if (e.target.files) setSelectedFiles(Array.from(e.target.files));
   };
 
   const handleReplyFileSelect = (
@@ -98,6 +107,8 @@ const SupportTicketComments: React.FC = () => {
     }));
   };
 
+  // ─── Comment handlers ─────────────────────────────────────────────────────────
+
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLocked) {
@@ -112,10 +123,7 @@ const SupportTicketComments: React.FC = () => {
     const formData = new FormData();
     formData.append('ticket_alias', supportticketalias as string);
     formData.append('message', newComment);
-
-    selectedFiles.forEach((file) => {
-      formData.append('upload_files', file);
-    });
+    selectedFiles.forEach((file) => formData.append('upload_files', file));
 
     try {
       await makeComment({
@@ -146,11 +154,8 @@ const SupportTicketComments: React.FC = () => {
     formData.append('ticket_alias', supportticketalias as string);
     formData.append('message', replyMessage);
     formData.append('parent', commentId.toString());
-
     const files = replyFiles[commentId] || [];
-    files.forEach((file) => {
-      formData.append('upload_files', file);
-    });
+    files.forEach((file) => formData.append('upload_files', file));
 
     try {
       await makeReply({
@@ -183,9 +188,7 @@ const SupportTicketComments: React.FC = () => {
       await updateComment({
         ticket_alias: supportticketalias as string,
         alias: commentAlias,
-        payload: {
-          message: editedMessage,
-        },
+        payload: { message: editedMessage },
       }).unwrap();
       setEditingCommentId(null);
       setEditText((prev) => ({ ...prev, [commentAlias]: '' }));
@@ -218,9 +221,63 @@ const SupportTicketComments: React.FC = () => {
     }
   };
 
-  const getFileNameFromUrl = (url: string) => {
-    return url.split('/').pop() || 'Unknown file';
+  // ─── Reply edit/delete handlers ───────────────────────────────────────────────
+
+  const handleEditReply = (reply: SupportTicketCommentReply) => {
+    setEditingReplyId(reply.alias);
+    setEditReplyText((prev) => ({ ...prev, [reply.alias]: reply.message }));
   };
+
+  const handleSaveEditReply = async (replyAlias: string) => {
+    const editedMessage = editReplyText[replyAlias];
+    if (!editedMessage?.trim()) {
+      toast.warning('Please enter a reply');
+      return;
+    }
+
+    try {
+      await updateComment({
+        ticket_alias: supportticketalias as string,
+        alias: replyAlias,
+        payload: { message: editedMessage },
+      }).unwrap();
+      setEditingReplyId(null);
+      setEditReplyText((prev) => ({ ...prev, [replyAlias]: '' }));
+      toast.success('Reply updated successfully');
+    } catch (error) {
+      console.error('Failed to update reply:', error);
+      toast.error('Failed to update reply');
+    }
+  };
+
+  const handleDeleteReply = (replyAlias: string) => {
+    setReplyToDelete(replyAlias);
+    setDeleteReplyModalOpen(true);
+  };
+
+  const confirmDeleteReply = async () => {
+    if (!replyToDelete) return;
+
+    try {
+      await deleteComment({
+        ticket_alias: supportticketalias as string,
+        alias: replyToDelete,
+      }).unwrap();
+      toast.success('Reply deleted successfully');
+      setDeleteReplyModalOpen(false);
+      setReplyToDelete(null);
+    } catch (error) {
+      console.error('Failed to delete reply:', error);
+      toast.error('Failed to delete reply');
+    }
+  };
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+  const getFileNameFromUrl = (url: string) =>
+    url.split('/').pop() || 'Unknown file';
+
+  // ─── Render reply ─────────────────────────────────────────────────────────────
 
   const renderReply = (reply: SupportTicketCommentReply, depth: number = 0) => (
     <div
@@ -245,36 +302,127 @@ const SupportTicketComments: React.FC = () => {
             </div>
           )}
         </div>
+
         <div className='flex-grow-1'>
           <div className='d-flex align-items-center gap-2 mb-1'>
             <strong className='text-dark'>{reply.author.name}</strong>
-
             <small className='text-muted'>
               {formatDateAndTime(reply.created_at)}
             </small>
           </div>
-          <p className='mb-2' style={{ whiteSpace: 'pre-wrap' }}>
-            {reply.message}
-          </p>
-          {reply.files && reply.files.length > 0 && (
-            <div className='mb-2'>
-              {reply.files.map((file) => (
-                <a
-                  key={file.alias}
-                  href={file.file}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
-                  style={{ fontSize: '0.875rem' }}
+
+          {/* Edit form or message */}
+          {editingReplyId === reply.alias ? (
+            <Form
+              className='mt-2'
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSaveEditReply(reply.alias);
+              }}
+            >
+              <Input
+                type='textarea'
+                rows={3}
+                value={editReplyText[reply.alias] || ''}
+                disabled={isUpdateLoading}
+                onChange={(e) =>
+                  setEditReplyText((prev) => ({
+                    ...prev,
+                    [reply.alias]: e.target.value,
+                  }))
+                }
+                className='mb-2'
+              />
+              <div className='d-flex gap-2'>
+                <Button
+                  color='primary'
+                  size='sm'
+                  type='submit'
+                  disabled={
+                    isUpdateLoading || !editReplyText[reply.alias]?.trim()
+                  }
                 >
-                  <FaFileAlt className='text-primary' />
-                  <span>{getFileNameFromUrl(file.file)}</span>
-                </a>
-              ))}
-            </div>
+                  {isUpdateLoading ? (
+                    <FaSpinner className='fa-spin' />
+                  ) : (
+                    <>
+                      <FaPaperPlane className='me-1' />
+                      Save
+                    </>
+                  )}
+                </Button>
+                <Button
+                  color='secondary'
+                  size='sm'
+                  outline
+                  onClick={() => {
+                    setEditingReplyId(null);
+                    setEditReplyText((prev) => ({
+                      ...prev,
+                      [reply.alias]: '',
+                    }));
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </Form>
+          ) : (
+            <>
+              <p className='mb-2' style={{ whiteSpace: 'pre-wrap' }}>
+                {reply.message}
+              </p>
+
+              {reply.files && reply.files.length > 0 && (
+                <div className='mb-2'>
+                  {reply.files.map((file) => (
+                    <a
+                      key={file.alias}
+                      href={file.file}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
+                      style={{ fontSize: '0.875rem' }}
+                    >
+                      <FaFileAlt className='text-primary' />
+                      <span>{getFileNameFromUrl(file.file)}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {/* Edit / Delete actions — visible only to author or SUPER_ADMIN */}
+              {(session?.user?.id === reply.author.id ||
+                session?.user?.role === 'SUPER_ADMIN') && (
+                <div className='d-flex gap-2 mt-1'>
+                  <Button
+                    color='link'
+                    size='sm'
+                    className='text-decoration-none p-0 text-warning'
+                    disabled={isLocked || isUpdateLoading}
+                    onClick={() => handleEditReply(reply)}
+                  >
+                    <FaEdit className='me-1' />
+                    Edit
+                  </Button>
+                  <Button
+                    color='link'
+                    size='sm'
+                    className='text-decoration-none p-0 text-danger'
+                    disabled={isLocked || isDeleteLoading}
+                    onClick={() => handleDeleteReply(reply.alias)}
+                  >
+                    <FaTrash className='me-1' />
+                    Delete
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
+
+      {/* Nested replies */}
       {reply.replies && reply.replies.length > 0 && (
         <div className='ms-3'>
           {reply.replies.map((nestedReply) =>
@@ -284,6 +432,8 @@ const SupportTicketComments: React.FC = () => {
       )}
     </div>
   );
+
+  // ─── Render comment ───────────────────────────────────────────────────────────
 
   const renderComment = (comment: SupportTicketComment) => (
     <Card key={comment.id} className='mb-3 shadow-sm'>
@@ -306,17 +456,19 @@ const SupportTicketComments: React.FC = () => {
               </div>
             )}
           </div>
+
           <div className='flex-grow-1'>
             <div className='d-flex align-items-center gap-2 mb-2'>
               <strong className='text-dark'>{comment.author.name}</strong>
-
               <small className='text-muted'>
                 {formatDateAndTime(comment.created_at)}
               </small>
             </div>
+
             <p className='mb-2' style={{ whiteSpace: 'pre-wrap' }}>
               {comment.message}
             </p>
+
             {comment.files && comment.files.length > 0 && (
               <div className='mb-3'>
                 {comment.files.map((file) => (
@@ -334,6 +486,7 @@ const SupportTicketComments: React.FC = () => {
                 ))}
               </div>
             )}
+
             <div className='d-flex gap-2'>
               <Button
                 color='link'
@@ -543,6 +696,8 @@ const SupportTicketComments: React.FC = () => {
     </Card>
   );
 
+  // ─── Loading state ────────────────────────────────────────────────────────────
+
   if (isLoading) {
     return (
       <div className='text-center py-4'>
@@ -551,6 +706,8 @@ const SupportTicketComments: React.FC = () => {
       </div>
     );
   }
+
+  // ─── Main render ──────────────────────────────────────────────────────────────
 
   return (
     <div>
@@ -663,13 +820,23 @@ const SupportTicketComments: React.FC = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Comment Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
         title='Delete Comment'
         message='Are you sure you want to delete this comment? This action cannot be undone.'
         onConfirm={confirmDeleteComment}
         onCancel={() => setDeleteModalOpen(false)}
+        isLoading={isDeleteLoading}
+      />
+
+      {/* Delete Reply Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteReplyModalOpen}
+        title='Delete Reply'
+        message='Are you sure you want to delete this reply? This action cannot be undone.'
+        onConfirm={confirmDeleteReply}
+        onCancel={() => setDeleteReplyModalOpen(false)}
         isLoading={isDeleteLoading}
       />
     </div>
