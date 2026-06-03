@@ -348,7 +348,8 @@ const SupportTicketComments: React.FC = () => {
                 <FaReply className='me-1' />
                 Reply
               </Button>
-              {session?.user?.id === comment.author.id && (
+              {(session?.user?.id === comment.author.id ||
+                session?.user?.role === 'SUPER_ADMIN') && (
                 <>
                   <Button
                     color='link'
