@@ -278,7 +278,7 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
           <Row className='mt-3 align-items-center'>
             <Col sm={6}>
               <div className='text-muted'>
-                Showing {advertiserAdsDataResults.length} entries
+                Showing {advertiserAdsDataResults.length} Ads
                 {totalCount ? ` of ${totalCount}` : ''}
               </div>
             </Col>
