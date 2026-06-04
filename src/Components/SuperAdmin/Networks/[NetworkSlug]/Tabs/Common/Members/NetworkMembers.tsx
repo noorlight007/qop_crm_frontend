@@ -550,38 +550,84 @@ const NetworkMembers: React.FC<NetworkMemberProps> = ({ role }) => {
                 </p>
               </div>
 
-              <Pagination className='d-flex'>
+              <Pagination className='d-flex justify-content-end p-2'>
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink first onClick={() => setCurrentPage(1)} />
                 </PaginationItem>
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink
                     previous
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    onClick={() => setCurrentPage(currentPage - 1)}
                   />
                 </PaginationItem>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (pageNumber) => (
-                    <PaginationItem
-                      key={pageNumber}
-                      active={pageNumber === currentPage}
-                    >
-                      <PaginationLink
-                        onClick={() => setCurrentPage(pageNumber)}
+                {totalPages <= 7 ? (
+                  Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (pageNumber) => (
+                      <PaginationItem
+                        key={pageNumber}
+                        active={pageNumber === currentPage}
                       >
-                        {pageNumber}
+                        <PaginationLink
+                          onClick={() => setCurrentPage(pageNumber)}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ),
+                  )
+                ) : (
+                  <>
+                    <PaginationItem active={currentPage === 1}>
+                      <PaginationLink onClick={() => setCurrentPage(1)}>
+                        1
                       </PaginationLink>
                     </PaginationItem>
-                  ),
+
+                    {currentPage > 3 && (
+                      <PaginationItem disabled>
+                        <PaginationLink>...</PaginationLink>
+                      </PaginationItem>
+                    )}
+
+                    {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                      .filter(
+                        (pageNumber) =>
+                          pageNumber > 1 && pageNumber < totalPages,
+                      )
+                      .map((pageNumber) => (
+                        <PaginationItem
+                          key={pageNumber}
+                          active={pageNumber === currentPage}
+                        >
+                          <PaginationLink
+                            onClick={() => setCurrentPage(pageNumber)}
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+
+                    {currentPage < totalPages - 2 && (
+                      <PaginationItem disabled>
+                        <PaginationLink>...</PaginationLink>
+                      </PaginationItem>
+                    )}
+
+                    <PaginationItem active={currentPage === totalPages}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(totalPages)}
+                      >
+                        {totalPages}
+                      </PaginationLink>
+                    </PaginationItem>
+                  </>
                 )}
 
                 <PaginationItem disabled={currentPage === totalPages}>
                   <PaginationLink
                     next
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
+                    onClick={() => setCurrentPage(currentPage + 1)}
                   />
                 </PaginationItem>
                 <PaginationItem disabled={currentPage === totalPages}>
