@@ -909,25 +909,78 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                               colSpan={
                                 session?.user?.role === 'SUPER_ADMIN' ? 10 : 8
                               }
-                              className='bg-light-primary px-4 py-3'
+                              className='bg-light px-3 pb-3 pt-0'
                             >
-                              <div className='d-flex flex-column text-start'>
-                                <div>
-                                  <strong className='text-muted small text-uppercase'>
-                                    Subject
-                                  </strong>
-                                  <p className='mb-0 mt-1'>
-                                    {ticket.subject || 'N/A'}
-                                  </p>
+                              <div className='bg-white border rounded-3 mt-3 p-3 d-flex flex-column gap-3'>
+                                {/* Subject */}
+                                <div className='d-flex align-items-start gap-3'>
+                                  <div
+                                    className='bg-primary bg-opacity-10 rounded-2 d-flex align-items-center justify-content-center flex-shrink-0'
+                                    style={{ width: '32px', height: '32px' }}
+                                  >
+                                    <i
+                                      className='fa-regular fa-bookmark text-white'
+                                      style={{ fontSize: '14px' }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <p
+                                      className='mb-0 text-uppercase text-muted fw-semibold'
+                                      style={{
+                                        fontSize: '11px',
+                                        letterSpacing: '0.05em',
+                                      }}
+                                    >
+                                      Subject
+                                    </p>
+                                    <p
+                                      className='mb-0 mt-1 fw-medium text-dark'
+                                      style={{ fontSize: '14px' }}
+                                    >
+                                      {ticket.subject || (
+                                        <span className='text-muted fw-normal'>
+                                          N/A
+                                        </span>
+                                      )}
+                                    </p>
+                                  </div>
                                 </div>
-                                <hr className='border-1 border-dark w-100' />
-                                <div>
-                                  <strong className='text-muted small text-uppercase'>
-                                    Message
-                                  </strong>
-                                  <p className='mb-0 mt-1 text-wrap'>
-                                    {ticket.message || 'N/A'}
-                                  </p>
+
+                                <hr className='my-0 w-100 text-muted opacity-25' />
+
+                                {/* Message */}
+                                <div className='d-flex align-items-start gap-3'>
+                                  <div
+                                    className='bg-success bg-opacity-10 rounded-2 d-flex align-items-center justify-content-center flex-shrink-0'
+                                    style={{ width: '32px', height: '32px' }}
+                                  >
+                                    <i
+                                      className='fa-regular fa-message text-white'
+                                      style={{ fontSize: '14px' }}
+                                    />
+                                  </div>
+                                  <div className='flex-grow-1'>
+                                    <p
+                                      className='mb-0 text-uppercase text-muted fw-semibold'
+                                      style={{
+                                        fontSize: '11px',
+                                        letterSpacing: '0.05em',
+                                      }}
+                                    >
+                                      Message
+                                    </p>
+                                    <p
+                                      className='mb-0 mt-1 text-secondary lh-base'
+                                      style={{
+                                        fontSize: '14px',
+                                        whiteSpace: 'pre-wrap',
+                                      }}
+                                    >
+                                      {ticket.message || (
+                                        <span className='text-muted'>N/A</span>
+                                      )}
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
                             </td>
