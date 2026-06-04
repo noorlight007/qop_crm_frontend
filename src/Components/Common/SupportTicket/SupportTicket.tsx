@@ -76,6 +76,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [ticketToDelete, setTicketToDelete] =
     useState<SupportTicketFormData | null>(null);
+  const [expandedTickets, setExpandedTickets] = useState<Set<string>>(
+    new Set(),
+  );
 
   const [filterIcon, setFilterIcon] = useState(false);
 
@@ -263,6 +266,14 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const renderStatusIcon = (status: TicketStatus) => {
     const Icon = statusIconMap[status];
     return <Icon />;
+  };
+
+  const toggleExpand = (ticketAlias: string) => {
+    setExpandedTickets((prev) => {
+      const next = new Set(prev);
+      next.has(ticketAlias) ? next.delete(ticketAlias) : next.add(ticketAlias);
+      return next;
+    });
   };
 
   return (
@@ -653,7 +664,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     )}
                     <th>Created By</th>
                     <th>Created At</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -667,213 +678,315 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     </tr>
                   ) : tickets.length > 0 ? (
                     tickets.map((ticket: any) => (
-                      <tr key={ticket.alias} className='text-center'>
-                        <td className='text-truncate'>
-                          <Link
-                            href={getSupportTicketUrl(
-                              ticket.alias,
-                              session?.user?.role as string,
-                              session?.user?.is_network,
-                            )}
-                            className='text_decoration_hover'
-                          >
-                            {ticket.ticket_id}
-                          </Link>
-                        </td>
-                        <td>
-                          <Badge
-                            color={
-                              ticketTypeColorMap[
-                                ticket?.ticket_type as TicketType
-                              ] ?? 'dark'
-                            }
-                          >
-                            {formatChoiceFieldValue(ticket.ticket_type)}
-                          </Badge>
-                        </td>
-                        <td>
-                          {ticket.status ? (
-                            userRole === 'SUPER_ADMIN' ? (
-                              <Dropdown
-                                isOpen={dropdownOpen[ticket.alias] || false}
-                                toggle={() => toggleDropdown(ticket.alias)}
-                              >
-                                <DropdownToggle
-                                  tag='span'
-                                  style={{ cursor: 'pointer' }}
-                                  caret={false}
+                      <React.Fragment key={ticket.alias}>
+                        <tr key={ticket.alias} className='text-center'>
+                          <td className='text-truncate'>
+                            <Link
+                              href={getSupportTicketUrl(
+                                ticket.alias,
+                                session?.user?.role as string,
+                                session?.user?.is_network,
+                              )}
+                              className='text_decoration_hover'
+                            >
+                              {ticket.ticket_id}
+                            </Link>
+                          </td>
+                          <td>
+                            <Badge
+                              color={
+                                ticketTypeColorMap[
+                                  ticket?.ticket_type as TicketType
+                                ] ?? 'dark'
+                              }
+                            >
+                              {formatChoiceFieldValue(ticket.ticket_type)}
+                            </Badge>
+                          </td>
+                          <td>
+                            {ticket.status ? (
+                              userRole === 'SUPER_ADMIN' ? (
+                                <Dropdown
+                                  isOpen={dropdownOpen[ticket.alias] || false}
+                                  toggle={() => toggleDropdown(ticket.alias)}
                                 >
-                                  <Badge
-                                    color={
-                                      statusColorMap[
-                                        ticket?.status as TicketStatus
-                                      ] ?? 'dark'
-                                    }
-                                    className='d-flex justify-content-center align-items-center gap-1 px-1'
+                                  <DropdownToggle
+                                    tag='span'
                                     style={{ cursor: 'pointer' }}
+                                    caret={false}
                                   >
+                                    <Badge
+                                      color={
+                                        statusColorMap[
+                                          ticket?.status as TicketStatus
+                                        ] ?? 'dark'
+                                      }
+                                      className='d-flex justify-content-center align-items-center gap-1 px-1'
+                                      style={{ cursor: 'pointer' }}
+                                    >
+                                      {renderStatusIcon(
+                                        ticket?.status as TicketStatus,
+                                      )}
+                                      <span style={{ marginTop: '2.5px' }}>
+                                        {formatChoiceFieldValue(ticket?.status)}
+                                      </span>
+                                      <FaChevronDown size={10} />
+                                    </Badge>
+                                  </DropdownToggle>
+                                  <DropdownMenu
+                                    className='shadow-sm py-2'
+                                    container='body'
+                                    style={{ minWidth: '160px', zIndex: 1050 }}
+                                  >
+                                    {statusOptions.map((option) => {
+                                      const isActive =
+                                        ticket.status === option.value;
+                                      const colorClass =
+                                        statusColorMap[
+                                          option.value as TicketStatus
+                                        ] || 'secondary';
+
+                                      return (
+                                        <DropdownItem
+                                          key={option.value}
+                                          onClick={() =>
+                                            handleStatusChange(
+                                              ticket.alias,
+                                              option.value,
+                                            )
+                                          }
+                                          className='d-flex align-items-center gap-3 px-3 py-2'
+                                          active={isActive}
+                                        >
+                                          <span
+                                            className={`rounded-circle bg-${colorClass}`}
+                                            style={{
+                                              width: '8px',
+                                              height: '8px',
+                                            }}
+                                          />
+                                          <span
+                                            className={
+                                              isActive ? 'fw-bold' : ''
+                                            }
+                                          >
+                                            {option.label}
+                                          </span>
+                                          {isActive && (
+                                            <span className='ms-auto'>
+                                              <FaCheck />
+                                            </span>
+                                          )}
+                                        </DropdownItem>
+                                      );
+                                    })}
+                                  </DropdownMenu>
+                                </Dropdown>
+                              ) : (
+                                <Badge
+                                  color={
+                                    statusColorMap[
+                                      ticket?.status as TicketStatus
+                                    ] ?? 'dark'
+                                  }
+                                >
+                                  <span>
                                     {renderStatusIcon(
                                       ticket?.status as TicketStatus,
                                     )}
-                                    <span style={{ marginTop: '2.5px' }}>
-                                      {formatChoiceFieldValue(ticket?.status)}
-                                    </span>
-                                    <FaChevronDown size={10} />
-                                  </Badge>
-                                </DropdownToggle>
-                                <DropdownMenu
-                                  className='shadow-sm py-2'
-                                  container='body'
-                                  style={{ minWidth: '160px', zIndex: 1050 }}
-                                >
-                                  {statusOptions.map((option) => {
-                                    const isActive =
-                                      ticket.status === option.value;
-                                    const colorClass =
-                                      statusColorMap[
-                                        option.value as TicketStatus
-                                      ] || 'secondary';
-
-                                    return (
-                                      <DropdownItem
-                                        key={option.value}
-                                        onClick={() =>
-                                          handleStatusChange(
-                                            ticket.alias,
-                                            option.value,
-                                          )
-                                        }
-                                        className='d-flex align-items-center gap-3 px-3 py-2'
-                                        active={isActive}
-                                      >
-                                        <span
-                                          className={`rounded-circle bg-${colorClass}`}
-                                          style={{
-                                            width: '8px',
-                                            height: '8px',
-                                          }}
-                                        />
-                                        <span
-                                          className={isActive ? 'fw-bold' : ''}
-                                        >
-                                          {option.label}
-                                        </span>
-                                        {isActive && (
-                                          <span className='ms-auto'>
-                                            <FaCheck />
-                                          </span>
-                                        )}
-                                      </DropdownItem>
-                                    );
-                                  })}
-                                </DropdownMenu>
-                              </Dropdown>
+                                  </span>{' '}
+                                  <span>
+                                    {formatChoiceFieldValue(ticket?.status)}
+                                  </span>
+                                </Badge>
+                              )
                             ) : (
-                              <Badge
-                                color={
-                                  statusColorMap[
-                                    ticket?.status as TicketStatus
-                                  ] ?? 'dark'
-                                }
-                              >
-                                <span>
-                                  {renderStatusIcon(
-                                    ticket?.status as TicketStatus,
-                                  )}
-                                </span>{' '}
-                                <span>
-                                  {formatChoiceFieldValue(ticket?.status)}
-                                </span>
-                              </Badge>
-                            )
-                          ) : (
-                            <small className='text-muted'>Not Found</small>
-                          )}
-                        </td>
-
-                        <td>
-                          <span>
-                            {ticket.priority ? (
-                              <Badge
-                                color={
-                                  priorityColorMap[
-                                    ticket?.priority as Priority
-                                  ] ?? 'dark'
-                                }
-                              >
-                                {formatChoiceFieldValue(ticket?.priority)}
-                              </Badge>
-                            ) : (
-                              <small className='text-text-muted'>
-                                Not Founds
-                              </small>
+                              <small className='text-muted'>Not Found</small>
                             )}
-                          </span>
-                        </td>
-                        <td>
-                          {ticket.files.length > 0 ? (
-                            <div>{ticket.files.length} file(s)</div>
-                          ) : (
-                            <span className='text-muted'>No files</span>
-                          )}
-                        </td>
-                        {session?.user?.role === 'SUPER_ADMIN' && (
-                          <>
-                            <td className='text-truncate'>
-                              {ticket.network || (
-                                <small className='text-muted'>
-                                  Not Specified
-                                </small>
-                              )}
-                            </td>
-                            <td className='text-truncate'>
-                              {ticket.organisation || (
-                                <small className='text-muted'>
-                                  Not Specified
-                                </small>
-                              )}
-                            </td>
-                          </>
-                        )}
-                        <td>
-                          <p className='m-0'>
-                            {ticket.created_by?.name || 'Unknown User'}
-                          </p>
-                          <p
-                            className='m-0 opacity-75'
-                            style={{ fontSize: '9px' }}
-                          >
-                            {ticket.created_by?.email}
-                          </p>
-                        </td>
-                        <td>{formatDateAndTime(ticket.created_at)}</td>
+                          </td>
 
-                        <td>
-                          <div className='d-flex justify-content-center gap-2 align-items-center'>
-                            <Button
-                              color='secondary'
-                              size='sm'
-                              title='View Ticket'
-                              disabled={
-                                session?.user?.role !== 'SUPER_ADMIN' &&
-                                ticket?.status === 'CLOSED'
+                          <td>
+                            <span>
+                              {ticket.priority ? (
+                                <Badge
+                                  color={
+                                    priorityColorMap[
+                                      ticket?.priority as Priority
+                                    ] ?? 'dark'
+                                  }
+                                >
+                                  {formatChoiceFieldValue(ticket?.priority)}
+                                </Badge>
+                              ) : (
+                                <small className='text-text-muted'>
+                                  Not Founds
+                                </small>
+                              )}
+                            </span>
+                          </td>
+                          <td>
+                            {ticket.files.length > 0 ? (
+                              <div>{ticket.files.length} file(s)</div>
+                            ) : (
+                              <span className='text-muted'>No files</span>
+                            )}
+                          </td>
+                          {session?.user?.role === 'SUPER_ADMIN' && (
+                            <>
+                              <td className='text-truncate'>
+                                {ticket.network || (
+                                  <small className='text-muted'>
+                                    Not Specified
+                                  </small>
+                                )}
+                              </td>
+                              <td className='text-truncate'>
+                                {ticket.organisation || (
+                                  <small className='text-muted'>
+                                    Not Specified
+                                  </small>
+                                )}
+                              </td>
+                            </>
+                          )}
+                          <td>
+                            <p className='m-0'>
+                              {ticket.created_by?.name || 'Unknown User'}
+                            </p>
+                            <p
+                              className='m-0 opacity-75'
+                              style={{ fontSize: '9px' }}
+                            >
+                              {ticket.created_by?.email}
+                            </p>
+                          </td>
+                          <td>{formatDateAndTime(ticket.created_at)}</td>
+
+                          <td>
+                            <div className='d-flex justify-content-center gap-2 align-items-center'>
+                              <Button
+                                color='primary'
+                                size='sm'
+                                title='View Details'
+                                onClick={() => toggleExpand(ticket.alias)}
+                              >
+                                <FaChevronDown
+                                  style={{
+                                    transition: 'transform 0.2s',
+                                    transform: expandedTickets.has(ticket.alias)
+                                      ? 'rotate(180deg)'
+                                      : 'rotate(0deg)',
+                                  }}
+                                />
+                              </Button>
+                              <Button
+                                color='secondary'
+                                size='sm'
+                                title='View Ticket'
+                                disabled={
+                                  session?.user?.role !== 'SUPER_ADMIN' &&
+                                  ticket?.status === 'CLOSED'
+                                }
+                                onClick={() => openUpdateModal(ticket)}
+                              >
+                                <i className='icon-pencil-alt'></i>
+                              </Button>
+                              <Button
+                                color='danger'
+                                size='sm'
+                                title='Mark as Resolved'
+                                disabled={ticket.is_resolved}
+                                onClick={() => openDeleteModal(ticket)}
+                              >
+                                <i className='icon-trash'></i>
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                        {expandedTickets.has(ticket.alias) && (
+                          <tr>
+                            <td
+                              colSpan={
+                                session?.user?.role === 'SUPER_ADMIN' ? 10 : 8
                               }
-                              onClick={() => openUpdateModal(ticket)}
+                              className='bg-light px-3 pb-3 pt-0'
                             >
-                              <i className='icon-pencil-alt'></i>
-                            </Button>
-                            <Button
-                              color='danger'
-                              size='sm'
-                              title='Mark as Resolved'
-                              disabled={ticket.is_resolved}
-                              onClick={() => openDeleteModal(ticket)}
-                            >
-                              <i className='icon-trash'></i>
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
+                              <div className='bg-white border rounded-3 mt-3 p-3 d-flex flex-column gap-3'>
+                                {/* Subject */}
+                                <div className='d-flex align-items-start gap-3'>
+                                  <div
+                                    className='bg-primary bg-opacity-10 rounded-2 d-flex align-items-center justify-content-center flex-shrink-0'
+                                    style={{ width: '32px', height: '32px' }}
+                                  >
+                                    <i
+                                      className='fa-regular fa-bookmark text-white'
+                                      style={{ fontSize: '14px' }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <p
+                                      className='mb-0 text-uppercase text-muted fw-semibold'
+                                      style={{
+                                        fontSize: '11px',
+                                        letterSpacing: '0.05em',
+                                      }}
+                                    >
+                                      Subject
+                                    </p>
+                                    <p
+                                      className='mb-0 mt-1 fw-medium text-dark'
+                                      style={{ fontSize: '14px' }}
+                                    >
+                                      {ticket.subject || (
+                                        <span className='text-muted fw-normal'>
+                                          N/A
+                                        </span>
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <hr className='my-0 w-100 text-muted opacity-25' />
+
+                                {/* Message */}
+                                <div className='d-flex align-items-start gap-3'>
+                                  <div
+                                    className='bg-success bg-opacity-10 rounded-2 d-flex align-items-center justify-content-center flex-shrink-0'
+                                    style={{ width: '32px', height: '32px' }}
+                                  >
+                                    <i
+                                      className='fa-regular fa-message text-white'
+                                      style={{ fontSize: '14px' }}
+                                    />
+                                  </div>
+                                  <div className='flex-grow-1'>
+                                    <p
+                                      className='mb-0 text-uppercase text-muted fw-semibold'
+                                      style={{
+                                        fontSize: '11px',
+                                        letterSpacing: '0.05em',
+                                      }}
+                                    >
+                                      Message
+                                    </p>
+                                    <p
+                                      className='mb-0 mt-1 text-secondary lh-base'
+                                      style={{
+                                        fontSize: '14px',
+                                        whiteSpace: 'pre-wrap',
+                                      }}
+                                    >
+                                      {ticket.message || (
+                                        <span className='text-muted'>N/A</span>
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     ))
                   ) : (
                     <tr>
