@@ -8,6 +8,7 @@ import { formatDateAndTime } from '@/utils/dateAndTimeFormatter';
 import formatChoiceFieldValue from '@/utils/formatters';
 import { useEffect, useState } from 'react';
 import { Edit, PlusCircle, Trash } from 'react-feather';
+import { FaChevronDown } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import {
   Button,
@@ -15,6 +16,10 @@ import {
   CardBody,
   CardHeader,
   Col,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -25,6 +30,7 @@ import Swal from 'sweetalert2';
 import AddNewAdModal from '../Modals/AddNewAdModal';
 import DeleteAdModal from '../Modals/DeleteAdModal';
 import EditAdModal from '../Modals/EditAdModal';
+import './AdvertiserAds.css';
 
 const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   advertiserAdsData,
@@ -42,6 +48,9 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
   const [selectedAd, setSelectedAd] = useState<AdvertiserAdsData | null>(null);
   const [editAdStatus, { isLoading: isStatusUpdating }] =
     useEditAdvertiserAdMutation();
+  const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>(
+    {},
+  );
 
   const advertiserAdsDataResults = Array.isArray(advertiserAdsData)
     ? advertiserAdsData
@@ -114,6 +123,10 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
 
   const isPaginationDisabled = advertiserAdsLoading || totalPages <= 1;
 
+  const toggleDropdown = (id: string) => {
+    setOpenDropdowns((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
   return (
     <>
       <Card>
@@ -182,15 +195,50 @@ const AdvertiserAds: React.FC<AdvertiserAdsProps> = ({
                       {formatChoiceFieldValue(ad.placement)}
                     </td>
                     <td>
-                      <Button
-                        color={ad.is_active ? 'success' : 'danger'}
-                        size='sm'
-                        outline={!ad.is_active}
-                        onClick={() => handleToggleActive(ad)}
-                        disabled={isStatusUpdating}
+                      <Dropdown
+                        isOpen={!!openDropdowns[ad.alias]}
+                        toggle={() => toggleDropdown(ad.alias)}
                       >
-                        {ad.is_active ? 'Active' : 'Inactive'}
-                      </Button>
+                        <DropdownToggle
+                          tag='button'
+                          disabled={isStatusUpdating}
+                          className={`btn d-inline-flex align-items-center justify-content-between gap-2 px-3 py-1 border-0 rounded-pill fw-medium small ${
+                            ad.is_active ? 'btn-success' : 'btn-danger'
+                          }`}
+                        >
+                          <span className='d-flex align-items-center gap-2'>
+                            <span className='status-dot bg-white bg-opacity-75 rounded-circle' />
+                            {ad.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                          <FaChevronDown />
+                        </DropdownToggle>
+
+                        <DropdownMenu
+                          className='border rounded-3 overflow-hidden py-1 shadow-sm mt-1'
+                          style={{ minWidth: '130px' }}
+                        >
+                          <DropdownItem
+                            disabled={ad.is_active}
+                            onClick={() =>
+                              !ad.is_active && handleToggleActive(ad)
+                            }
+                            className='d-flex align-items-center gap-2 px-3 py-2 small'
+                          >
+                            <span className='status-dot bg-success rounded-circle' />
+                            Active
+                          </DropdownItem>
+                          <DropdownItem
+                            disabled={!ad.is_active}
+                            onClick={() =>
+                              ad.is_active && handleToggleActive(ad)
+                            }
+                            className='d-flex align-items-center gap-2 px-3 py-2 small'
+                          >
+                            <span className='status-dot bg-danger rounded-circle' />
+                            Inactive
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
                     </td>
                     <td>{formatDateAndTime(ad.start_date)}</td>
                     <td>{formatDateAndTime(ad.end_date)}</td>
