@@ -63,6 +63,21 @@ export const SupportTicketApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["SupportTicket"],
     }),
+    updateSupportTicketComment: builder.mutation({
+      query: ({ payload, ticket_alias, alias }) => ({
+        url: `/api/support-ticket/${ticket_alias}/comments/${alias}/`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["SupportTicket"],
+    }),
+    deleteSupportTicketComment: builder.mutation({
+      query: ({ ticket_alias, alias }) => ({
+        url: `/api/support-ticket/${ticket_alias}/comments/${alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["SupportTicket"],
+    }),
   }),
 });
 
@@ -75,4 +90,6 @@ export const {
   useFetchSupportTicketCommentsQuery,
   useMakeSupportTicketCommentMutation,
   useMakeSupportTicketCommentReplyMutation,
+  useUpdateSupportTicketCommentMutation,
+  useDeleteSupportTicketCommentMutation,
 } = SupportTicketApi;
