@@ -9,11 +9,11 @@ import {
   portableWhyOptionTemplates,
   protectionOptionTemplates,
   rateSwitchOptions,
-} from "@/Data/Cases/SuitabilityData";
-import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { RecommendationLetterProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
-import Image from "next/image";
-import React, { useState } from "react";
+} from '@/Data/Cases/SuitabilityData';
+import { useGetPublicAppranceQuery } from '@/Redux/Reducers/Appearance/AppearanceApi';
+import { RecommendationLetterProps } from '@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes';
+import Image from 'next/image';
+import React, { useState } from 'react';
 import {
   Button,
   Col,
@@ -24,17 +24,17 @@ import {
   Input,
   Row,
   Table,
-} from "reactstrap";
+} from 'reactstrap';
 
 /* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
-  <p className="suitability-advisor-note rounded">{children}</p>
+  <p className='suitability-advisor-note rounded'>{children}</p>
 );
 
-const Divider = () => <hr className="my-4" />;
+const Divider = () => <hr className='my-4' />;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">{children}</h6>
+  <h6 className='suitability-section-heading'>{children}</h6>
 );
 
 const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
@@ -43,17 +43,17 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   formValues,
   onFormChange,
 }) => {
-  const blue = "#1565c0";
+  const blue = '#1565c0';
   const s = suitability;
 
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
 
   // ── Read-only display values from API ──
-  const advisorName = s?.adviser?.name ?? "";
-  const advisorJobTitle = s?.adviser?.user_type ?? "";
-  const advisorEmail = s?.adviser?.email ?? "";
-  const advisorPhone = s?.adviser?.phone ?? "";
-  const companyName = s?.adviser?.company ?? "";
+  const advisorName = s?.adviser?.name ?? '';
+  const advisorJobTitle = s?.adviser?.user_type ?? '';
+  const advisorEmail = s?.adviser?.email ?? '';
+  const advisorPhone = s?.adviser?.phone ?? '';
+  const companyName = s?.adviser?.company ?? '';
   const companyAddress =
     [
       s?.adviser?.address?.house_name_or_number,
@@ -61,39 +61,41 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       s?.adviser?.address?.postcode,
     ]
       .filter(Boolean)
-      .join("\n") || "";
+      .join('\n') || '';
 
   const clientName = s?.applicant?.name;
   const jointApplicantNames = s?.joint_applicants || [];
   const allApplicantNames = [clientName, ...jointApplicantNames]
     .filter(Boolean)
-    .join(", ")
-    .replace(/,([^,]*)$/, " &$1");
+    .join(', ')
+    .replace(/,([^,]*)$/, ' &$1');
 
-  const lender = s?.loan_details?.lender ?? "";
-  const initialRate = s?.loan_details?.initial_interest_rate ?? "";
-  const rateType = s?.loan_details?.interest_rate_type ?? "";
-  const repaymentMethod = s?.loan_details?.repayment_method ?? "";
-  const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
-  const productTerm = s?.loan_details?.product_term ?? "";
-  const mortgageType = s?.loan_details?.mortgage_type ?? "";
-  const interestRateType = s?.loan_details?.interest_rate_type ?? "";
+  const lender = s?.loan_details?.lender ?? '';
+  const initialRate = s?.loan_details?.initial_interest_rate ?? '';
+  const rateType = s?.loan_details?.interest_rate_type ?? '';
+  const repaymentMethod = s?.loan_details?.repayment_method ?? '';
+  const mortgageTerm = s?.loan_details?.mortgage_term ?? '';
+  const productTerm = s?.loan_details?.product_term ?? '';
+  const mortgageType = s?.loan_details?.mortgage_type ?? '';
+  const interestRateType = s?.loan_details?.interest_rate_type ?? '';
   const dealEndDate =
-    (s?.loan_details?.initial_interest_rate ?? "").match(
+    (s?.loan_details?.initial_interest_rate ?? '').match(
       /\d{2}\/\d{2}\/\d{4}/,
-    )?.[0] ?? "";
+    )?.[0] ?? '';
 
-  const mortgageAmount = s?.loan_details?.mortgage_amount ?? "";
-  const monthlyRepayment = s?.loan_details?.monthly_repayment ?? "";
+  const mortgageAmount = s?.loan_details?.mortgage_amount ?? '';
+  const monthlyRepayment = s?.loan_details?.monthly_repayment ?? '';
 
   const { house_number_or_name, city, post_code } = s?.applicant ?? {};
   const clientAddress = [house_number_or_name, city, post_code]
     .filter(Boolean)
-    .join("\n");
+    .join('\n');
   const propertyAddress =
-  s?.property?.house_name_or_number && s?.property?.city && s?.property?.postcode
-    ? `${s?.property?.house_name_or_number}, ${s?.property?.city}, ${s?.property?.postcode}`
-    : "Not Available";
+    s?.property_details?.house_name_or_number &&
+    s?.property_details?.city &&
+    s?.property_details?.postcode
+      ? `${s?.property_details?.house_name_or_number}, ${s?.property_details?.city}, ${s?.property_details?.postcode}`
+      : 'Not Available';
 
   // ══════════════════════════════════════════════════════════
   // LOCAL UI-ONLY STATES (dropdown open/close + edit toggles)
@@ -125,17 +127,17 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const [isAdditionalRecipientsEditing, setIsAdditionalRecipientsEditing] =
     useState(false);
   const [additionalRecipientsDraft, setAdditionalRecipientsDraft] =
-    useState("");
+    useState('');
   const [isRepaymentMethodEditing, setIsRepaymentMethodEditing] =
     useState(false);
-  const [repaymentMethodDraft, setRepaymentMethodDraft] = useState("");
+  const [repaymentMethodDraft, setRepaymentMethodDraft] = useState('');
   const [isArrangementFeeNoteEditing, setIsArrangementFeeNoteEditing] =
     useState(false);
-  const [arrangementFeeNoteDraft, setArrangementFeeNoteDraft] = useState("");
+  const [arrangementFeeNoteDraft, setArrangementFeeNoteDraft] = useState('');
   const [isErcWhyNoteEditing, setIsErcWhyNoteEditing] = useState(false);
-  const [ercWhyNoteDraft, setErcWhyNoteDraft] = useState("");
+  const [ercWhyNoteDraft, setErcWhyNoteDraft] = useState('');
   const [isOverpaymentEditing, setIsOverpaymentEditing] = useState(false);
-  const [overpaymentDraft, setOverpaymentDraft] = useState("");
+  const [overpaymentDraft, setOverpaymentDraft] = useState('');
 
   // ══════════════════════════════════════════════════════════
   // LOCAL DRAFT STATES
@@ -143,47 +145,47 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   // On Save → pushed to parent via onFormChange.
   // On Cancel → reset back to formValues (the last saved value).
   // ══════════════════════════════════════════════════════════
-  const [lenderDraft, setLenderDraft] = useState("");
-  const [interestRateDraft, setInterestRateDraft] = useState("");
-  const [initialInterestRateDraft, setInitialInterestRateDraft] = useState("");
-  const [mortgageTermDraft, setMortgageTermDraft] = useState("");
-  const [portableWhyDraft, setPortableWhyDraft] = useState("");
-  const [protectionDraft, setProtectionDraft] = useState("");
+  const [lenderDraft, setLenderDraft] = useState('');
+  const [interestRateDraft, setInterestRateDraft] = useState('');
+  const [initialInterestRateDraft, setInitialInterestRateDraft] = useState('');
+  const [mortgageTermDraft, setMortgageTermDraft] = useState('');
+  const [portableWhyDraft, setPortableWhyDraft] = useState('');
+  const [protectionDraft, setProtectionDraft] = useState('');
   const [arrangementFeeDraft, setArrangementFeeDraft] = useState<string | null>(
     null,
   );
-  const [maxErcDraft, setMaxErcDraft] = useState("");
+  const [maxErcDraft, setMaxErcDraft] = useState('');
 
   // ══════════════════════════════════════════════════════════
   // DROPDOWN OPTION LISTS
   // ══════════════════════════════════════════════════════════
   const mortgageOptions: { value: string; label: React.ReactNode }[] = [
     {
-      value: "HOME_IMPROVEMENTS",
+      value: 'HOME_IMPROVEMENTS',
       label:
-        "Your mortgage includes additional funds required for the home improvements detailed at the beginning of this letter.",
+        'Your mortgage includes additional funds required for the home improvements detailed at the beginning of this letter.',
     },
     {
-      value: "DEBT_REPAYMENT",
+      value: 'DEBT_REPAYMENT',
       label:
         "Your mortgage includes additional funds to repay debts. I have explained the disadvantages to adding debts to your mortgage in the 'important information' section of this letter. Please read this carefully.",
     },
     {
-      value: "OTHER_REASON",
+      value: 'OTHER_REASON',
       label:
-        "Your mortgage includes additional funds as per the reasons stated at the beginning of this letter.",
+        'Your mortgage includes additional funds as per the reasons stated at the beginning of this letter.',
     },
     {
-      value: "EQUAL_OUTSTANDING",
+      value: 'EQUAL_OUTSTANDING',
       label:
-        "The mortgage amount I am recommending is equal to what is currently outstanding on the mortgage.",
+        'The mortgage amount I am recommending is equal to what is currently outstanding on the mortgage.',
     },
     {
-      value: "LESS_THAN_OUTSTANDING",
+      value: 'LESS_THAN_OUTSTANDING',
       label: (
         <>
           The mortgage amount is less than what you currently have outstanding
-          on your mortgage, this is because you are making an overpayment of{" "}
+          on your mortgage, this is because you are making an overpayment of{' '}
           <span style={{ color: blue }}>
             {formValues.mortgage_amount_overpayment || mortgageAmount}
           </span>
@@ -192,9 +194,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       ),
     },
     {
-      value: "PURCHASE_MINUS_DEPOSIT",
+      value: 'PURCHASE_MINUS_DEPOSIT',
       label:
-        "Your mortgage is equal to the purchase price of the property, minus your deposit.",
+        'Your mortgage is equal to the purchase price of the property, minus your deposit.',
     },
   ];
 
@@ -251,11 +253,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsLenderEditing(false);
   };
   const handleLenderCancel = () => {
-    setLenderDraft(formValues.lender_text ?? "");
+    setLenderDraft(formValues.lender_text ?? '');
     setIsLenderEditing(false);
   };
   const startLenderEdit = () => {
-    setLenderDraft(formValues.lender_text ?? "");
+    setLenderDraft(formValues.lender_text ?? '');
     setIsLenderEditing(true);
   };
 
@@ -264,11 +266,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsInterestRateEditing(false);
   };
   const handleInterestRateCancel = () => {
-    setInterestRateDraft(formValues.initial_interest_rate_text ?? "");
+    setInterestRateDraft(formValues.initial_interest_rate_text ?? '');
     setIsInterestRateEditing(false);
   };
   const startInterestRateEdit = () => {
-    setInterestRateDraft(formValues.initial_interest_rate_text ?? "");
+    setInterestRateDraft(formValues.initial_interest_rate_text ?? '');
     setIsInterestRateEditing(true);
   };
 
@@ -280,13 +282,13 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   };
   const handleInitialInterestRateCancel = () => {
     setInitialInterestRateDraft(
-      formValues.initial_interest_rate_deal_period_text ?? "",
+      formValues.initial_interest_rate_deal_period_text ?? '',
     );
     setIsInitialInterestRateEditing(false);
   };
   const startInitialInterestRateEdit = () => {
     setInitialInterestRateDraft(
-      formValues.initial_interest_rate_deal_period_text ?? "",
+      formValues.initial_interest_rate_deal_period_text ?? '',
     );
     setIsInitialInterestRateEditing(true);
   };
@@ -296,11 +298,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsMortgageTermEditing(false);
   };
   const handleMortgageTermCancel = () => {
-    setMortgageTermDraft(formValues.mortgage_term_text ?? "");
+    setMortgageTermDraft(formValues.mortgage_term_text ?? '');
     setIsMortgageTermEditing(false);
   };
   const startMortgageTermEdit = () => {
-    setMortgageTermDraft(formValues.mortgage_term_text ?? "");
+    setMortgageTermDraft(formValues.mortgage_term_text ?? '');
     setIsMortgageTermEditing(true);
   };
 
@@ -309,11 +311,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsPortableWhyEditing(false);
   };
   const handlePortableWhyCancel = () => {
-    setPortableWhyDraft(formValues.portability_suggestion ?? "");
+    setPortableWhyDraft(formValues.portability_suggestion ?? '');
     setIsPortableWhyEditing(false);
   };
   const startPortableWhyEdit = () => {
-    setPortableWhyDraft(formValues.portability_suggestion ?? "");
+    setPortableWhyDraft(formValues.portability_suggestion ?? '');
     setIsPortableWhyEditing(true);
   };
 
@@ -322,11 +324,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsProtectionEditing(false);
   };
   const handleProtectionCancel = () => {
-    setProtectionDraft(formValues.protection_reason ?? "");
+    setProtectionDraft(formValues.protection_reason ?? '');
     setIsProtectionEditing(false);
   };
   const startProtectionEdit = () => {
-    setProtectionDraft(formValues.protection_reason ?? "");
+    setProtectionDraft(formValues.protection_reason ?? '');
     setIsProtectionEditing(true);
   };
 
@@ -348,7 +350,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setArrangementFeeDraft(
       formValues.arrangement_fee != null
         ? String(formValues.arrangement_fee)
-        : "",
+        : '',
     );
     setIsArrangementFeeEditing(true);
   };
@@ -358,11 +360,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsMaxErcEditing(false);
   };
   const handleMaxErcCancel = () => {
-    setMaxErcDraft(formValues.max_erc ?? "");
+    setMaxErcDraft(formValues.max_erc ?? '');
     setIsMaxErcEditing(false);
   };
   const startMaxErcEdit = () => {
-    setMaxErcDraft(formValues.max_erc ?? "");
+    setMaxErcDraft(formValues.max_erc ?? '');
     setIsMaxErcEditing(true);
   };
   const handleAdditionalRecipientsSave = () => {
@@ -370,11 +372,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsAdditionalRecipientsEditing(false);
   };
   const handleAdditionalRecipientsCancel = () => {
-    setAdditionalRecipientsDraft(formValues.address ?? "");
+    setAdditionalRecipientsDraft(formValues.address ?? '');
     setIsAdditionalRecipientsEditing(false);
   };
   const startAdditionalRecipientsEdit = () => {
-    setAdditionalRecipientsDraft(formValues.address ?? "");
+    setAdditionalRecipientsDraft(formValues.address ?? '');
     setIsAdditionalRecipientsEditing(true);
   };
   const handleRepaymentMethodSave = () => {
@@ -382,11 +384,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsRepaymentMethodEditing(false);
   };
   const handleRepaymentMethodCancel = () => {
-    setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? "");
+    setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? '');
     setIsRepaymentMethodEditing(false);
   };
   const startRepaymentMethodEdit = () => {
-    setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? "");
+    setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? '');
     setIsRepaymentMethodEditing(true);
   };
 
@@ -398,13 +400,13 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   };
   const handleArrangementFeeNoteCancel = () => {
     setArrangementFeeNoteDraft(
-      formValues.arrangement_fee_why_recommended_text ?? "",
+      formValues.arrangement_fee_why_recommended_text ?? '',
     );
     setIsArrangementFeeNoteEditing(false);
   };
   const startArrangementFeeNoteEdit = () => {
     setArrangementFeeNoteDraft(
-      formValues.arrangement_fee_why_recommended_text ?? "",
+      formValues.arrangement_fee_why_recommended_text ?? '',
     );
     setIsArrangementFeeNoteEditing(true);
   };
@@ -417,13 +419,13 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   };
   const handleErcWhyNoteCancel = () => {
     setErcWhyNoteDraft(
-      formValues.early_repayment_charges_why_recommended_text ?? "",
+      formValues.early_repayment_charges_why_recommended_text ?? '',
     );
     setIsErcWhyNoteEditing(false);
   };
   const startErcWhyNoteEdit = () => {
     setErcWhyNoteDraft(
-      formValues.early_repayment_charges_why_recommended_text ?? "",
+      formValues.early_repayment_charges_why_recommended_text ?? '',
     );
     setIsErcWhyNoteEditing(true);
   };
@@ -433,11 +435,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsOverpaymentEditing(false);
   };
   const handleOverpaymentCancel = () => {
-    setOverpaymentDraft(formValues.mortgage_amount_overpayment ?? "");
+    setOverpaymentDraft(formValues.mortgage_amount_overpayment ?? '');
     setIsOverpaymentEditing(false);
   };
   const startOverpaymentEdit = () => {
-    setOverpaymentDraft(formValues.mortgage_amount_overpayment ?? "");
+    setOverpaymentDraft(formValues.mortgage_amount_overpayment ?? '');
     setIsOverpaymentEditing(true);
   };
 
@@ -449,50 +451,50 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       {/* ══════════════════════════════
           LETTERHEAD
       ══════════════════════════════ */}
-      <Row className="mb-5 d-flex align-items-start justify-content-between">
-        <Col xs="auto" className="align-self-start">
+      <Row className='mb-5 d-flex align-items-start justify-content-between'>
+        <Col xs='auto' className='align-self-start'>
           {appearanceData?.logo && (
             <Image
               width={200}
               height={70}
-              className="img-fluid for-light"
+              className='img-fluid for-light'
               src={appearanceData.logo}
-              alt="suitability page"
+              alt='suitability page'
               priority
-              style={{ width: "130px", height: "50px" }}
+              style={{ width: '130px', height: '50px' }}
             />
           )}
         </Col>
-        <Col xs={12} md={5} className="text-end">
-          <p className="mb-0 fw-bold" style={{ color: blue }}>
+        <Col xs={12} md={5} className='text-end'>
+          <p className='mb-0 fw-bold' style={{ color: blue }}>
             {advisorName}
           </p>
-          <p className="mb-0" style={{ color: blue }}>
+          <p className='mb-0' style={{ color: blue }}>
             {companyName}
           </p>
-          <p className="mb-0" style={{ whiteSpace: "pre-line", color: blue }}>
+          <p className='mb-0' style={{ whiteSpace: 'pre-line', color: blue }}>
             {companyAddress}
           </p>
-          <p className="mb-0" style={{ color: blue }}>
+          <p className='mb-0' style={{ color: blue }}>
             <a
               href={`mailto:${advisorEmail}`}
-              style={{ color: blue, textDecoration: "underline" }}
+              style={{ color: blue, textDecoration: 'underline' }}
             >
               {advisorEmail}
             </a>
           </p>
-          <p className="mb-0" style={{ color: blue }}>
+          <p className='mb-0' style={{ color: blue }}>
             {advisorPhone}
           </p>
         </Col>
       </Row>
 
-      <Row className="mb-4">
-        <Col xs={12} md={6} className="text-start">
-          <p className="mb-0 fw-semibold" style={{ color: blue }}>
+      <Row className='mb-4'>
+        <Col xs={12} md={6} className='text-start'>
+          <p className='mb-0 fw-semibold' style={{ color: blue }}>
             {clientName}
           </p>
-          <p className="mb-0" style={{ whiteSpace: "pre-line", color: blue }}>
+          <p className='mb-0' style={{ whiteSpace: 'pre-line', color: blue }}>
             {clientAddress}
           </p>
         </Col>
@@ -503,16 +505,16 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       {/* ══════════════════════════════
           LETTER TITLE
       ══════════════════════════════ */}
-      <div className="text-center mb-4">
-        <h4 className="fw-bold mb-1" style={{ textDecoration: "underline" }}>
+      <div className='text-center mb-4'>
+        <h4 className='fw-bold mb-1' style={{ textDecoration: 'underline' }}>
           Recommendation Letter
         </h4>
-        <p className="fw-bold mb-1">Summary of your Mortgage Recommendation</p>
-        <p className="mb-0">
-          Prepared for{" "}
+        <p className='fw-bold mb-1'>Summary of your Mortgage Recommendation</p>
+        <p className='mb-0'>
+          Prepared for{' '}
           <strong style={{ color: blue }}>{allApplicantNames}</strong>
         </p>
-        <p className="mb-0">
+        <p className='mb-0'>
           By <strong style={{ color: blue }}>{advisorName}</strong>
         </p>
       </div>
@@ -536,12 +538,12 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         that you have.
       </p>
       <p>
-        During our discussion you asked me to provide advice on your{" "}
-        <span style={{ color: blue }}>{mortgageType}</span> of{" "}
+        During our discussion you asked me to provide advice on your{' '}
+        <span style={{ color: blue }}>{mortgageType}</span> of{' '}
         <strong style={{ color: blue }}>{propertyAddress}</strong>.
       </p>
 
-      <div className="mb-3">
+      <div className='mb-3'>
         <AdvisorNote>
           (add soft facts about the transaction / what the clients overall goals
           were that were relevant to the advice and any other general
@@ -558,10 +560,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       </p>
 
       <p>Warm regards,</p>
-      <p className="mb-0 fw-semibold" style={{ color: blue }}>
+      <p className='mb-0 fw-semibold' style={{ color: blue }}>
         {advisorName}
       </p>
-      <p className="mb-0" style={{ color: blue }}>
+      <p className='mb-0' style={{ color: blue }}>
         {advisorJobTitle}
       </p>
       <p style={{ color: blue }}>{companyName}</p>
@@ -574,40 +576,40 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       <SectionHeading>What have I recommended and why?</SectionHeading>
       <p>I have recommended the following mortgage:</p>
 
-      <Table bordered responsive size="sm" className="mb-3">
+      <Table bordered responsive size='sm' className='mb-3'>
         <thead>
           <tr>
-            <th className="suitability-table-header">Lender</th>
-            <th className="suitability-table-header">
+            <th className='suitability-table-header'>Lender</th>
+            <th className='suitability-table-header'>
               Initial interest rate, type &amp; period
             </th>
-            <th className="suitability-table-header">Repayment method</th>
-            <th className="suitability-table-header">
+            <th className='suitability-table-header'>Repayment method</th>
+            <th className='suitability-table-header'>
               Mortgage amount (including any added fees)
             </th>
-            <th className="suitability-table-header">Mortgage term</th>
-            <th className="suitability-table-header">Monthly repayment</th>
+            <th className='suitability-table-header'>Mortgage term</th>
+            <th className='suitability-table-header'>Monthly repayment</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="fw-semibold" style={{ color: blue }}>
+            <td className='fw-semibold' style={{ color: blue }}>
               {lender}
             </td>
             <td style={{ color: blue }}>{initialRate}</td>
             <td style={{ color: blue }}>{repaymentMethod}</td>
-            <td className="fw-semibold" style={{ color: blue }}>
+            <td className='fw-semibold' style={{ color: blue }}>
               {mortgageAmount}
             </td>
             <td style={{ color: blue }}>{mortgageTerm}</td>
-            <td className="fw-semibold" style={{ color: blue }}>
+            <td className='fw-semibold' style={{ color: blue }}>
               {monthlyRepayment}
             </td>
           </tr>
         </tbody>
       </Table>
 
-      <p className="fw-bold">
+      <p className='fw-bold'>
         Your property can be repossessed if you do not keep up your payments.
       </p>
 
@@ -622,19 +624,19 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         are explained in the table below.
       </p>
 
-      <Table bordered responsive size="sm" className="mb-3">
+      <Table bordered responsive size='sm' className='mb-3'>
         <thead>
           <tr>
-            <th className="suitability-table-header" style={{ width: "13%" }}>
+            <th className='suitability-table-header' style={{ width: '13%' }}>
               Feature
             </th>
-            <th className="suitability-table-header" style={{ width: "15%" }}>
+            <th className='suitability-table-header' style={{ width: '15%' }}>
               Recommendation
             </th>
-            <th className="suitability-table-header" style={{ width: "30%" }}>
+            <th className='suitability-table-header' style={{ width: '30%' }}>
               What does this mean?
             </th>
-            <th className="suitability-table-header">
+            <th className='suitability-table-header'>
               Why was this recommended to you?
             </th>
           </tr>
@@ -642,36 +644,36 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         <tbody>
           {/* ── 1. Lender ── */}
           <tr>
-            <td className="fw-bold">Lender</td>
+            <td className='fw-bold'>Lender</td>
             <td style={{ color: blue }}>{lender}</td>
             <td>This is the lender who will provide your mortgage.</td>
-            <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              I have recommended{" "}
-              <strong style={{ color: blue }}>{lender}</strong> because{" "}
+            <td style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+              I have recommended{' '}
+              <strong style={{ color: blue }}>{lender}</strong> because{' '}
               {isLenderEditing ? (
-                <span className="d-block w-100 mt-1">
+                <span className='d-block w-100 mt-1'>
                   <Input
-                    type="textarea"
+                    type='textarea'
                     rows={5}
                     value={lenderDraft}
                     onChange={(e) => setLenderDraft(e.target.value)}
-                    placeholder="Enter your reason..."
+                    placeholder='Enter your reason...'
                     autoFocus
-                    className="w-100 p-1"
+                    className='w-100 p-1'
                   />
-                  <div className="d-flex gap-2 mt-2">
+                  <div className='d-flex gap-2 mt-2'>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleLenderSave}
                     >
                       Save
                     </Button>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleLenderCancel}
                     >
                       Cancel
@@ -680,16 +682,16 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 </span>
               ) : (
                 <span
-                  className="d-inline text-success"
+                  className='d-inline text-success'
                   style={{
-                    cursor: "pointer",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
+                    cursor: 'pointer',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
                   }}
                   onClick={startLenderEdit}
-                  title="Click to edit"
+                  title='Click to edit'
                 >
-                  {formValues.lender_text || "click to add reason..."}
+                  {formValues.lender_text || 'click to add reason...'}
                 </span>
               )}
             </td>
@@ -697,41 +699,41 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
           {/* ── 2. Interest Rate Type ── */}
           <tr>
-            <td className="fw-bold">Interest Rate Type</td>
+            <td className='fw-bold'>Interest Rate Type</td>
             <td style={{ color: blue }}>{rateType}</td>
             <td>
-              {interestRateType === "Fixed"
-                ? "Your payments will not change during the initial period."
-                : "Your payments can fluctuate during the initial deal period."}
+              {interestRateType === 'Fixed'
+                ? 'Your payments will not change during the initial period.'
+                : 'Your payments can fluctuate during the initial deal period.'}
             </td>
-            <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              {interestRateType === "Fixed"
-                ? "You wanted the certainty of knowing exactly what your monthly payments will be because "
-                : "You did not need the certainty of knowing exactly what your monthly repayments will be and were satisfied with payments that have the ability to fluctuate because "}
+            <td style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+              {interestRateType === 'Fixed'
+                ? 'You wanted the certainty of knowing exactly what your monthly payments will be because '
+                : 'You did not need the certainty of knowing exactly what your monthly repayments will be and were satisfied with payments that have the ability to fluctuate because '}
               {isInterestRateEditing ? (
-                <span className="d-block w-100 mt-1">
+                <span className='d-block w-100 mt-1'>
                   <Input
-                    type="textarea"
+                    type='textarea'
                     rows={5}
                     value={interestRateDraft}
                     onChange={(e) => setInterestRateDraft(e.target.value)}
-                    placeholder="Enter your reason..."
+                    placeholder='Enter your reason...'
                     autoFocus
-                    className="w-100 p-1"
+                    className='w-100 p-1'
                   />
-                  <div className="d-flex gap-2 mt-2">
+                  <div className='d-flex gap-2 mt-2'>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleInterestRateSave}
                     >
                       Save
                     </Button>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleInterestRateCancel}
                     >
                       Cancel
@@ -740,20 +742,20 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 </span>
               ) : (
                 <span
-                  className="d-inline text-success"
+                  className='d-inline text-success'
                   style={{
-                    cursor: "pointer",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
+                    cursor: 'pointer',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
                   }}
                   onClick={startInterestRateEdit}
-                  title="Click to edit"
+                  title='Click to edit'
                 >
                   {formValues.initial_interest_rate_text ||
-                    "click to add reason..."}
+                    'click to add reason...'}
                 </span>
               )}
-              <span className="mt-2">
+              <span className='mt-2'>
                 <AdvisorNote>
                   (there needs to be a &lsquo;why&rsquo; based answer for all
                   justifications. The client wants the payments to be the same
@@ -766,13 +768,13 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
           {/* ── 3. Initial interest rate / deal period ── */}
           <tr>
-            <td className="fw-bold">Initial interest rate / deal period</td>
+            <td className='fw-bold'>Initial interest rate / deal period</td>
             <td>
-              The recommended deal period will apply until{" "}
+              The recommended deal period will apply until{' '}
               <span style={{ color: blue }}>{dealEndDate}</span>
             </td>
             <td>
-              <p className="mb-2 fw-bold">
+              <p className='mb-2 fw-bold'>
                 At the end of the initial deal period the interest rate will
                 change to the lender&rsquo;s standard variable rate (SVR). We
                 have given you an example of their current standard variable
@@ -780,50 +782,50 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 to the standard variable rate when your deal expires, therefore
                 the cost after expiry could be higher.
               </p>
-              <p className="mb-0">
+              <p className='mb-0'>
                 We recommend you start to review your mortgage deal 6 months in
                 advance of the end date.
               </p>
             </td>
             <td>
-              <p className="mb-1">
+              <p className='mb-1'>
                 We discussed that lenders offer different deals for varying
                 lengths of time and reviewed the options that are available to
                 you.
               </p>
-              <p className="mb-2">
+              <p className='mb-2'>
                 We also discussed your personal circumstances and the future
                 goals &amp; plans that are important in advising what is the
                 most suitable deal period for you.
               </p>
-              I recommend a period of{" "}
-              <span style={{ color: blue }}>{productTerm}</span> because{" "}
+              I recommend a period of{' '}
+              <span style={{ color: blue }}>{productTerm}</span> because{' '}
               {isInitialInterestRateEditing ? (
-                <span className="d-block w-100 mt-1">
+                <span className='d-block w-100 mt-1'>
                   <Input
-                    type="textarea"
+                    type='textarea'
                     rows={5}
                     value={initialInterestRateDraft}
                     onChange={(e) =>
                       setInitialInterestRateDraft(e.target.value)
                     }
-                    placeholder="Enter your reason..."
+                    placeholder='Enter your reason...'
                     autoFocus
-                    className="w-100 p-1"
+                    className='w-100 p-1'
                   />
-                  <div className="d-flex gap-2 mt-2">
+                  <div className='d-flex gap-2 mt-2'>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleInitialInterestRateSave}
                     >
                       Save
                     </Button>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleInitialInterestRateCancel}
                     >
                       Cancel
@@ -832,23 +834,23 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 </span>
               ) : (
                 <span
-                  className="d-inline text-success"
+                  className='d-inline text-success'
                   style={{
-                    cursor: "pointer",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
+                    cursor: 'pointer',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
                   }}
                   onClick={startInitialInterestRateEdit}
-                  title="Click to edit"
+                  title='Click to edit'
                 >
                   {formValues.initial_interest_rate_deal_period_text ||
-                    "click to add reason..."}
+                    'click to add reason...'}
                 </span>
               )}
-              <span className="mt-2">
+              <span className='mt-2'>
                 <AdvisorNote>
                   (Always discount <strong>both</strong> shorter and longer term
-                  options, based on the clients <strong>individual</strong>{" "}
+                  options, based on the clients <strong>individual</strong>{' '}
                   circumstances, needs and preferences. There are so many
                   different possible reasons that feed into this part of the
                   advice, we need to evidence those reasons in a clear way so if
@@ -861,55 +863,55 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
           {/* ── 4. Repayment Method ── */}
           <tr>
-            <td className="fw-bold">Repayment Method</td>
+            <td className='fw-bold'>Repayment Method</td>
             <td style={{ color: blue }}>{repaymentMethod}</td>
             <td>
-              {repaymentMethod === "Capital and Interest" ? (
-                "Your mortgage will be repaid by the end of its term, provided you make the required monthly payments when due."
-              ) : repaymentMethod === "Interest Only" ? (
+              {repaymentMethod === 'Capital and Interest' ? (
+                'Your mortgage will be repaid by the end of its term, provided you make the required monthly payments when due.'
+              ) : repaymentMethod === 'Interest Only' ? (
                 <>
                   Your mortgage balance will <strong>not</strong> be repaid by
                   the end of the term through making your monthly repayments.
-                  You will be responsible for paying the balance{" "}
+                  You will be responsible for paying the balance{' '}
                   <strong>in full</strong> at the end of the term.
                 </>
               ) : null}
             </td>
-            <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              {repaymentMethod === "Capital and Interest" ? (
-                "You wanted the certainty of your mortgage being repaid by the end of the term through making your monthly repayments because "
-              ) : repaymentMethod === "Interest Only" ? (
+            <td style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+              {repaymentMethod === 'Capital and Interest' ? (
+                'You wanted the certainty of your mortgage being repaid by the end of the term through making your monthly repayments because '
+              ) : repaymentMethod === 'Interest Only' ? (
                 <>
                   You wanted the certainty of your mortgage not being repaid by
                   the end of the term through making your monthly repayments and
-                  you will be responsible for paying the balance{" "}
-                  <strong>in full</strong> at the end of the term because{" "}
+                  you will be responsible for paying the balance{' '}
+                  <strong>in full</strong> at the end of the term because{' '}
                 </>
               ) : null}
               {isRepaymentMethodEditing ? (
-                <span className="d-block w-100 mt-1">
+                <span className='d-block w-100 mt-1'>
                   <Input
-                    type="textarea"
+                    type='textarea'
                     rows={5}
                     value={repaymentMethodDraft}
                     onChange={(e) => setRepaymentMethodDraft(e.target.value)}
-                    placeholder="Enter your reason..."
+                    placeholder='Enter your reason...'
                     autoFocus
-                    className="w-100 p-1"
+                    className='w-100 p-1'
                   />
-                  <div className="d-flex gap-2 mt-2">
+                  <div className='d-flex gap-2 mt-2'>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleRepaymentMethodSave}
                     >
                       Save
                     </Button>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleRepaymentMethodCancel}
                     >
                       Cancel
@@ -918,17 +920,17 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 </span>
               ) : (
                 <span
-                  className="d-inline text-success"
+                  className='d-inline text-success'
                   style={{
-                    cursor: "pointer",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
+                    cursor: 'pointer',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
                   }}
                   onClick={startRepaymentMethodEdit}
-                  title="Click to edit"
+                  title='Click to edit'
                 >
                   {formValues.repayment_method_recommended_text ||
-                    "click to add reason..."}
+                    'click to add reason...'}
                 </span>
               )}
             </td>
@@ -936,7 +938,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
           {/* ── 5. Mortgage Amount ── */}
           <tr>
-            <td className="fw-bold">Mortgage Amount</td>
+            <td className='fw-bold'>Mortgage Amount</td>
             <td style={{ color: blue }}>{mortgageAmount}</td>
             <td>
               This is the total amount borrowed. If fees have been added to the
@@ -948,26 +950,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 toggle={() => setIsMortgageOptionOpen((p) => !p)}
               >
                 <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
+                  color='light'
+                  className='text-start w-100 border'
                   style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.4',
                   }}
                   caret
                 >
                   {selectedMortgageOption ? (
                     selectedMortgageOption.label
                   ) : (
-                    <span className="text-muted fst-italic">
+                    <span className='text-muted fst-italic'>
                       Click to choose an option...
                     </span>
                   )}
                 </DropdownToggle>
                 <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                  className='w-100'
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   {mortgageOptions.map((option) => (
                     <DropdownItem
@@ -975,41 +977,41 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                       onClick={() =>
                         onFormChange({ mortgage_amount_type: option.value })
                       }
-                      className="text-wrap"
+                      className='text-wrap'
                     >
-                      <span className="me-1 fw-bolder">•</span>
+                      <span className='me-1 fw-bolder'>•</span>
                       {option.label}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
               </Dropdown>
 
-              {formValues.mortgage_amount_type === "LESS_THAN_OUTSTANDING" && (
-                <span className="d-block mt-2">
+              {formValues.mortgage_amount_type === 'LESS_THAN_OUTSTANDING' && (
+                <span className='d-block mt-2'>
                   {isOverpaymentEditing ? (
-                    <span className="d-block w-100 mt-1">
+                    <span className='d-block w-100 mt-1'>
                       <strong>£</strong>
                       <Input
-                        type="text"
+                        type='text'
                         value={overpaymentDraft}
                         onChange={(e) => setOverpaymentDraft(e.target.value)}
-                        placeholder="Enter overpayment amount..."
+                        placeholder='Enter overpayment amount...'
                         autoFocus
-                        className="w-100 p-1 mt-1"
+                        className='w-100 p-1 mt-1'
                       />
-                      <div className="d-flex gap-2 mt-2">
+                      <div className='d-flex gap-2 mt-2'>
                         <Button
-                          color="light"
-                          className="text-dark"
-                          size="sm"
+                          color='light'
+                          className='text-dark'
+                          size='sm'
                           onClick={handleOverpaymentSave}
                         >
                           Save
                         </Button>
                         <Button
-                          color="light"
-                          className="text-dark"
-                          size="sm"
+                          color='light'
+                          className='text-dark'
+                          size='sm'
                           onClick={handleOverpaymentCancel}
                         >
                           Cancel
@@ -1018,18 +1020,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                     </span>
                   ) : (
                     <span
-                      className="d-inline text-success"
+                      className='d-inline text-success'
                       style={{
-                        cursor: "pointer",
-                        whiteSpace: "pre-wrap",
-                        wordBreak: "break-word",
+                        cursor: 'pointer',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
                       }}
                       onClick={startOverpaymentEdit}
-                      title="Click to edit"
+                      title='Click to edit'
                     >
                       {formValues.mortgage_amount_overpayment
                         ? `Overpayment: £${formValues.mortgage_amount_overpayment}`
-                        : "click to set overpayment amount..."}
+                        : 'click to set overpayment amount...'}
                     </span>
                   )}
                 </span>
@@ -1039,32 +1041,32 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
           {/* ── 6. Arrangement Fee ── */}
           <tr>
-            <td className="fw-bold">Arrangement Fee</td>
+            <td className='fw-bold'>Arrangement Fee</td>
             <td>
               {isArrangementFeeEditing ? (
                 <>
                   <strong>£</strong>
                   <Input
-                    type="number"
-                    value={arrangementFeeDraft ?? ""}
+                    type='number'
+                    value={arrangementFeeDraft ?? ''}
                     onChange={(e) => setArrangementFeeDraft(e.target.value)}
-                    placeholder="e.g. £999"
+                    placeholder='e.g. £999'
                     autoFocus
-                    className="w-100 p-1 mb-2"
+                    className='w-100 p-1 mb-2'
                   />
-                  <div className="d-flex gap-2">
+                  <div className='d-flex gap-2'>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleArrangementFeeSave}
                     >
                       Save
                     </Button>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleArrangementFeeCancel}
                     >
                       Cancel
@@ -1074,26 +1076,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               ) : (
                 <span
                   className={
-                    formValues.arrangement_fee ? "fw-normal" : "text-success"
+                    formValues.arrangement_fee ? 'fw-normal' : 'text-success'
                   }
                   style={{
-                    cursor: "pointer",
+                    cursor: 'pointer',
                     color: formValues.arrangement_fee ? blue : undefined,
                   }}
                   onClick={startArrangementFeeEdit}
-                  title="Click to edit"
+                  title='Click to edit'
                 >
                   {formValues.arrangement_fee
                     ? `£${formValues.arrangement_fee.toFixed(2)}`
-                    : "＋ add arrangement fee"}
+                    : '＋ add arrangement fee'}
                 </span>
               )}
             </td>
             <td>
-              <p className="mb-1">
+              <p className='mb-1'>
                 Your mortgage may have fees and charges payable.
               </p>
-              <p className="mb-0 fw-bold">
+              <p className='mb-0 fw-bold'>
                 Please refer to the mortgage illustration for full details.
               </p>
             </td>
@@ -1103,26 +1105,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 toggle={() => setIsArrangementOptionOpen((p) => !p)}
               >
                 <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
+                  color='light'
+                  className='text-start w-100 border'
                   style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.4',
                   }}
                   caret
                 >
                   {selectedArrangementOption ? (
                     selectedArrangementOption.label
                   ) : (
-                    <span className="text-muted fst-italic">
+                    <span className='text-muted fst-italic'>
                       Click to choose an option...
                     </span>
                   )}
                 </DropdownToggle>
                 <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                  className='w-100'
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   {arrangementOptions.map((option) => (
                     <DropdownItem
@@ -1130,9 +1132,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                       onClick={() =>
                         onFormChange({ arrangement_fee_type: option.value })
                       }
-                      className="text-wrap"
+                      className='text-wrap'
                     >
-                      <span className="me-1 fw-bolder">•</span>
+                      <span className='me-1 fw-bolder'>•</span>
                       {option.label}
                     </DropdownItem>
                   ))}
@@ -1140,33 +1142,33 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               </Dropdown>
 
               {/* ── Arrangement Fee Note textarea ── */}
-              <span className="d-block mt-2">
+              <span className='d-block mt-2'>
                 {isArrangementFeeNoteEditing ? (
-                  <span className="d-block w-100 mt-1">
+                  <span className='d-block w-100 mt-1'>
                     <Input
-                      type="textarea"
+                      type='textarea'
                       rows={5}
                       value={arrangementFeeNoteDraft}
                       onChange={(e) =>
                         setArrangementFeeNoteDraft(e.target.value)
                       }
-                      placeholder="Enter your note..."
+                      placeholder='Enter your note...'
                       autoFocus
-                      className="w-100 p-1"
+                      className='w-100 p-1'
                     />
-                    <div className="d-flex gap-2 mt-2">
+                    <div className='d-flex gap-2 mt-2'>
                       <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
+                        color='light'
+                        className='text-dark'
+                        size='sm'
                         onClick={handleArrangementFeeNoteSave}
                       >
                         Save
                       </Button>
                       <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
+                        color='light'
+                        className='text-dark'
+                        size='sm'
                         onClick={handleArrangementFeeNoteCancel}
                       >
                         Cancel
@@ -1175,21 +1177,21 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   </span>
                 ) : (
                   <span
-                    className="d-inline text-success"
+                    className='d-inline text-success'
                     style={{
-                      cursor: "pointer",
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
+                      cursor: 'pointer',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
                     }}
                     onClick={startArrangementFeeNoteEdit}
-                    title="Click to edit"
+                    title='Click to edit'
                   >
                     {formValues.arrangement_fee_why_recommended_text ||
-                      "click to add note..."}
+                      'click to add note...'}
                   </span>
                 )}
               </span>
-              <span className="mt-2 w-100">
+              <span className='mt-2 w-100'>
                 <AdvisorNote>
                   (Where fees added, include the reason why)
                 </AdvisorNote>
@@ -1199,37 +1201,37 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
           {/* ── 7. Mortgage Term ── */}
           <tr>
-            <td className="fw-bold">Mortgage Term</td>
+            <td className='fw-bold'>Mortgage Term</td>
             <td style={{ color: blue }}>{mortgageTerm}</td>
             <td>
               This is the term over which you will repay back your mortgage.
             </td>
-            <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              The term has been recommended because{" "}
+            <td style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+              The term has been recommended because{' '}
               {isMortgageTermEditing ? (
-                <span className="d-block w-100 mt-1">
+                <span className='d-block w-100 mt-1'>
                   <Input
-                    type="textarea"
+                    type='textarea'
                     rows={5}
                     value={mortgageTermDraft}
                     onChange={(e) => setMortgageTermDraft(e.target.value)}
-                    placeholder="Enter your reason..."
+                    placeholder='Enter your reason...'
                     autoFocus
-                    className="w-100 p-1"
+                    className='w-100 p-1'
                   />
-                  <div className="d-flex gap-2 mt-2">
+                  <div className='d-flex gap-2 mt-2'>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleMortgageTermSave}
                     >
                       Save
                     </Button>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleMortgageTermCancel}
                     >
                       Cancel
@@ -1238,19 +1240,19 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 </span>
               ) : (
                 <span
-                  className="d-inline text-success"
+                  className='d-inline text-success'
                   style={{
-                    cursor: "pointer",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
+                    cursor: 'pointer',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
                   }}
                   onClick={startMortgageTermEdit}
-                  title="Click to edit"
+                  title='Click to edit'
                 >
-                  {formValues.mortgage_term_text || "click to add reason..."}
+                  {formValues.mortgage_term_text || 'click to add reason...'}
                 </span>
               )}
-              <span className="mt-2">
+              <span className='mt-2'>
                 <AdvisorNote>
                   (If past retirement age, fully cover the reason why,
                   feasibility etc)
@@ -1261,7 +1263,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
           {/* ── 8. Early Repayment Charges ── */}
           <tr>
-            <td className="fw-bold">Early Repayment Charges</td>
+            <td className='fw-bold'>Early Repayment Charges</td>
             <td>
               {/* Recommendation column — which ERC option applies */}
               <Dropdown
@@ -1269,26 +1271,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 toggle={() => setIsErcOptionOpen((p) => !p)}
               >
                 <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
+                  color='light'
+                  className='text-start w-100 border'
                   style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.4',
                   }}
                   caret
                 >
                   {selectedErcOption ? (
                     selectedErcOption.label
                   ) : (
-                    <span className="text-muted fst-italic">
+                    <span className='text-muted fst-italic'>
                       Click to choose an option...
                     </span>
                   )}
                 </DropdownToggle>
                 <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                  className='w-100'
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   {ercOptions.map((option) => (
                     <DropdownItem
@@ -1298,9 +1300,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                           early_repayment_charges_recommendation: option.value,
                         })
                       }
-                      className="text-wrap"
+                      className='text-wrap'
                     >
-                      <span className="me-1 fw-bolder">•</span>
+                      <span className='me-1 fw-bolder'>•</span>
                       {option.label}
                     </DropdownItem>
                   ))}
@@ -1314,26 +1316,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 toggle={() => setIsErcMeaningOptionOpen((p) => !p)}
               >
                 <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
+                  color='light'
+                  className='text-start w-100 border'
                   style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.4',
                   }}
                   caret
                 >
                   {selectedErcMeaningOption ? (
                     selectedErcMeaningOption.label
                   ) : (
-                    <span className="text-muted fst-italic">
+                    <span className='text-muted fst-italic'>
                       Click to choose an option...
                     </span>
                   )}
                 </DropdownToggle>
                 <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                  className='w-100'
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   {ercMeaningOptions.map((option) => (
                     <DropdownItem
@@ -1343,40 +1345,40 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                           early_repayment_charges_meaning: option.value,
                         })
                       }
-                      className="text-wrap"
+                      className='text-wrap'
                     >
-                      <span className="me-1 fw-bolder">•</span>
+                      <span className='me-1 fw-bolder'>•</span>
                       {option.label}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
               </Dropdown>
-              <p className="mt-2 mb-0">
-                The Maximum Early Repayment Charge that could apply is{" "}
+              <p className='mt-2 mb-0'>
+                The Maximum Early Repayment Charge that could apply is{' '}
                 {isMaxErcEditing ? (
-                  <span className="d-flex align-items-center gap-2 mt-1 flex-wrap">
+                  <span className='d-flex align-items-center gap-2 mt-1 flex-wrap'>
                     <strong>£</strong>
                     <Input
-                      type="number"
+                      type='number'
                       value={maxErcDraft}
                       onChange={(e) => setMaxErcDraft(e.target.value)}
-                      placeholder="e.g. 2500"
+                      placeholder='e.g. 2500'
                       autoFocus
-                      style={{ width: "140px" }}
-                      className="p-1"
+                      style={{ width: '140px' }}
+                      className='p-1'
                     />
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleMaxErcSave}
                     >
                       Save
                     </Button>
                     <Button
-                      color="light"
-                      className="text-dark"
-                      size="sm"
+                      color='light'
+                      className='text-dark'
+                      size='sm'
                       onClick={handleMaxErcCancel}
                     >
                       Cancel
@@ -1385,18 +1387,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 ) : (
                   <span
                     className={
-                      formValues.max_erc ? "fw-normal" : "text-success"
+                      formValues.max_erc ? 'fw-normal' : 'text-success'
                     }
                     style={{
                       color: formValues.max_erc ? blue : undefined,
-                      cursor: "pointer",
+                      cursor: 'pointer',
                     }}
                     onClick={startMaxErcEdit}
-                    title="Click to edit"
+                    title='Click to edit'
                   >
                     {formValues.max_erc
                       ? `£${formValues.max_erc}`
-                      : "＋ add max ERC charge"}
+                      : '＋ add max ERC charge'}
                   </span>
                 )}
               </p>
@@ -1407,26 +1409,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 toggle={() => setIsErcWhyOptionOpen((p) => !p)}
               >
                 <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
+                  color='light'
+                  className='text-start w-100 border'
                   style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.4',
                   }}
                   caret
                 >
                   {selectedErcWhyOption ? (
                     selectedErcWhyOption.label
                   ) : (
-                    <span className="text-muted fst-italic">
+                    <span className='text-muted fst-italic'>
                       Click to choose an option...
                     </span>
                   )}
                 </DropdownToggle>
                 <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                  className='w-100'
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   {ercWhyOptions.map((option) => (
                     <DropdownItem
@@ -1436,9 +1438,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                           early_repayment_charges_reason: option.value,
                         })
                       }
-                      className="text-wrap"
+                      className='text-wrap'
                     >
-                      <span className="me-1 fw-bolder">•</span>
+                      <span className='me-1 fw-bolder'>•</span>
                       {option.label}
                     </DropdownItem>
                   ))}
@@ -1446,31 +1448,31 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               </Dropdown>
 
               {/* ── ERC Why Note textarea ── */}
-              <span className="d-block mt-2">
+              <span className='d-block mt-2'>
                 {isErcWhyNoteEditing ? (
-                  <span className="d-block w-100 mt-1">
+                  <span className='d-block w-100 mt-1'>
                     <Input
-                      type="textarea"
+                      type='textarea'
                       rows={5}
                       value={ercWhyNoteDraft}
                       onChange={(e) => setErcWhyNoteDraft(e.target.value)}
-                      placeholder="Enter your note..."
+                      placeholder='Enter your note...'
                       autoFocus
-                      className="w-100 p-1"
+                      className='w-100 p-1'
                     />
-                    <div className="d-flex gap-2 mt-2">
+                    <div className='d-flex gap-2 mt-2'>
                       <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
+                        color='light'
+                        className='text-dark'
+                        size='sm'
                         onClick={handleErcWhyNoteSave}
                       >
                         Save
                       </Button>
                       <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
+                        color='light'
+                        className='text-dark'
+                        size='sm'
                         onClick={handleErcWhyNoteCancel}
                       >
                         Cancel
@@ -1479,17 +1481,17 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   </span>
                 ) : (
                   <span
-                    className="d-inline text-success"
+                    className='d-inline text-success'
                     style={{
-                      cursor: "pointer",
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
+                      cursor: 'pointer',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
                     }}
                     onClick={startErcWhyNoteEdit}
-                    title="Click to edit"
+                    title='Click to edit'
                   >
                     {formValues.early_repayment_charges_why_recommended_text ||
-                      "click to add note..."}
+                      'click to add note...'}
                   </span>
                 )}
               </span>
@@ -1498,7 +1500,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
           {/* ── 9. Portability ── */}
           <tr>
-            <td className="fw-bold">Portability</td>
+            <td className='fw-bold'>Portability</td>
             <td>
               {/* Recommendation — portable yes/no */}
               <Dropdown
@@ -1506,26 +1508,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 toggle={() => setIsPortableOptionOpen((p) => !p)}
               >
                 <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
+                  color='light'
+                  className='text-start w-100 border'
                   style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.4',
                   }}
                   caret
                 >
                   {selectedPortableOption ? (
                     selectedPortableOption.label
                   ) : (
-                    <span className="text-muted fst-italic">
+                    <span className='text-muted fst-italic'>
                       Click to choose an option...
                     </span>
                   )}
                 </DropdownToggle>
                 <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                  className='w-100'
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   {portableOptions.map((option) => (
                     <DropdownItem
@@ -1535,9 +1537,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                           portability_recommendation: option.value,
                         })
                       }
-                      className="text-wrap"
+                      className='text-wrap'
                     >
-                      <span className="me-1 fw-bolder">•</span>
+                      <span className='me-1 fw-bolder'>•</span>
                       {option.label}
                     </DropdownItem>
                   ))}
@@ -1551,26 +1553,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 toggle={() => setIsPortableMeaningOptionOpen((p) => !p)}
               >
                 <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
+                  color='light'
+                  className='text-start w-100 border'
                   style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.4',
                   }}
                   caret
                 >
                   {selectedPortableMeaningOption ? (
                     selectedPortableMeaningOption.label
                   ) : (
-                    <span className="text-muted fst-italic">
+                    <span className='text-muted fst-italic'>
                       Click to choose an option...
                     </span>
                   )}
                 </DropdownToggle>
                 <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                  className='w-100'
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   {portableMeaningOptions.map((option) => (
                     <DropdownItem
@@ -1578,9 +1580,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                       onClick={() =>
                         onFormChange({ portability_meaning: option.value })
                       }
-                      className="text-wrap"
+                      className='text-wrap'
                     >
-                      <span className="me-1 fw-bolder">•</span>
+                      <span className='me-1 fw-bolder'>•</span>
                       {option.label}
                     </DropdownItem>
                   ))}
@@ -1594,26 +1596,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 toggle={() => setIsPortableWhyOptionOpen((p) => !p)}
               >
                 <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
+                  color='light'
+                  className='text-start w-100 border'
                   style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.4',
                   }}
                   caret
                 >
                   {selectedPortableWhyOption ? (
                     selectedPortableWhyOption.label
                   ) : (
-                    <span className="text-muted fst-italic">
+                    <span className='text-muted fst-italic'>
                       Click to choose an option...
                     </span>
                   )}
                 </DropdownToggle>
                 <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                  className='w-100'
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   {portableWhyOptionTemplates.map((option) => (
                     <DropdownItem
@@ -1622,10 +1624,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                         onFormChange({ portability_reason: option.value });
                         setIsPortableWhyEditing(false);
                       }}
-                      className="text-wrap"
+                      className='text-wrap'
                     >
-                      <span className="me-1 fw-bolder">•</span>
-                      {option.label}{" "}
+                      <span className='me-1 fw-bolder'>•</span>
+                      {option.label}{' '}
                       <span style={{ color: blue }}>[reason]</span>
                     </DropdownItem>
                   ))}
@@ -1634,32 +1636,32 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
               {/* Reason field — only shown after an option is selected */}
               {selectedPortableWhyOption !== null && (
-                <span className="d-block mt-2">
-                  {selectedPortableWhyOption.label}{" "}
+                <span className='d-block mt-2'>
+                  {selectedPortableWhyOption.label}{' '}
                   {isPortableWhyEditing ? (
-                    <span className="d-block w-100 mt-1">
+                    <span className='d-block w-100 mt-1'>
                       <Input
-                        type="textarea"
+                        type='textarea'
                         rows={5}
-                        value={portableWhyDraft ?? ""}
+                        value={portableWhyDraft ?? ''}
                         onChange={(e) => setPortableWhyDraft(e.target.value)}
-                        placeholder="Enter your reason..."
+                        placeholder='Enter your reason...'
                         autoFocus
-                        className="w-100 p-1"
+                        className='w-100 p-1'
                       />
-                      <div className="d-flex gap-2 mt-2">
+                      <div className='d-flex gap-2 mt-2'>
                         <Button
-                          color="light"
-                          className="text-dark"
-                          size="sm"
+                          color='light'
+                          className='text-dark'
+                          size='sm'
                           onClick={handlePortableWhySave}
                         >
                           Save
                         </Button>
                         <Button
-                          color="light"
-                          className="text-dark"
-                          size="sm"
+                          color='light'
+                          className='text-dark'
+                          size='sm'
                           onClick={handlePortableWhyCancel}
                         >
                           Cancel
@@ -1668,17 +1670,17 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                     </span>
                   ) : (
                     <span
-                      className="d-inline text-success"
+                      className='d-inline text-success'
                       style={{
-                        cursor: "pointer",
-                        whiteSpace: "pre-wrap",
-                        wordBreak: "break-word",
+                        cursor: 'pointer',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
                       }}
                       onClick={startPortableWhyEdit}
-                      title="Click to edit"
+                      title='Click to edit'
                     >
                       {formValues.portability_suggestion ||
-                        "click to add reason..."}
+                        'click to add reason...'}
                     </span>
                   )}
                 </span>
@@ -1696,8 +1698,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       </AdvisorNote>
 
       {/* ── Purple: Rate switch section ── */}
-      <div className="suitability-purple-box p-3 my-3 rounded">
-        <p className="fw-semibold mb-2 small" style={{ color: "#6a1b9a" }}>
+      <div className='suitability-purple-box p-3 my-3 rounded'>
+        <p className='fw-semibold mb-2 small' style={{ color: '#6a1b9a' }}>
           <strong>For residential Mortgages</strong> – where rate switches are
           allowed post application, select one of the following 3 paragraphs:
         </p>
@@ -1707,26 +1709,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           toggle={() => setIsRateSwitchOptionOpen((p) => !p)}
         >
           <DropdownToggle
-            color="light"
-            className="text-start w-100 border"
+            color='light'
+            className='text-start w-100 border'
             style={{
-              whiteSpace: "normal",
-              wordBreak: "break-word",
-              lineHeight: "1.4",
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+              lineHeight: '1.4',
             }}
             caret
           >
             {selectedRateSwitchOption ? (
               selectedRateSwitchOption.displayLabel
             ) : (
-              <span className="text-muted fst-italic">
+              <span className='text-muted fst-italic'>
                 Select rate switch option...
               </span>
             )}
           </DropdownToggle>
           <DropdownMenu
-            className="w-100"
-            style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+            className='w-100'
+            style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
           >
             {rateSwitchOptions.map((option) => (
               <DropdownItem
@@ -1734,9 +1736,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 onClick={() =>
                   onFormChange({ residential_mortgages_type: option.value })
                 }
-                className="text-wrap"
+                className='text-wrap'
               >
-                <span className="me-1 fw-bolder">•</span>
+                <span className='me-1 fw-bolder'>•</span>
                 {option.displayLabel}
               </DropdownItem>
             ))}
@@ -1744,15 +1746,15 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         </Dropdown>
 
         {selectedRateSwitchOption && (
-          <div className="mt-3 small" style={{ color: "#6a1b9a" }}>
-            <p className="fw-semibold mb-1">
+          <div className='mt-3 small' style={{ color: '#6a1b9a' }}>
+            <p className='fw-semibold mb-1'>
               {selectedRateSwitchOption.displayLabel}
             </p>
-            <p className="mb-0">{selectedRateSwitchOption.label}</p>
+            <p className='mb-0'>{selectedRateSwitchOption.label}</p>
           </div>
         )}
 
-        <div className="mt-2">
+        <div className='mt-2'>
           <AdvisorNote>
             (if there is a charge associated with the service, outline what this
             is, <strong>must be included on IDD</strong>)
@@ -1793,12 +1795,12 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       </SectionHeading>
 
       {/* ── Protection ── */}
-      <p className="fw-bold mb-1">Protection</p>
+      <p className='fw-bold mb-1'>Protection</p>
       <p>
         Your mortgage is a large financial commitment, please consider how you
         would be able to manage your mortgage payments if you were no longer
         able to work due to accident / illness / injury, or the impact of if you
-        were to suffer a critical illness or die during the{" "}
+        were to suffer a critical illness or die during the{' '}
         <span style={{ color: blue }}>{mortgageTerm}</span> mortgage term.
       </p>
 
@@ -1807,26 +1809,26 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         toggle={() => setIsProtectionOptionOpen((p) => !p)}
       >
         <DropdownToggle
-          color="light"
-          className="text-start w-100 border"
+          color='light'
+          className='text-start w-100 border'
           style={{
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-            lineHeight: "1.4",
+            whiteSpace: 'normal',
+            wordBreak: 'break-word',
+            lineHeight: '1.4',
           }}
           caret
         >
           {selectedProtectionOption ? (
             selectedProtectionOption.label
           ) : (
-            <span className="text-muted fst-italic">
+            <span className='text-muted fst-italic'>
               Click to choose an option...
             </span>
           )}
         </DropdownToggle>
         <DropdownMenu
-          className="w-100"
-          style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+          className='w-100'
+          style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
         >
           {protectionOptionTemplates.map((option) => (
             <DropdownItem
@@ -1834,15 +1836,15 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               onClick={() => {
                 onFormChange({
                   protection: option.value,
-                  protection_reason: "",
+                  protection_reason: '',
                 });
-                setProtectionDraft("");
+                setProtectionDraft('');
                 setIsProtectionEditing(false);
               }}
-              className="text-wrap"
+              className='text-wrap'
             >
-              <span className="me-1 fw-bolder">•</span>
-              {option.label}{" "}
+              <span className='me-1 fw-bolder'>•</span>
+              {option.label}{' '}
               {option.requiresReason && (
                 <span style={{ color: blue }}>[reason]</span>
               )}
@@ -1852,32 +1854,32 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       </Dropdown>
 
       {selectedProtectionOption?.requiresReason && (
-        <span className="d-block mt-2">
-          {selectedProtectionOption.label}{" "}
+        <span className='d-block mt-2'>
+          {selectedProtectionOption.label}{' '}
           {isProtectionEditing ? (
-            <span className="d-block w-100 mt-1">
+            <span className='d-block w-100 mt-1'>
               <Input
-                type="textarea"
+                type='textarea'
                 rows={5}
                 value={protectionDraft}
                 onChange={(e) => setProtectionDraft(e.target.value)}
-                placeholder="Enter your reason..."
+                placeholder='Enter your reason...'
                 autoFocus
-                className="w-100 p-1"
+                className='w-100 p-1'
               />
-              <div className="d-flex gap-2 mt-2">
+              <div className='d-flex gap-2 mt-2'>
                 <Button
-                  color="light"
-                  className="text-dark"
-                  size="sm"
+                  color='light'
+                  className='text-dark'
+                  size='sm'
                   onClick={handleProtectionSave}
                 >
                   Save
                 </Button>
                 <Button
-                  color="light"
-                  className="text-dark"
-                  size="sm"
+                  color='light'
+                  className='text-dark'
+                  size='sm'
                   onClick={handleProtectionCancel}
                 >
                   Cancel
@@ -1886,22 +1888,22 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             </span>
           ) : (
             <span
-              className="d-inline text-success"
+              className='d-inline text-success'
               style={{
-                cursor: "pointer",
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
+                cursor: 'pointer',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
               }}
               onClick={startProtectionEdit}
-              title="Click to edit"
+              title='Click to edit'
             >
-              {formValues.protection_reason || "click to add reason..."}
+              {formValues.protection_reason || 'click to add reason...'}
             </span>
           )}
         </span>
       )}
 
-      <div className="mt-2">
+      <div className='mt-2'>
         <AdvisorNote>
           (Where you have not recommended new policies or advice has been
           rejected, please include as much detail as possible. If they have
@@ -1912,7 +1914,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       </div>
 
       {/* ── Lasting Power of Attorney ── */}
-      <p className="fw-bold mb-1 mt-4">Lasting Power of Attorney (LPOA)</p>
+      <p className='fw-bold mb-1 mt-4'>Lasting Power of Attorney (LPOA)</p>
       <p>
         A Lasting Power of Attorney, registered with the appropriate authority,
         means somebody else can act for you, if you can&rsquo;t act for
@@ -1921,7 +1923,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       </p>
 
       {/* ── Buildings Insurance ── */}
-      <p className="fw-bold mb-1 mt-3">Buildings Insurance</p>
+      <p className='fw-bold mb-1 mt-3'>Buildings Insurance</p>
       <p>
         It is a condition of the mortgage that you have appropriate and adequate
         buildings insurance in place. Where you are purchasing a home, the
@@ -1935,48 +1937,48 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         toggle={() => setIsHomeInsuranceOptionOpen((p) => !p)}
       >
         <DropdownToggle
-          color="light"
-          className="text-start w-100 border"
+          color='light'
+          className='text-start w-100 border'
           style={{
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-            lineHeight: "1.4",
+            whiteSpace: 'normal',
+            wordBreak: 'break-word',
+            lineHeight: '1.4',
           }}
           caret
         >
           {selectedHomeInsuranceOption ? (
             selectedHomeInsuranceOption.label
           ) : (
-            <span className="text-muted fst-italic">
+            <span className='text-muted fst-italic'>
               Click to choose an option...
             </span>
           )}
         </DropdownToggle>
         <DropdownMenu
-          className="w-100"
-          style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+          className='w-100'
+          style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
         >
           {homeInsuranceOptions.map((option) => (
             <DropdownItem
               key={option.value}
               onClick={() => onFormChange({ home_insurance: option.value })}
-              className="text-wrap"
+              className='text-wrap'
             >
-              <span className="me-1 fw-bolder">•</span>
+              <span className='me-1 fw-bolder'>•</span>
               {option.label}
             </DropdownItem>
           ))}
         </DropdownMenu>
       </Dropdown>
 
-      <div className="mt-2">
+      <div className='mt-2'>
         <AdvisorNote>
           (Where recommendation is declined, please include the reason)
         </AdvisorNote>
       </div>
 
       {/* ── Wills ── */}
-      <p className="fw-bold mb-1 mt-3">Wills</p>
+      <p className='fw-bold mb-1 mt-3'>Wills</p>
       <p>
         Owning a property impacts your overall financial wealth and your wishes
         for the property upon death should be detailed in a legal will. If you
@@ -1989,10 +1991,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       {/* ══════════════════════════════
           HELP US IMPROVE
       ══════════════════════════════ */}
-      <p className="fw-bold mb-1">Help us to improve our service</p>
+      <p className='fw-bold mb-1'>Help us to improve our service</p>
       <p>
         We would love to know what you think about our service. This helps us to
-        better understand our customers and improve the way we work.{" "}
+        better understand our customers and improve the way we work.{' '}
         <span style={{ color: blue }}>{companyName}</span> will send you an
         email link to complete a short survey. We appreciate you taking the time
         to complete this.
@@ -2004,7 +2006,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           SIGNATURE
       ══════════════════════════════ */}
       <p>Yours sincerely,</p>
-      <p className="mb-0 fw-bold" style={{ color: blue }}>
+      <p className='mb-0 fw-bold' style={{ color: blue }}>
         {advisorName}
       </p>
       <p style={{ color: blue }}>{companyName}</p>
@@ -2015,35 +2017,35 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         shot to QOP)
       </AdvisorNote>
 
-      <p className="mt-3 mb-0">If applicable:</p>
-      <p className="mb-0">
+      <p className='mt-3 mb-0'>If applicable:</p>
+      <p className='mb-0'>
         This Recommendation Letter is also being sent by email/post to:
       </p>
 
       {isAdditionalRecipientsEditing ? (
-        <div className="mt-1">
+        <div className='mt-1'>
           <Input
-            type="textarea"
+            type='textarea'
             rows={3}
             value={additionalRecipientsDraft}
             onChange={(e) => setAdditionalRecipientsDraft(e.target.value)}
-            placeholder="Enter email address or postal address..."
+            placeholder='Enter email address or postal address...'
             autoFocus
-            className="w-100 p-1"
+            className='w-100 p-1'
           />
-          <div className="d-flex gap-2 mt-2">
+          <div className='d-flex gap-2 mt-2'>
             <Button
-              color="light"
-              className="text-dark"
-              size="sm"
+              color='light'
+              className='text-dark'
+              size='sm'
               onClick={handleAdditionalRecipientsSave}
             >
               Save
             </Button>
             <Button
-              color="light"
-              className="text-dark"
-              size="sm"
+              color='light'
+              className='text-dark'
+              size='sm'
               onClick={handleAdditionalRecipientsCancel}
             >
               Cancel
@@ -2053,13 +2055,13 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       ) : (
         <p
           style={{
-            cursor: "pointer",
+            cursor: 'pointer',
           }}
-          className="text-success"
+          className='text-success'
           onClick={startAdditionalRecipientsEdit}
-          title="Click to edit"
+          title='Click to edit'
         >
-          {formValues.address || "click to add email / address..."}
+          {formValues.address || 'click to add email / address...'}
         </p>
       )}
     </>

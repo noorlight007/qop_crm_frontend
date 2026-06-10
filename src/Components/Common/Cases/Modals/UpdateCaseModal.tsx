@@ -1,12 +1,13 @@
-import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
+import { useUpdateCaseMutation } from '@/Redux/Reducers/Common/Cases/CasesApi';
+import { useGetUserListQuery } from '@/Redux/Reducers/Common/Cases/UserFiltersListApi';
 import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
-} from "@/Types/Common/Cases/CaseTypes";
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+} from '@/Types/Common/Cases/CaseTypes';
+import CaseStageSelect from '@/utils/CaseStageSelect';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Form,
@@ -17,7 +18,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-} from "reactstrap";
+} from 'reactstrap';
 
 const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   isOpen,
@@ -31,9 +32,9 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
     if (!data) return null;
     return {
       ...data,
-      assigned_to: data.assigned_user?.id?.toString() || data.assigned_to || "",
+      assigned_to: data.assigned_user?.id?.toString() || data.assigned_to || '',
       assigned_to_admin:
-        data.assigned_admin?.id?.toString() || data.assigned_to_admin || "",
+        data.assigned_admin?.id?.toString() || data.assigned_to_admin || '',
     };
   };
 
@@ -45,14 +46,14 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
 
     // Only diff fields that are editable in this modal.
     const editableKeys: Array<keyof CaseInfoPrpos> = [
-      "case_stage",
-      "assigned_to",
-      "assigned_to_admin",
-      "notes",
+      'case_stage',
+      'assigned_to',
+      'assigned_to_admin',
+      'notes',
     ];
 
     const normalize = (value: unknown) => {
-      if (value === null || value === undefined) return "";
+      if (value === null || value === undefined) return '';
       return String(value);
     };
 
@@ -75,11 +76,11 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
     useUpdateCaseMutation();
 
   const { data: userAdviserListData } = useGetUserListQuery({
-    role: "ADVISER",
+    role: 'ADVISER',
   });
 
   const { data: userAdminListData } = useGetUserListQuery({
-    role: "ADMIN",
+    role: 'ADMIN',
   });
 
   const baselineFormData = getInitialFormData(caseData);
@@ -116,103 +117,49 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
         payload: changedFields,
       });
       if (res.data) {
-        toast.success("Case updated successfully.");
+        toast.success('Case updated successfully.');
         toggle();
       } else if (res.error) {
         const errorMessage =
           (res.error as any)?.data?.detail ||
-          "Failed to update the case. Please try again.";
+          'Failed to update the case. Please try again.';
         toast.error(errorMessage);
       } else {
-        toast.error("An unexpected error occurred. Please try again.");
+        toast.error('An unexpected error occurred. Please try again.');
       }
     } catch (error) {
-      console.error("Error updating case:", error);
-      toast.error("Failed to update the case. Please try again.");
+      console.error('Error updating case:', error);
+      toast.error('Failed to update the case. Please try again.');
     }
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-primary">Update Case</h3>
+        <h3 className='text-primary'>Update Case</h3>
       </ModalHeader>
       <ModalBody>
         {formData ? (
           <Form>
-            <FormGroup>
-              <Label for="case_stage">Case Stage</Label>
-              <Input
-                type="select"
-                name="case_stage"
-                id="case_stage"
-                value={formData?.case_stage || ""}
-                onChange={handleInputChange}
-              >
-                {formData?.case_category === "MORTGAGE" ? (
-                  <>
-                    <option value="">Select...</option>
-                    <option value="ENQUIRY">Enquiry</option>
-                    <option value="FACT_FIND">Fact Find</option>
-                    <option value="RESEARCH_COMPLIANCE_CHECK">
-                      Research and Compliance Check
-                    </option>
-                    <option value="DECISION_IN_PRINCIPLE">
-                      Decision in Principle
-                    </option>
-                    <option value="FULL_MORTGAGE_APPLICATION">
-                      Full Mortgage Application
-                    </option>
-                    <option value="SUBMISSION">Submission</option>
-                    <option value="OFFER_FROM_BANK">Offer From Bank</option>
-                    <option value="LEGAL">Legal</option>
-                    <option value="COMPLETION">Completion</option>
-                    <option value="REFERRED">
-                      Referred(Packager/External)
-                    </option>
-                    <option value="FUTURE_OPPORTUNITY">
-                      Future Opportunity
-                    </option>
-                    <option value="NOT_PROCEED">Not Proceed</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="">Select...</option>
-                    <option value="ENQUIRY">Enquiry</option>
-                    <option value="FACT_FIND">Fact Find</option>
-                    <option value="SUBMISSION">Submission</option>
-                    <option value="ACCEPT_WAITING_START_DATE">
-                      Accept Awaiting Start Date
-                    </option>
-                    <option value="ACCEPTED_ON_RISK">Accepted on Risk</option>
-                    <option value="FURTHER_MEDICAL_REQUIRED">
-                      Further Medical Required
-                    </option>
-                    <option value="REFERRED">
-                      Referred(Packager/External)
-                    </option>
-                    <option value="FUTURE_OPPORTUNITY">
-                      Future Opportunity
-                    </option>
-                    <option value="NOT_PROCEED">Not Proceed</option>
-                  </>
-                )}
-              </Input>
-            </FormGroup>
+            <CaseStageSelect
+              value={formData.case_stage || ''}
+              caseCategory={formData.case_category || ''}
+              onChange={handleInputChange}
+            />
 
-            {(session?.user?.role === "DIRECTOR" ||
-              session?.user?.role === "ADVISER" ||
-              session?.user?.role === "COMPLIANCE") && (
+            {(session?.user?.role === 'DIRECTOR' ||
+              session?.user?.role === 'ADVISER' ||
+              session?.user?.role === 'COMPLIANCE') && (
               <FormGroup>
-                <Label for="adviser">Assign Adviser</Label>
+                <Label for='adviser'>Assign Adviser</Label>
                 <Input
-                  id="adviser"
-                  name="assigned_to"
-                  type="select"
-                  value={formData?.assigned_to || ""}
+                  id='adviser'
+                  name='assigned_to'
+                  type='select'
+                  value={formData?.assigned_to || ''}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select...</option>
+                  <option value=''>Select...</option>
                   {userAdviserListData?.length > 0 ? (
                     userAdviserListData?.map((user: any) => (
                       <option key={user.id} value={user.id}>
@@ -220,7 +167,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                       </option>
                     ))
                   ) : (
-                    <option value="" disabled>
+                    <option value='' disabled>
                       No advisers available
                     </option>
                   )}
@@ -229,19 +176,19 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
             )}
 
             {!session?.user?.is_network &&
-              (session?.user?.role === "DIRECTOR" ||
-                session?.user?.role === "ADVISER" ||
-                session?.user?.role === "ADMIN") && (
+              (session?.user?.role === 'DIRECTOR' ||
+                session?.user?.role === 'ADVISER' ||
+                session?.user?.role === 'ADMIN') && (
                 <FormGroup>
-                  <Label for="adviser">Assign Admin</Label>
+                  <Label for='adviser'>Assign Admin</Label>
                   <Input
-                    id="admin"
-                    name="assigned_to_admin"
-                    type="select"
-                    value={formData?.assigned_to_admin || ""}
+                    id='admin'
+                    name='assigned_to_admin'
+                    type='select'
+                    value={formData?.assigned_to_admin || ''}
                     onChange={handleInputChange}
                   >
-                    <option value="">Select...</option>
+                    <option value=''>Select...</option>
                     {userAdminListData?.length > 0 ? (
                       userAdminListData?.map((user: any) => (
                         <option key={user.id} value={user.id}>
@@ -249,8 +196,8 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                         </option>
                       ))
                     ) : (
-                      <option value="" disabled>
-                        No advisers available
+                      <option value='' disabled>
+                        No admins available
                       </option>
                     )}
                   </Input>
@@ -258,31 +205,31 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
               )}
 
             <FormGroup>
-              <Label for="notes">Notes</Label>
+              <Label for='notes'>Notes</Label>
               <Input
-                type="textarea"
-                name="notes"
-                id="notes"
-                value={formData?.notes || ""}
+                type='textarea'
+                name='notes'
+                id='notes'
+                value={formData?.notes || ''}
                 onChange={handleInputChange}
               />
             </FormGroup>
           </Form>
         ) : (
-          <div className="text-center p-3">
+          <div className='text-center p-3'>
             <p>Loading case data...</p>
           </div>
         )}
       </ModalBody>
       <ModalFooter>
         <Button
-          color="primary"
+          color='primary'
           onClick={handleSubmit}
           disabled={!hasChanges || isUpdating || !formData}
         >
-          {isUpdating ? "Saving..." : "Save Changes"}
+          {isUpdating ? 'Saving...' : 'Save Changes'}
         </Button>
-        <Button color="secondary" onClick={toggle} disabled={isUpdating}>
+        <Button color='secondary' onClick={toggle} disabled={isUpdating}>
           Cancel
         </Button>
       </ModalFooter>

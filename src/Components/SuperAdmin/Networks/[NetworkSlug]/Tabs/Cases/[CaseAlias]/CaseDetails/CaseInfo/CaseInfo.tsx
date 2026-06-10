@@ -43,6 +43,7 @@ import {
 } from 'reactstrap';
 import AddNetworkJointApplicantModal from '../../../Modals/AddNetworkJointApplicantModal';
 import UpdateNetworkCaseModal from '../Modals/UpdateNetworkCaseModal';
+import { STAGE_COLORS } from '@/utils/CaseStageSelect';
 
 const CaseInfo: React.FC<NetworkCaseProps> = ({
   caseInfo,
@@ -545,42 +546,19 @@ const CaseInfo: React.FC<NetworkCaseProps> = ({
                           {caseInfo?.case_category
                             ? formatChoiceFieldValue(caseInfo.case_category)
                             : 'N/A'}
-                          {/* {caseInfo?.case_category === "MORTGAGE" &&
-                            ((caseInfo?.application_type &&
-                              String(caseInfo.application_type).trim() !==
-                                "") ||
-                              (caseInfo?.mortgage_type &&
-                                String(caseInfo.mortgage_type).trim() !==
-                                  "")) && (
-                              <small>
-                                (
-                                {caseInfo?.application_type &&
-                                caseInfo?.mortgage_type ? (
-                                  <>
-                                    {formatChoiceFieldValue(
-                                      caseInfo.application_type,
-                                    )}{" "}
-                                    <FaArrowRight />{" "}
-                                    {formatChoiceFieldValue(
-                                      caseInfo.mortgage_type,
-                                    )}
-                                  </>
-                                ) : caseInfo?.application_type ? (
-                                  formatChoiceFieldValue(
-                                    caseInfo.application_type,
-                                  )
-                                ) : (
-                                  formatChoiceFieldValue(caseInfo.mortgage_type)
-                                )}
-                                )
-                              </small>
-                            )} */}
                         </strong>
                       </h6>
 
                       <h6 className='pt-1'>
                         <span className='small'>Case Stage:</span>{' '}
-                        <strong className='small rounded-1 px-1 bg-secondary text-white'>
+                        <strong
+                          className='small rounded-1 px-1 text-white'
+                          style={{
+                            backgroundColor: caseInfo?.case_stage
+                              ? STAGE_COLORS[caseInfo.case_stage] || '#6c757d'
+                              : '#6c757d',
+                          }}
+                        >
                           {caseInfo?.case_stage ? (
                             formatChoiceFieldValue(caseInfo.case_stage)
                           ) : (

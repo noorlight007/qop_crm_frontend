@@ -1,14 +1,14 @@
-import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from '@/Components/Common/Breadcrumbs/Breadcrumbs';
 import {
   useGetAdvertiserAdsQuery,
   useGetAdvertiserDetailsQuery,
-} from "@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Container } from "reactstrap";
-import AdvertiserAds from "./AdvertiserAds/AdvertiserAds";
-import AdvertisersInfo from "./AdvertisersInfo/AdvertisersInfo";
-import DeleteAdvertiser from "./DeleteAdvertiser/DeleteAdvertiser";
+} from '@/Redux/Reducers/SuperAdmin/Advertisers/AdvertisersApi';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Container } from 'reactstrap';
+import AdvertiserAds from './AdvertiserAds/AdvertiserAds';
+import AdvertisersInfo from './AdvertisersInfo/AdvertisersInfo';
+import DeleteAdvertiser from './DeleteAdvertiser/DeleteAdvertiser';
 
 const AdvertiserDetailsContainer: React.FC = () => {
   const { advertiseralias } = useParams();
@@ -35,11 +35,11 @@ const AdvertiserDetailsContainer: React.FC = () => {
   return (
     <div>
       <Breadcrumbs
-        title="Advertiser Details"
-        subTitle="Manage your advertiser details and information here."
+        title='Advertiser Details'
+        subTitle='Manage your advertiser details and information here.'
         items={[
-          { label: "Advertisers", href: "/super-admin/advertisers" },
-          { label: "Advertiser Details", href: "#", active: true },
+          { label: 'Advertisers' },
+          { label: 'Advertiser Details', href: '#', active: true },
         ]}
       />
       <Container fluid>
@@ -50,7 +50,7 @@ const AdvertiserDetailsContainer: React.FC = () => {
         <AdvertiserAds
           advertiserAdsData={advertiserAdsData}
           advertiserAdsLoading={advertiserAdsLoading}
-          advertiserAlias={String(advertiserAlias || "")}
+          advertiserAlias={String(advertiserAlias || '')}
           currentPage={adsPage}
           pageSize={adsPageSize}
           onPageChange={setAdsPage}
