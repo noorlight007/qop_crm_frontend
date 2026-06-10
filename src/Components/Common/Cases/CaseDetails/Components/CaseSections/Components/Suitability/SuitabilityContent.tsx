@@ -104,6 +104,7 @@ const Suitability: React.FC = () => {
     early_repayment_charges_why_recommended_text: null,
     mortgage_amount_overpayment: null,
     product_transfer_expires_or_expired_type: null,
+    soft_facts: null,
   });
 
   // Pre-populate from API response
@@ -203,6 +204,7 @@ const Suitability: React.FC = () => {
         mortgage_amount_overpayment: formValues.mortgage_amount_overpayment,
         product_transfer_expires_or_expired_type:
           formValues.product_transfer_expires_or_expired_type,
+        soft_facts: formValues.soft_facts,
       };
 
       const response = await updateSuitability({
