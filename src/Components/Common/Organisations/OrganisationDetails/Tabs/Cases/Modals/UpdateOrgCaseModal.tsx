@@ -4,6 +4,7 @@ import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
 } from "@/Types/Common/Cases/CaseTypes";
+import CaseStageSelect from '@/utils/CaseStageSelect';
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -144,65 +145,11 @@ const UpdateOrgCaseModal: React.FC<UpdateCaseModalProps> = ({
       <ModalBody>
         {formData ? (
           <Form>
-            <FormGroup>
-              <Label for="case_stage">Case Stage</Label>
-              <Input
-                type="select"
-                name="case_stage"
-                id="case_stage"
-                value={formData?.case_stage || ""}
-                onChange={handleInputChange}
-              >
-                {formData?.case_category === "MORTGAGE" ? (
-                  <>
-                    <option value="">Select...</option>
-                    <option value="ENQUIRY">Enquiry</option>
-                    <option value="FACT_FIND">Fact Find</option>
-                    <option value="RESEARCH_COMPLIANCE_CHECK">
-                      Research and Compliance Check
-                    </option>
-                    <option value="DECISION_IN_PRINCIPLE">
-                      Decision in Principle
-                    </option>
-                    <option value="FULL_MORTGAGE_APPLICATION">
-                      Full Mortgage Application
-                    </option>
-                    <option value="SUBMISSION">Submission</option>
-                    <option value="OFFER_FROM_BANK">Offer From Bank</option>
-                    <option value="LEGAL">Legal</option>
-                    <option value="COMPLETION">Completion</option>
-                    <option value="REFERRED">
-                      Referred(Packager/External)
-                    </option>
-                    <option value="FUTURE_OPPORTUNITY">
-                      Future Opportunity
-                    </option>
-                    <option value="NOT_PROCEED">Not Proceed</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="">Select...</option>
-                    <option value="ENQUIRY">Enquiry</option>
-                    <option value="FACT_FIND">Fact Find</option>
-                    <option value="SUBMISSION">Submission</option>
-                    <option value="ACCEPT_WAITING_START_DATE">
-                      Accept Awaiting Start Date
-                    </option>
-                    <option value="ACCEPTED_ON_RISK">Accepted on Risk</option>
-                    <option value="FURTHER_MEDICAL_REQUIRED">
-                      Further Medical Required
-                    </option>
-                    <option value="REFERRED">
-                      Referred(Packager/External)
-                    </option>
-                    <option value="FUTURE_OPPORTUNITY">
-                      Future Opportunity
-                    </option>
-                    <option value="NOT_PROCEED">Not Proceed</option>
-                  </>
-                )}
-              </Input>
-            </FormGroup>
+           <CaseStageSelect
+              value={formData.case_stage || ''}
+              caseCategory={formData.case_category || ''}
+              onChange={handleInputChange}
+            />
 
             <FormGroup>
               <Label for="adviser">Assign Adviser</Label>
