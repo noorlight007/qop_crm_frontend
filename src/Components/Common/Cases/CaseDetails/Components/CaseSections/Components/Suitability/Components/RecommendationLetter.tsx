@@ -453,12 +453,12 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       ══════════════════════════════ */}
       <Row className='mb-5 d-flex align-items-start justify-content-between'>
         <Col xs='auto' className='align-self-start'>
-          {appearanceData?.logo && (
+          {s?.logo && (
             <Image
               width={200}
               height={70}
               className='img-fluid for-light'
-              src={appearanceData.logo}
+              src={s.logo}
               alt='suitability page'
               priority
               style={{ width: '130px', height: '50px' }}

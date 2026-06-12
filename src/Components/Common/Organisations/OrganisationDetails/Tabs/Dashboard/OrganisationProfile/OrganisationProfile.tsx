@@ -1,8 +1,8 @@
-import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
-import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
-import { useRef, useState } from "react";
-import { Mail } from "react-feather";
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
+import { useUpdateOrganisationMutation } from '@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi';
+import { FetchSingleOrganisationProps } from '@/Types/Common/Organisations/OrganisationsTypes';
+import { useRef, useState } from 'react';
+import { Mail } from 'react-feather';
 import {
   FaCamera,
   FaCheckCircle,
@@ -11,9 +11,9 @@ import {
   FaIdCard,
   FaNetworkWired,
   FaPhoneAlt,
-} from "react-icons/fa";
-import { TbCopy } from "react-icons/tb";
-import { toast } from "react-toastify";
+} from 'react-icons/fa';
+import { TbCopy } from 'react-icons/tb';
+import { toast } from 'react-toastify';
 import {
   Badge,
   Button,
@@ -25,8 +25,8 @@ import {
   PopoverHeader,
   Row,
   Spinner,
-} from "reactstrap";
-import UpdateOrganisationModal from "../../../Modals/UpdateOrganisationModal";
+} from 'reactstrap';
+import UpdateOrganisationModal from '../../../Modals/UpdateOrganisationModal';
 
 const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,
@@ -49,6 +49,12 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
     if (!files || files.length === 0) return;
     const file = files[0];
 
+    if (file.type !== 'image/png') {
+      toast.error('Logo must be a PNG image');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     // Basic client-side validation (optional)
     const maxSizeInMB = 5;
     if (file.size / 1024 / 1024 > maxSizeInMB) {
@@ -59,10 +65,10 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
     try {
       const formDataToSend = new FormData();
       // Place file inside user_data so backend updates the user profile image
-      formDataToSend.append("organization.logo", file);
+      formDataToSend.append('organization.logo', file);
 
       if (!singleOrgInfo?.organization?.slug) {
-        toast.error("Organisation identifier missing");
+        toast.error('Organisation identifier missing');
         return;
       }
 
@@ -71,14 +77,14 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
         payload: formDataToSend,
       }).unwrap();
 
-      toast.success("Profile image updated");
+      toast.success('Profile image updated');
     } catch (err: any) {
-      console.error("Profile upload error:", err);
-      const msg = err?.data?.detail || err?.message || "Upload failed";
+      console.error('Profile upload error:', err);
+      const msg = err?.data?.detail || err?.message || 'Upload failed';
       toast.error(msg);
     } finally {
       // Reset input so same file can be re-selected if needed
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -104,11 +110,11 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       const blobUrl = window.URL.createObjectURL(blob);
 
       // Create a temporary anchor element
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = blobUrl;
 
       // Extract filename from URL or use a default name
-      const fileName = licenseImageUrl.split("/").pop() || "license-image.jpg";
+      const fileName = licenseImageUrl.split('/').pop() || 'license-image.jpg';
       link.download = fileName;
 
       // Append to body, click, and remove
@@ -119,16 +125,16 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       // Clean up the blob URL
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
-      console.error("Download failed:", error);
+      console.error('Download failed:', error);
       // Fallback to opening in new tab if download fails
-      window.open(licenseImageUrl, "_blank");
+      window.open(licenseImageUrl, '_blank');
     }
   };
 
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopyDomain = () => {
-    const url = `https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
+    const url = `https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ''}`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -137,11 +143,11 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       })
       .catch(() => {
         // fallback for older browsers
-        const el = document.createElement("textarea");
+        const el = document.createElement('textarea');
         el.value = url;
         document.body.appendChild(el);
         el.select();
-        document.execCommand("copy");
+        document.execCommand('copy');
         document.body.removeChild(el);
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
@@ -161,11 +167,11 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       })
       .catch(() => {
         // fallback for older browsers
-        const el = document.createElement("textarea");
+        const el = document.createElement('textarea');
         el.value = email;
         document.body.appendChild(el);
         el.select();
-        document.execCommand("copy");
+        document.execCommand('copy');
         document.body.removeChild(el);
         setIsEmailCopied(true);
         setTimeout(() => setIsEmailCopied(false), 2000);
@@ -176,88 +182,88 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
     <>
       {isLoading ? (
         <Card
-          className="d-flex justify-content-center align-items-center w-100"
-          style={{ minHeight: "450px" }}
+          className='d-flex justify-content-center align-items-center w-100'
+          style={{ minHeight: '450px' }}
         >
           <LoadingGrow />
         </Card>
       ) : (
-        <Card className="shadow-lg">
+        <Card className='shadow-lg'>
           {/* Header Section with Logo and Basic Info */}
           <div
-            className="bg-gradient-primary position-relative overflow-hidden rounded-top-3"
+            className='bg-gradient-primary position-relative overflow-hidden rounded-top-3'
             style={{
               background: `linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)`,
-              minHeight: "140px",
+              minHeight: '140px',
             }}
           >
             {/* Decorative elements */}
             <div
-              className="position-absolute"
+              className='position-absolute'
               style={{
                 top: -50,
                 right: -50,
                 width: 200,
                 height: 200,
-                background: "rgba(255,255,255,0.1)",
-                borderRadius: "50%",
+                background: 'rgba(255,255,255,0.1)',
+                borderRadius: '50%',
               }}
             ></div>
             <div
-              className="position-absolute"
+              className='position-absolute'
               style={{
                 bottom: -30,
                 left: -30,
                 width: 150,
                 height: 150,
-                background: "rgba(255,255,255,0.05)",
-                borderRadius: "50%",
+                background: 'rgba(255,255,255,0.05)',
+                borderRadius: '50%',
               }}
             ></div>
 
-            <CardBody className="position-relative pt-3 pb-0">
-              <Row className="align-items-end">
-                <Col md="auto">
+            <CardBody className='position-relative pt-3 pb-0'>
+              <Row className='align-items-end'>
+                <Col md='auto'>
                   {/* Organisation Logo */}
                   <div
-                    className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center border border-5 border-secondary"
+                    className='position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center border border-5 border-secondary'
                     style={{
-                      width: "150px",
-                      height: "100px",
+                      width: '150px',
+                      height: '100px',
                       // border: "5px solid white",
-                      overflow: "hidden",
+                      overflow: 'hidden',
                     }}
                   >
                     <img
                       src={
                         singleOrgInfo?.organization?.logo ||
-                        "/assets/images/network/logo.jpg"
+                        '/assets/images/network/logo.jpg'
                       }
-                      alt="Logo"
+                      alt='Logo'
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
                       }}
                     />
 
                     {/* Upload overlay: camera on hover */}
                     <button
-                      type="button"
-                      aria-label="Change Organization Logo"
-                      className="camera-btn position-absolute bg-secondary d-flex align-items-center justify-content-center rounded-circle border-0"
+                      type='button'
+                      aria-label='Change Organization Logo'
+                      className='camera-btn position-absolute bg-secondary d-flex align-items-center justify-content-center rounded-circle border-0'
                       style={{
-                        right: "-6px",
-                        bottom: "-6px",
-                        width: "35px",
-                        height: "35px",
-                        color: "#fff",
-                        cursor: "pointer",
+                        right: '-6px',
+                        bottom: '-6px',
+                        width: '35px',
+                        height: '35px',
+                        color: '#fff',
+                        cursor: 'pointer',
                       }}
                       onClick={handleProfileImageUpload}
                     >
                       {isUpdating ? (
-                        <Spinner size="sm" color="light" />
+                        <Spinner size='sm' color='light' />
                       ) : (
                         <FaCamera size={12} />
                       )}
@@ -266,38 +272,38 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                     {/* Hidden file input */}
                     <input
                       ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="d-none"
+                      type='file'
+                      accept='image/png'
+                      className='d-none'
                       onChange={handleFileSelected}
                     />
                   </div>
                 </Col>
-                <Col className="text-white">
-                  <h2 className="mb-1 fw-bold">
+                <Col className='text-white'>
+                  <h2 className='mb-1 fw-bold'>
                     {singleOrgInfo?.organization?.name}
                   </h2>
-                  <div className="d-flex align-items-center gap-2 mb-2">
+                  <div className='d-flex align-items-center gap-2 mb-2'>
                     {singleOrgInfo?.organization?.network && (
-                      <Badge className="bg-success">
-                        <FaNetworkWired className="me-1" />
+                      <Badge className='bg-success'>
+                        <FaNetworkWired className='me-1' />
                         {singleOrgInfo?.organization?.network}
                       </Badge>
                     )}
                     {singleOrgInfo?.organization?.subdomain && (
-                      <Badge className="bg-warning text-truncate d-flex gap-2 align-items-center">
-                        <span className="d-flex align-items-center">
-                          <FaGlobe className="me-1" />
-                          <span style={{ paddingTop: "0.15rem" }}>
-                            {`https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
+                      <Badge className='bg-warning text-truncate d-flex gap-2 align-items-center'>
+                        <span className='d-flex align-items-center'>
+                          <FaGlobe className='me-1' />
+                          <span style={{ paddingTop: '0.15rem' }}>
+                            {`https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ''}`}
                           </span>
                         </span>
                         <span
-                          style={{ cursor: "pointer" }}
+                          style={{ cursor: 'pointer' }}
                           onClick={handleCopyDomain}
                         >
                           {isCopied ? (
-                            <FaCheckCircle className="text-success" />
+                            <FaCheckCircle className='text-success' />
                           ) : (
                             <TbCopy />
                           )}
@@ -308,28 +314,28 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       singleOrgInfo?.organization?.license_image) && (
                       <>
                         <Badge
-                          id="licensePopover"
-                          color="secondary"
+                          id='licensePopover'
+                          color='secondary'
                           onClick={toggleLicensePopover}
-                          style={{ cursor: "pointer", padding: "0.3rem" }}
+                          style={{ cursor: 'pointer', padding: '0.3rem' }}
                         >
                           <FaIdCard />
                         </Badge>
 
                         <Popover
-                          placement="bottom"
+                          placement='bottom'
                           isOpen={licensePopoverOpen}
-                          target="licensePopover"
+                          target='licensePopover'
                           toggle={toggleLicensePopover}
-                          trigger="legacy"
+                          trigger='legacy'
                         >
-                          <PopoverHeader className="bg-primary text-light">
-                            <FaIdCard className="me-2" />
+                          <PopoverHeader className='bg-primary text-light'>
+                            <FaIdCard className='me-2' />
                             License Information
                           </PopoverHeader>
                           <PopoverBody>
-                            <div className="mb-3">
-                              <small className="text-muted d-block mb-1">
+                            <div className='mb-3'>
+                              <small className='text-muted d-block mb-1'>
                                 License Number
                               </small>
                               {singleOrgInfo?.organization?.license_no ? (
@@ -337,14 +343,14 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                                   {singleOrgInfo.organization.license_no}
                                 </strong>
                               ) : (
-                                <small className="text-danger fst-italic">
+                                <small className='text-danger fst-italic'>
                                   Not added yet
                                 </small>
                               )}
                             </div>
 
                             <div>
-                              <small className="text-muted d-block mb-1">
+                              <small className='text-muted d-block mb-1'>
                                 License Image
                               </small>
                               {singleOrgInfo?.organization?.license_image ? (
@@ -353,27 +359,27 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                                     src={
                                       singleOrgInfo.organization.license_image
                                     }
-                                    alt="License"
-                                    className="img-fluid rounded border mb-2"
+                                    alt='License'
+                                    className='img-fluid rounded border mb-2'
                                     style={{
-                                      maxHeight: "200px",
-                                      width: "100%",
-                                      maxWidth: "100%",
-                                      objectFit: "contain",
+                                      maxHeight: '200px',
+                                      width: '100%',
+                                      maxWidth: '100%',
+                                      objectFit: 'contain',
                                     }}
                                   />
                                   <Button
-                                    color="primary"
-                                    size="sm"
+                                    color='primary'
+                                    size='sm'
                                     onClick={handleLicenseImageDownload}
-                                    style={{ width: "100%" }}
+                                    style={{ width: '100%' }}
                                   >
-                                    <FaDownload className="me-1" />
+                                    <FaDownload className='me-1' />
                                     Download
                                   </Button>
                                 </div>
                               ) : (
-                                <small className="text-danger fst-italic">
+                                <small className='text-danger fst-italic'>
                                   Not added yet
                                 </small>
                               )}
@@ -387,118 +393,118 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               </Row>
             </CardBody>
           </div>
-          <div className="edit_icon">
+          <div className='edit_icon'>
             <Button
-              size="sm"
+              size='sm'
               outline
-              color="primary"
+              color='primary'
               onClick={toggleUpdateModal}
-              title="Edit Organisation"
-              className="fw-500"
+              title='Edit Organisation'
+              className='fw-500'
             >
-              <i className="iconly-Edit me-2"></i>Edit
+              <i className='iconly-Edit me-2'></i>Edit
             </Button>
           </div>
 
           {/* Organization Details Section */}
-          <CardBody className="pb-2">
+          <CardBody className='pb-2'>
             {/* Contact Information */}
-            <div className="mb-4">
-              <h6 className="fw-bold text-uppercase text-muted small mb-3">
+            <div className='mb-4'>
+              <h6 className='fw-bold text-uppercase text-muted small mb-3'>
                 Contact Information
               </h6>
               <Row>
-                <Col md="6" className="mb-3">
-                  <div className="d-flex align-items-start gap-3">
+                <Col md='6' className='mb-3'>
+                  <div className='d-flex align-items-start gap-3'>
                     <div
-                      className="flex-shrink-0 d-flex align-items-center justify-content-center"
+                      className='flex-shrink-0 d-flex align-items-center justify-content-center'
                       style={{
                         width: 36,
                         height: 36,
-                        background: "var(--primary-color)",
-                        color: "#fff",
+                        background: 'var(--primary-color)',
+                        color: '#fff',
                         borderRadius: 6,
                         marginTop: 2,
                       }}
                     >
                       <FaPhoneAlt size={18} />
                     </div>
-                    <div className="flex-grow-1">
-                      <p className="small text-muted mb-1">Phone</p>
+                    <div className='flex-grow-1'>
+                      <p className='small text-muted mb-1'>Phone</p>
                       {singleOrgInfo?.organization?.primary_mobile ? (
                         <span
-                          className="fw-500 text-dark text-decoration-none text-break"
+                          className='fw-500 text-dark text-decoration-none text-break'
                           style={{
-                            transition: "color 0.2s",
-                            wordBreak: "break-word",
+                            transition: 'color 0.2s',
+                            wordBreak: 'break-word',
                           }}
                           onMouseEnter={(e) =>
                             (e.currentTarget.style.color =
-                              "var(--primary-color)")
+                              'var(--primary-color)')
                           }
                           onMouseLeave={(e) =>
-                            (e.currentTarget.style.color = "inherit")
+                            (e.currentTarget.style.color = 'inherit')
                           }
                         >
                           {singleOrgInfo?.organization?.primary_mobile}
                         </span>
                       ) : (
-                        <span className="text-muted">Not Available</span>
+                        <span className='text-muted'>Not Available</span>
                       )}
                     </div>
                   </div>
                 </Col>
-                <Col md="6" className="mb-3">
-                  <div className="d-flex align-items-start gap-3">
+                <Col md='6' className='mb-3'>
+                  <div className='d-flex align-items-start gap-3'>
                     <div
-                      className="flex-shrink-0 d-flex align-items-center justify-content-center"
+                      className='flex-shrink-0 d-flex align-items-center justify-content-center'
                       style={{
                         width: 36,
                         height: 36,
-                        background: "var(--primary-color)",
-                        color: "#fff",
+                        background: 'var(--primary-color)',
+                        color: '#fff',
                         borderRadius: 6,
                         marginTop: 2,
                       }}
                     >
                       <Mail size={18} />
                     </div>
-                    <div className="flex-grow-1" style={{ minWidth: 0 }}>
-                      <p className="small text-muted mb-1">Email</p>
+                    <div className='flex-grow-1' style={{ minWidth: 0 }}>
+                      <p className='small text-muted mb-1'>Email</p>
                       {singleOrgInfo?.organization?.email ? (
                         <span
-                          className="d-flex align-items-center gap-2"
+                          className='d-flex align-items-center gap-2'
                           style={{ minWidth: 0 }}
                         >
                           <span
-                            className="fw-500 text-dark text-truncate d-block"
+                            className='fw-500 text-dark text-truncate d-block'
                             style={{
-                              transition: "color 0.2s",
+                              transition: 'color 0.2s',
                             }}
                             onMouseEnter={(e) =>
                               (e.currentTarget.style.color =
-                                "var(--primary-color)")
+                                'var(--primary-color)')
                             }
                             onMouseLeave={(e) =>
-                              (e.currentTarget.style.color = "inherit")
+                              (e.currentTarget.style.color = 'inherit')
                             }
                           >
                             {singleOrgInfo?.organization?.email}
                           </span>
                           <span
-                            className=""
-                            style={{ cursor: "pointer", flexShrink: 0 }}
+                            className=''
+                            style={{ cursor: 'pointer', flexShrink: 0 }}
                             onClick={handleCopyEmail}
                           >
                             {isEmailCopied ? (
-                              <FaCheckCircle className="text-success" />
+                              <FaCheckCircle className='text-success' />
                             ) : (
                               <TbCopy />
                             )}
                           </span>
                         </span>
                       ) : (
-                        <span className="text-muted">Not Available</span>
+                        <span className='text-muted'>Not Available</span>
                       )}
                     </div>
                   </div>
@@ -507,63 +513,63 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
             </div>
 
             {/* Divider */}
-            <hr className="my-3" />
+            <hr className='my-3' />
 
             {/* Statistics Section */}
             <div>
-              <h6 className="fw-bold text-uppercase text-muted small mb-3">
+              <h6 className='fw-bold text-uppercase text-muted small mb-3'>
                 Organization Statistics
               </h6>
               <Row>
-                <Col className="mb-3">
-                  <div className="text-center p-3 rounded-3 bg-light-primary">
-                    <h4 className="fw-bold text-primary mb-1">
+                <Col className='mb-3'>
+                  <div className='text-center p-3 rounded-3 bg-light-primary'>
+                    <h4 className='fw-bold text-primary mb-1'>
                       {Number(
                         singleOrgDashboardData?.counters?.total_cases || 0,
                       ).toLocaleString()}
                     </h4>
-                    <p className="small text-muted mb-0">Cases</p>
+                    <p className='small text-muted mb-0'>Cases</p>
                   </div>
                 </Col>
-                <Col className="mb-3">
-                  <div className="text-center p-3 rounded-3 bg-light-primary">
-                    <h4 className="fw-bold text-primary mb-1">
+                <Col className='mb-3'>
+                  <div className='text-center p-3 rounded-3 bg-light-primary'>
+                    <h4 className='fw-bold text-primary mb-1'>
                       {Number(
                         singleOrgDashboardData?.counters?.total_leads || 0,
                       ).toLocaleString()}
                     </h4>
-                    <p className="small text-muted mb-0">Leads</p>
+                    <p className='small text-muted mb-0'>Leads</p>
                   </div>
                 </Col>
-                <Col className="mb-3">
-                  <div className="text-center p-3 rounded-3 bg-light-primary">
-                    <h4 className="fw-bold text-primary mb-1">
+                <Col className='mb-3'>
+                  <div className='text-center p-3 rounded-3 bg-light-primary'>
+                    <h4 className='fw-bold text-primary mb-1'>
                       {Number(
                         singleOrgDashboardData?.counters?.total_clients || 0,
                       ).toLocaleString()}
                     </h4>
-                    <p className="small text-muted mb-0">Applicants</p>
+                    <p className='small text-muted mb-0'>Applicants</p>
                   </div>
                 </Col>
-                <Col className="mb-3">
-                  <div className="text-center p-3 rounded-3 bg-light-primary">
-                    <h4 className="fw-bold text-primary mb-1">
+                <Col className='mb-3'>
+                  <div className='text-center p-3 rounded-3 bg-light-primary'>
+                    <h4 className='fw-bold text-primary mb-1'>
                       {Number(
                         singleOrgDashboardData?.counters?.total_advisers || 0,
                       ).toLocaleString()}
                     </h4>
-                    <p className="small text-muted mb-0">Advisers</p>
+                    <p className='small text-muted mb-0'>Advisers</p>
                   </div>
                 </Col>
-                <Col className="mb-3">
-                  <div className="text-center p-3 rounded-3 bg-light-primary">
-                    <h4 className="fw-bold text-primary mb-1">
+                <Col className='mb-3'>
+                  <div className='text-center p-3 rounded-3 bg-light-primary'>
+                    <h4 className='fw-bold text-primary mb-1'>
                       {Number(
                         singleOrgDashboardData?.counters?.total_introducers ||
                           0,
                       ).toLocaleString()}
                     </h4>
-                    <p className="small text-muted mb-0">Introducers</p>
+                    <p className='small text-muted mb-0'>Introducers</p>
                   </div>
                 </Col>
               </Row>
