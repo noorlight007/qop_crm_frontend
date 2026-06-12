@@ -138,6 +138,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const [ercWhyNoteDraft, setErcWhyNoteDraft] = useState('');
   const [isOverpaymentEditing, setIsOverpaymentEditing] = useState(false);
   const [overpaymentDraft, setOverpaymentDraft] = useState('');
+  const [isSoftFactsEditing, setIsSoftFactsEditing] = useState(false);
+  const [softFactsDraft, setSoftFactsDraft] = useState('');
 
   // ══════════════════════════════════════════════════════════
   // LOCAL DRAFT STATES
@@ -248,6 +250,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   // SAVE / CANCEL HANDLERS FOR TEXTAREA FIELDS
   // ══════════════════════════════════════════════════════════
 
+  // Lender handlers
   const handleLenderSave = () => {
     onFormChange({ lender_text: lenderDraft });
     setIsLenderEditing(false);
@@ -261,6 +264,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsLenderEditing(true);
   };
 
+  // Interest rate handlers
   const handleInterestRateSave = () => {
     onFormChange({ initial_interest_rate_text: interestRateDraft });
     setIsInterestRateEditing(false);
@@ -274,6 +278,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsInterestRateEditing(true);
   };
 
+  // Initial interest rate deal period handlers
   const handleInitialInterestRateSave = () => {
     onFormChange({
       initial_interest_rate_deal_period_text: initialInterestRateDraft,
@@ -293,6 +298,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsInitialInterestRateEditing(true);
   };
 
+  // Mortgage term handlers
   const handleMortgageTermSave = () => {
     onFormChange({ mortgage_term_text: mortgageTermDraft });
     setIsMortgageTermEditing(false);
@@ -306,6 +312,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsMortgageTermEditing(true);
   };
 
+  // Portability handlers
   const handlePortableWhySave = () => {
     onFormChange({ portability_suggestion: portableWhyDraft });
     setIsPortableWhyEditing(false);
@@ -319,6 +326,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsPortableWhyEditing(true);
   };
 
+  // Protection handlers
   const handleProtectionSave = () => {
     onFormChange({ protection_reason: protectionDraft });
     setIsProtectionEditing(false);
@@ -332,6 +340,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsProtectionEditing(true);
   };
 
+  // Arrangement fee handlers
   const handleArrangementFeeSave = () => {
     onFormChange({
       arrangement_fee: arrangementFeeDraft ? Number(arrangementFeeDraft) : null,
@@ -355,6 +364,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsArrangementFeeEditing(true);
   };
 
+  // max erc handlers
   const handleMaxErcSave = () => {
     onFormChange({ max_erc: maxErcDraft });
     setIsMaxErcEditing(false);
@@ -367,6 +377,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setMaxErcDraft(formValues.max_erc ?? '');
     setIsMaxErcEditing(true);
   };
+
+  // address/email handlers
   const handleAdditionalRecipientsSave = () => {
     onFormChange({ address: additionalRecipientsDraft });
     setIsAdditionalRecipientsEditing(false);
@@ -379,6 +391,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setAdditionalRecipientsDraft(formValues.address ?? '');
     setIsAdditionalRecipientsEditing(true);
   };
+
+  // Repayment method handlers
   const handleRepaymentMethodSave = () => {
     onFormChange({ repayment_method_recommended_text: repaymentMethodDraft });
     setIsRepaymentMethodEditing(false);
@@ -392,6 +406,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsRepaymentMethodEditing(true);
   };
 
+  // Arrangement fee note handlers
   const handleArrangementFeeNoteSave = () => {
     onFormChange({
       arrangement_fee_why_recommended_text: arrangementFeeNoteDraft,
@@ -411,6 +426,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsArrangementFeeNoteEditing(true);
   };
 
+  // ERC reason handlers
   const handleErcWhyNoteSave = () => {
     onFormChange({
       early_repayment_charges_why_recommended_text: ercWhyNoteDraft,
@@ -430,6 +446,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsErcWhyNoteEditing(true);
   };
 
+  // Overpayment handlers
   const handleOverpaymentSave = () => {
     onFormChange({ mortgage_amount_overpayment: overpaymentDraft });
     setIsOverpaymentEditing(false);
@@ -443,6 +460,20 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsOverpaymentEditing(true);
   };
 
+  // soft facts handler
+  const startSoftFactsEdit = () => {
+    setSoftFactsDraft(formValues.soft_facts ?? '');
+    setIsSoftFactsEditing(true);
+  };
+  const handleSoftFactsSave = () => {
+    onFormChange({ soft_facts: softFactsDraft });
+    setIsSoftFactsEditing(false);
+  };
+  const handleSoftFactsCancel = () => {
+    setSoftFactsDraft(formValues.soft_facts ?? '');
+    setIsSoftFactsEditing(false);
+  };
+
   // ══════════════════════════════════════════════════════════
   // RENDER
   // ══════════════════════════════════════════════════════════
@@ -453,12 +484,12 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       ══════════════════════════════ */}
       <Row className='mb-5 d-flex align-items-start justify-content-between'>
         <Col xs='auto' className='align-self-start'>
-          {appearanceData?.logo && (
+          {s?.logo && (
             <Image
               width={200}
               height={70}
               className='img-fluid for-light'
-              src={appearanceData.logo}
+              src={s.logo}
               alt='suitability page'
               priority
               style={{ width: '130px', height: '50px' }}
@@ -541,6 +572,53 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         During our discussion you asked me to provide advice on your{' '}
         <span style={{ color: blue }}>{mortgageType}</span> of{' '}
         <strong style={{ color: blue }}>{propertyAddress}</strong>.
+      </p>
+
+      <p>
+        {isSoftFactsEditing ? (
+          <span className='d-block w-100 mt-1'>
+            <Input
+              type='textarea'
+              rows={5}
+              value={softFactsDraft}
+              onChange={(e) => setSoftFactsDraft(e.target.value)}
+              placeholder='Enter your reason...'
+              autoFocus
+              className='w-100 p-1'
+            />
+            <div className='d-flex gap-2 mt-2'>
+              <Button
+                color='light'
+                className='text-dark'
+                size='sm'
+                onClick={handleSoftFactsSave}
+              >
+                Save
+              </Button>
+              <Button
+                color='light'
+                className='text-dark'
+                size='sm'
+                onClick={handleSoftFactsCancel}
+              >
+                Cancel
+              </Button>
+            </div>
+          </span>
+        ) : (
+          <span
+            className='d-inline text-success'
+            style={{
+              cursor: 'pointer',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+            }}
+            onClick={startSoftFactsEdit}
+            title='Click to edit'
+          >
+            {formValues.soft_facts || 'click to add soft facts...'}
+          </span>
+        )}
       </p>
 
       <div className='mb-3'>

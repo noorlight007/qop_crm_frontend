@@ -52,6 +52,7 @@ export interface SuitabilityData {
   early_repayment_charges_why_recommended_text: string | null;
   mortgage_amount_overpayment: string | null;
   product_transfer_expires_or_expired_type: string | null;
+  soft_facts: string | null;
 }
 
 export interface RecommendationLetterProps {
