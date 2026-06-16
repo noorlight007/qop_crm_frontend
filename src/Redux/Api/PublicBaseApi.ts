@@ -27,7 +27,7 @@ const baseQuery = fetchBaseQuery({
       }
 
       if (subdomainToSet) {
-        headers.set("X-Tenant-Subdomain", subdomainToSet);
+        headers.set("X-TENANT-SUBDOMAIN", subdomainToSet);
       }
     }
 
