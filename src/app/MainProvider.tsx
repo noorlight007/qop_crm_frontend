@@ -1,16 +1,17 @@
-"use client";
-import ErrorPage1Container from "@/Components/Other/ErrorPage/ErrorPage1Container";
-import { useAppDispatch } from "@/Redux/Hooks";
+'use client';
+import ErrorPage1Container from '@/Components/Other/ErrorPage/ErrorPage1Container';
+import { useAppDispatch } from '@/Redux/Hooks';
 import {
   useGetAppranceQuery,
   useGetPublicAppranceQuery,
-} from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { addColor } from "@/Redux/Reducers/ThemeCustomizerReducer";
-import Store from "@/Redux/Store";
-import { useSession } from "next-auth/react";
-import React, { ErrorInfo, ReactNode, useEffect } from "react";
-import { unstable_batchedUpdates } from "react-dom";
-import { Provider } from "react-redux";
+} from '@/Redux/Reducers/Appearance/AppearanceApi';
+import { addColor } from '@/Redux/Reducers/ThemeCustomizerReducer';
+import Store from '@/Redux/Store';
+import { registerUpdateSession } from '@/utils/sessionUpdate';
+import { useSession } from 'next-auth/react';
+import React, { ErrorInfo, ReactNode, useEffect } from 'react';
+import { unstable_batchedUpdates } from 'react-dom';
+import { Provider } from 'react-redux';
 
 interface MainProviderProps {
   children: ReactNode;
@@ -39,8 +40,8 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    if (error.message.includes("ToastContainer")) return;
-    console.error("Uncaught error:", error, errorInfo);
+    if (error.message.includes('ToastContainer')) return;
+    console.error('Uncaught error:', error, errorInfo);
   }
 
   render() {
@@ -50,7 +51,7 @@ class ErrorBoundary extends React.Component<
 }
 
 const AppearanceFontApplier: React.FC<MainProviderProps> = ({ children }) => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const dispatch = useAppDispatch();
 
   // Authenticated appearance
@@ -65,8 +66,37 @@ const AppearanceFontApplier: React.FC<MainProviderProps> = ({ children }) => {
 
   const appearanceData = privateAppearance || publicAppearance;
 
+  // Sync localStorage tokens to NextAuth session and register update function
   useEffect(() => {
-    if (typeof document === "undefined") return;
+    if (typeof window === 'undefined' || !update) return;
+
+    registerUpdateSession(update);
+
+    const localToken = localStorage.getItem('token');
+    const localRefreshToken = localStorage.getItem('refreshToken');
+
+    if (localToken || localRefreshToken) {
+      const needsUpdate =
+        (localToken && session?.user?.accessToken !== localToken) ||
+        (localRefreshToken &&
+          session?.user?.refreshToken !== localRefreshToken);
+
+      if (needsUpdate) {
+        update({
+          ...session?.user,
+          ...(localToken ? { accessToken: localToken } : {}),
+          ...(localRefreshToken ? { refreshToken: localRefreshToken } : {}),
+        } as any);
+      }
+    }
+
+    return () => {
+      registerUpdateSession(null as any);
+    };
+  }, [session, update]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
 
     const root = document.documentElement;
     const fontKey = appearanceData?.font_family;
@@ -89,9 +119,9 @@ const AppearanceFontApplier: React.FC<MainProviderProps> = ({ children }) => {
     const mappedFont = fontKey ? fontMap[fontKey] : undefined;
 
     if (mappedFont) {
-      root.style.setProperty("--app-body-font", mappedFont);
+      root.style.setProperty('--app-body-font', mappedFont);
     } else {
-      root.style.removeProperty("--app-body-font");
+      root.style.removeProperty('--app-body-font');
     }
   }, [appearanceData?.font_family]);
 
