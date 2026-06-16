@@ -1,4 +1,5 @@
 import { logOut } from '@/services/auth/logout';
+import { updateSession } from '@/utils/sessionUpdate';
 import type {
   BaseQueryFn,
   FetchArgs,
@@ -154,6 +155,16 @@ const refreshAccessToken = async (): Promise<string | null> => {
         localStorage.setItem('token', newToken);
         if (newRefreshToken) {
           localStorage.setItem('refreshToken', newRefreshToken);
+        }
+
+        // Update NextAuth session with new tokens
+        const currentSession = await getSession();
+        if (currentSession?.user) {
+          updateSession({
+            ...currentSession.user,
+            accessToken: newToken,
+            ...(newRefreshToken ? { refreshToken: newRefreshToken } : {}),
+          });
         }
       }
 
