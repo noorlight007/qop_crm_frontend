@@ -142,7 +142,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
       setCompanyName(property.company_name || "");
       setFetchedEpcRating(property.epc_rating || "");
       setNote(property.note || "");
-      const linkedCustomers = property.customers ?? [];
+      const linkedCustomers = property.applicants ?? [];
       setSelectedApplicants(
         Array.isArray(linkedCustomers)
           ? linkedCustomers.map((c: any) => String(c.id))
@@ -290,7 +290,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
     if (errors[snake]) return errors[snake];
     const aliases: Record<string, string[]> = {
       houseNumber: ["house_name_or_number"],
-      customers: ["customer_ids"],
+      applicants: ["applicant_ids"],
       propertyValue: ["property_value"],
       currentMortgageBalance: ["current_mortgage_balance"],
       monthlyRental: ["monthly_rental_income"],
@@ -393,7 +393,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
     // }
     try {
       const payload = {
-        customer_ids: selectedApplicants.map(Number),
+        applicant_ids: selectedApplicants.map(Number),
         postcode,
         house_name_or_number: houseNumber,
         address_1: address1,
@@ -606,11 +606,11 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                       </div>
                     )}
                   </div>
-                  {(getFieldError("customer_ids") ||
-                    getFieldError("customers")) && (
+                  {(getFieldError("applicant_ids") ||
+                    getFieldError("applicants")) && (
                     <small className="text-danger d-block mt-1">
-                      {getFieldError("customer_ids") ||
-                        getFieldError("customers")}
+                      {getFieldError("applicant_ids") ||
+                        getFieldError("applicants")}
                     </small>
                   )}
                 </FormGroup>
