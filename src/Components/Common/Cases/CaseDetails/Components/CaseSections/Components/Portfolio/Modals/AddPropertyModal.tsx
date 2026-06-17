@@ -171,7 +171,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     // common alias mappings
     const aliases: Record<string, string[]> = {
       houseNumber: ["house_name_or_number"],
-      customers: ["customer_ids"],
+      applicants: ["applicant_ids"],
       propertyValue: ["property_value"],
       currentMortgageBalance: ["current_mortgage_balance"],
       monthlyRental: ["monthly_rental_income"],
@@ -211,7 +211,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     const formData = new FormData(e.currentTarget);
     try {
       const payload = {
-        customer_ids: selectedApplicants.map((id) => Number(id)),
+        applicant_ids: selectedApplicants.map((id) => Number(id)),
         postcode: formData.get("postcode"),
         house_name_or_number: formData.get("house_name_or_number"),
         address_1: formData.get("address_1"),
@@ -655,14 +655,14 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                       </div>
                     )}
                   </div>
-                  {(getFieldError("customer_ids") ||
-                    getFieldError("customers")) && (
+                  {(getFieldError("applicant_ids") ||
+                    getFieldError("applicants")) && (
                     <small
                       className="text-danger"
                       style={{ marginTop: "5px", display: "block" }}
                     >
-                      {getFieldError("customer_ids") ||
-                        getFieldError("customers")}
+                      {getFieldError("applicant_ids") ||
+                        getFieldError("applicants")}
                     </small>
                   )}
                 </FormGroup>

@@ -1,22 +1,22 @@
-import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
+import { useAppDispatch, useAppSelector } from '@/Redux/Hooks';
+import { basicTabIndicator } from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice';
 import {
   useExportPropertiesCSVMutation,
   useGetPortfolioDetailsQuery,
   useImportPropertiesCSVMutation,
-} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
-import getCurrencySign from "@/utils/currency";
-import { formatDate } from "@/utils/dateAndTimeFormatter";
-import formatChoiceFieldValue from "@/utils/formatters";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import { useRef, useState } from "react";
-import { FaFileExport, FaFileImport } from "react-icons/fa";
-import { toast } from "react-toastify";
+} from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi';
+import { useUpdateSectionCompleteStatusMutation } from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi';
+import { useGetSingleCaseQuery } from '@/Redux/Reducers/Common/Cases/CasesApi';
+import { getNextTabNav } from '@/utils/Helper/nextTabUtils';
+import getCurrencySign from '@/utils/currency';
+import { formatDate } from '@/utils/dateAndTimeFormatter';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
+import { useRef, useState } from 'react';
+import { FaFileExport, FaFileImport } from 'react-icons/fa';
+import { TbCirclePlus } from 'react-icons/tb';
+import { toast } from 'react-toastify';
 import {
   Button,
   Card,
@@ -26,12 +26,12 @@ import {
   Container,
   Row,
   Table,
-} from "reactstrap";
-import AddPropertyModal from "./Modals/AddPropertyModal";
-import DeletePropertyModal from "./Modals/DeletePropertyModal";
-import ImportCSVModal from "./Modals/ImportCSVModal";
-import UpdatePropertyModal from "./Modals/UpdatePropertyModal";
-import PortfolioSummary from "./PortfolioSummary";
+} from 'reactstrap';
+import AddPropertyModal from './Modals/AddPropertyModal';
+import DeletePropertyModal from './Modals/DeletePropertyModal';
+import ImportCSVModal from './Modals/ImportCSVModal';
+import UpdatePropertyModal from './Modals/UpdatePropertyModal';
+import PortfolioSummary from './PortfolioSummary';
 
 const PortfolioContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,7 +75,7 @@ const PortfolioContent: React.FC = () => {
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
     } else {
-      toast.warning("This is the last tab.");
+      toast.warning('This is the last tab.');
     }
   };
 
@@ -103,7 +103,7 @@ const PortfolioContent: React.FC = () => {
   const handleImportCSV = async (file: File) => {
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append('file', file);
 
       const response = await importPropertiesCSV({
         case_alias: casealias,
@@ -111,21 +111,21 @@ const PortfolioContent: React.FC = () => {
       }).unwrap();
 
       if (response.message) {
-        toast.success("Properties imported successfully.");
+        toast.success('Properties imported successfully.');
         try {
           await updateSectionCompleteStatus({
             case_alias: casealias,
             section_data: { is_portfolio: true },
           });
         } catch (err) {
-          console.error("Failed to update section complete status:", err);
+          console.error('Failed to update section complete status:', err);
         }
       } else {
-        toast.error("Something went wrong");
+        toast.error('Something went wrong');
       }
     } catch (error) {
-      toast.error("Failed to import properties from CSV.");
-      console.error("Import error:", error);
+      toast.error('Failed to import properties from CSV.');
+      console.error('Import error:', error);
     }
   };
 
@@ -135,96 +135,97 @@ const PortfolioContent: React.FC = () => {
         case_alias: casealias,
       }).unwrap();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.download = "properties-report.csv";
+      link.download = 'properties-report.csv';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      toast.error("Failed to export properties to CSV.");
-      console.error("Export error:", error);
+      toast.error('Failed to export properties to CSV.');
+      console.error('Export error:', error);
     }
   };
 
-  const isApplicant = session?.user?.role === "APPLICANT";
+  const isApplicant = session?.user?.role === 'APPLICANT';
   const isEditable = caseData?.is_editable !== false;
   const isLocked = isApplicant && !isEditable;
 
   return (
     <>
-      <Container fluid className="p-4">
+      <Container fluid className='p-4'>
         <Row>
           <Card>
-            <CardHeader className="bg-light-info">
-              <span className="fs-5">Summary of client declared values</span>
+            <CardHeader className='bg-light-info'>
+              <span className='fs-5'>Summary of client declared values</span>
             </CardHeader>
-            <CardBody className="p-0 mt-5">
+            <CardBody className='p-0 mt-5'>
               <PortfolioSummary />
             </CardBody>
           </Card>
         </Row>
         <hr />
-        <div style={{ position: "relative" }}>
+        <div style={{ position: 'relative' }}>
           {isLocked && (
             <div
               style={{
-                position: "absolute",
+                position: 'absolute',
                 inset: 0,
                 zIndex: 10,
-                cursor: "not-allowed",
-                backgroundColor: "rgba(0,0,0,0.0001)",
+                cursor: 'not-allowed',
+                backgroundColor: 'rgba(0,0,0,0.0001)',
               }}
-              title="This case is not editable"
+              title='This case is not editable'
             />
           )}
           <div
             style={{
               opacity: isLocked ? 0.45 : 1,
-              pointerEvents: isLocked ? "none" : "auto",
-              transition: "opacity 0.2s ease",
-              userSelect: isLocked ? "none" : "auto",
+              pointerEvents: isLocked ? 'none' : 'auto',
+              transition: 'opacity 0.2s ease',
+              userSelect: isLocked ? 'none' : 'auto',
             }}
           >
-            <Row className="mb-4">
+            <Row className='mb-4'>
               <Col md={12}>
                 <Card>
                   <CardHeader>
-                    <div className="d-flex justify-content-between mb-2">
-                      <h5 className="mb-0 fs-3 text-primary">
+                    <div className='d-flex justify-content-between mb-2'>
+                      <h5 className='mb-0 fs-3 text-primary'>
                         Additional Properties
                       </h5>
-                      <div className="d-flex justify-content-end gap-2">
+                      <div className='d-flex justify-content-end gap-2'>
                         <Button
                           outline
-                          color="primary"
-                          className="d-flex gap-1"
+                          color='primary'
+                          className='d-flex gap-1'
                           onClick={handleExportToCSV}
                           disabled={isExporting || data.length === 0}
                         >
                           <FaFileExport />
-                          {isExporting ? "Exporting..." : " Export to CSV"}
+                          {isExporting ? 'Exporting...' : ' Export to CSV'}
                         </Button>
                         <>
                           <Button
-                            color="secondary"
-                            className="d-flex gap-1 cursor-pointer"
+                            color='secondary'
+                            className='d-flex gap-1 cursor-pointer'
                             onClick={() => setIsImportModalOpen(true)}
                             disabled={isImporting}
                           >
                             <FaFileImport />
-                            {isImporting ? "Importing..." : "Import CSV"}
+                            {isImporting ? 'Importing...' : 'Import CSV'}
                           </Button>
                           <Button
-                            color="success"
-                            className="border-success"
+                            color='success'
+                            className='border-success'
                             onClick={toggleModal}
                             disabled={
-                              session?.user?.role === "APPLICANT" &&
+                              session?.user?.role === 'APPLICANT' &&
                               data.map((item: any) => item?.alias).length > 0
                             }
                           >
+                            <TbCirclePlus size={16} className='me-1' />
                             Add Portfolio
                           </Button>
                         </>
@@ -232,28 +233,28 @@ const PortfolioContent: React.FC = () => {
                     </div>
                   </CardHeader>
                   <CardBody>
-                    <div className="mt-3">
+                    <div className='mt-3'>
                       {data && data.length === 0 ? (
-                        <div className="p-4 text-center text-muted">
-                          <i className="fa-solid fa-inbox fs-3 mb-2 d-block"></i>
-                          <div className="fw-semibold">
+                        <div className='p-4 text-center text-muted'>
+                          <i className='fa-solid fa-inbox fs-3 mb-2 d-block'></i>
+                          <div className='fw-semibold'>
                             No additional properties found.
                           </div>
-                          <div className="small">
+                          <div className='small'>
                             You can add a portfolio using the button above.
                           </div>
                         </div>
                       ) : (
                         <>
-                          <div className="table-responsive">
+                          <div className='table-responsive'>
                             <Table
-                              className="table table-bordered table-hover"
-                              style={{ fontSize: "0.9rem" }}
+                              className='table table-bordered table-hover'
+                              style={{ fontSize: '0.9rem' }}
                             >
-                              <thead className="table-light">
+                              <thead className='table-light'>
                                 <tr>
-                                  <th className="text-center">Action</th>
-                                  <th className="text-center">
+                                  <th className='text-center'>Action</th>
+                                  <th className='text-center'>
                                     Applicant&apos;s/Company
                                   </th>
                                   <th>Is Ltd Company</th>
@@ -283,69 +284,67 @@ const PortfolioContent: React.FC = () => {
                                   <th>Year Built</th>
                                   <th>Leasehold</th>
                                   <th>Property Type</th>
-                                  <th style={{ minWidth: "300px" }}>Notes</th>
+                                  <th style={{ minWidth: '300px' }}>Notes</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {data?.map((item: any) => (
                                   <tr key={item?.alias}>
                                     <td>
-                                      <div className="text-center d-flex justify-content-center align-items-center gap-2">
+                                      <div className='text-center d-flex justify-content-center align-items-center gap-2'>
                                         <Button
-                                          color="danger"
-                                          size="xs"
+                                          color='danger'
+                                          size='xs'
                                           outline
                                           onClick={() =>
                                             handleDeleteClick(item)
                                           }
-                                          className="text-truncate d-flex gap-1"
+                                          className='text-truncate d-flex gap-1'
                                         >
-                                          <i className="fa-solid fa-trash"></i>
+                                          <i className='fa-solid fa-trash'></i>
                                           Delete
                                         </Button>
                                         <Button
-                                          color="success"
-                                          size="xs"
+                                          color='success'
+                                          size='xs'
                                           outline
                                           onClick={() => handleEditClick(item)}
-                                          className="text-truncate d-flex gap-1"
+                                          className='text-truncate d-flex gap-1'
                                         >
-                                          <i className="fa-regular fa-pen-to-square"></i>
+                                          <i className='fa-regular fa-pen-to-square'></i>
                                           Edit
                                         </Button>
                                       </div>
                                     </td>
                                     <td>
-                                      {item?.customers?.length > 0 ? (
+                                      {item?.applicants?.length > 0 ? (
                                         <ul
-                                          className="mb-0 text-truncate"
+                                          className='mb-0 text-truncate'
                                           style={{
-                                            listStyleType: "disc",
-                                            paddingLeft: "40px",
+                                            listStyleType: 'disc',
+                                            paddingLeft: '40px',
                                           }}
                                         >
-                                          {(item?.customers || []).map(
+                                          {(item?.applicants || []).map(
                                             (app: any, idx: number) => (
                                               <li key={app?.id ?? idx}>
-                                                {`${formatChoiceFieldValue(app?.title) || ""} ${app?.first_name || ""} ${app?.middle_name || ""} ${
-                                                  app?.last_name || ""
-                                                }`.trim() || "-"}
+                                                {app?.name}
                                               </li>
                                             ),
                                           )}
                                         </ul>
                                       ) : (
-                                        <ul className="text-center">
-                                          {item?.company_name || "-"}
+                                        <ul className='text-center'>
+                                          {item?.company_name || '-'}
                                         </ul>
                                       )}
                                     </td>
                                     <td>
-                                      <div className="d-flex justify-content-center fs-6">
+                                      <div className='d-flex justify-content-center fs-6'>
                                         {item?.is_limited_company ? (
-                                          <i className="fa-solid fa-circle-check text-success"></i>
+                                          <i className='fa-solid fa-circle-check text-success'></i>
                                         ) : (
-                                          <i className="fa-solid fa-circle-xmark text-danger"></i>
+                                          <i className='fa-solid fa-circle-xmark text-danger'></i>
                                         )}
                                       </div>
                                     </td>
@@ -362,7 +361,7 @@ const PortfolioContent: React.FC = () => {
                                         item?.monthly_rental_income,
                                       ).toLocaleString()}
                                     </td>
-                                    <td>{item?.mortgage_lender || "-"}</td>
+                                    <td>{item?.mortgage_lender || '-'}</td>
                                     <td>
                                       {getCurrencySign()}
                                       {Number(
@@ -378,7 +377,7 @@ const PortfolioContent: React.FC = () => {
                                     <td>
                                       {item?.date_purchased
                                         ? formatDate(item.date_purchased)
-                                        : "-"}
+                                        : '-'}
                                     </td>
                                     <td>
                                       {getCurrencySign()}
@@ -389,49 +388,49 @@ const PortfolioContent: React.FC = () => {
                                     <td>{item?.ltv}%</td>
                                     <td>{item?.icr}%</td>
                                     <td>
-                                      <div className="d-flex justify-content-center fs-6">
+                                      <div className='d-flex justify-content-center fs-6'>
                                         {item?.is_hmo ? (
-                                          <i className="fa-solid fa-circle-check text-success"></i>
+                                          <i className='fa-solid fa-circle-check text-success'></i>
                                         ) : (
-                                          <i className="fa-solid fa-circle-xmark text-danger"></i>
+                                          <i className='fa-solid fa-circle-xmark text-danger'></i>
                                         )}
                                       </div>
                                     </td>
                                     <td>
-                                      <div className="d-flex justify-content-center fs-6">
+                                      <div className='d-flex justify-content-center fs-6'>
                                         {item?.is_mufb ? (
-                                          <i className="fa-solid fa-circle-check text-success"></i>
+                                          <i className='fa-solid fa-circle-check text-success'></i>
                                         ) : (
-                                          <i className="fa-solid fa-circle-xmark text-danger"></i>
+                                          <i className='fa-solid fa-circle-xmark text-danger'></i>
                                         )}
                                       </div>
                                     </td>
-                                    <td>{item?.epc_rating || "-"}</td>
-                                    <td>{item?.repayment_type || "-"}</td>
-                                    <td>{item?.to_be_repaid || "-"}</td>
-                                    <td>{item?.current_rate || "-"}</td>
-                                    <td>{item?.rate_type || "-"}</td>
+                                    <td>{item?.epc_rating || '-'}</td>
+                                    <td>{item?.repayment_type || '-'}</td>
+                                    <td>{item?.to_be_repaid || '-'}</td>
+                                    <td>{item?.current_rate || '-'}</td>
+                                    <td>{item?.rate_type || '-'}</td>
                                     <td>
                                       {item?.current_rate_end_date
                                         ? formatDate(item.current_rate_end_date)
-                                        : "-"}
+                                        : '-'}
                                     </td>
                                     <td>
                                       {item?.erc_end_date
                                         ? formatDate(item.erc_end_date)
-                                        : "-"}
+                                        : '-'}
                                     </td>
-                                    <td>{item?.account_number || "-"}</td>
-                                    <td>{item?.ownership || "-"}</td>
+                                    <td>{item?.account_number || '-'}</td>
+                                    <td>{item?.ownership || '-'}</td>
                                     <td>
-                                      {item?.remaining_mortgage_term || "-"}
+                                      {item?.remaining_mortgage_term || '-'}
                                     </td>
-                                    <td>{item?.number_of_bedrooms || "-"}</td>
-                                    <td>{item?.year_built || "-"}</td>
-                                    <td>{item?.leasehold || "-"}</td>
-                                    <td>{item?.property_type || "-"}</td>
-                                    <td style={{ minWidth: "300px" }}>
-                                      {item?.note || "No Notes Available"}
+                                    <td>{item?.number_of_bedrooms || '-'}</td>
+                                    <td>{item?.year_built || '-'}</td>
+                                    <td>{item?.leasehold || '-'}</td>
+                                    <td>{item?.property_type || '-'}</td>
+                                    <td style={{ minWidth: '300px' }}>
+                                      {item?.note || 'No Notes Available'}
                                     </td>
                                   </tr>
                                 ))}
@@ -445,10 +444,10 @@ const PortfolioContent: React.FC = () => {
                 </Card>
               </Col>
             </Row>
-            <div className="d-flex justify-content-end">
+            <div className='d-flex justify-content-end'>
               <Button
-                type="submit"
-                color="secondary"
+                type='submit'
+                color='secondary'
                 onClick={() => {
                   handleNextTab();
                 }}
@@ -481,8 +480,8 @@ const PortfolioContent: React.FC = () => {
         propertyAlias={selectedProperty?.alias}
         propertyLabel={
           selectedProperty
-            ? `${selectedProperty?.house_name_or_number || ""} ${
-                selectedProperty?.address_1 || ""
+            ? `${selectedProperty?.house_name_or_number || ''} ${
+                selectedProperty?.address_1 || ''
               }`
             : undefined
         }
