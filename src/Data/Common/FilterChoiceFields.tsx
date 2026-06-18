@@ -30,6 +30,7 @@ export const mortgageStages = [
   { value: "OFFER_FROM_BANK", label: "Offer From Bank" },
   { value: "LEGAL", label: "Legal" },
   { value: "COMPLETION", label: "Completion" },
+  { value: 'REFERRED', label: 'Referred (Packager/External)' },
   { value: "FUTURE_OPPORTUNITY", label: "Future Opportunity" },
   { value: "NOT_PROCEED", label: "Not Proceed" },
 ];
@@ -44,6 +45,7 @@ export const insuranceCaseStages = [
     label: "Accept Awaiting Start Date",
   },
   { value: "ACCEPTED_ON_RISK", label: "Accepted on Risk" },
+  { value: 'REFERRED', label: 'Referred (Packager/External)' },
   { value: "FURTHER_MEDICAL_REQUIRED", label: "Further Medical Required" },
   { value: "NOT_PROCEED", label: "Not Proceed" },
 ];
