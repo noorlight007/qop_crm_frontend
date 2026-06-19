@@ -1,53 +1,53 @@
-import { useGetSuperAdminDashboardSupportTicketStatusChartQuery } from "@/Redux/Reducers/SuperAdmin/Dashboard/DashboardApi";
+import { useGetSuperAdminDashboardSupportTicketStatusChartQuery } from '@/Redux/Reducers/SuperAdmin/Dashboard/DashboardApi';
 import {
   TicketStatusKey,
   TicketStatusPoint,
-} from "@/Types/SuperAdmin/Dashboard/DashboardTypes";
-import dynamic from "next/dynamic";
-import React from "react";
-import { Card, CardBody, CardHeader } from "reactstrap";
+} from '@/Types/SuperAdmin/Dashboard/DashboardTypes';
+import dynamic from 'next/dynamic';
+import React from 'react';
+import { Card, CardBody, CardHeader } from 'reactstrap';
 
 // Dynamically import Google Charts with SSR disabled
-const Chart = dynamic(() => import("react-google-charts"), { ssr: false });
+const Chart = dynamic(() => import('react-google-charts'), { ssr: false });
 
 const monthShort = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 const statusSeries = [
-  { key: "open", label: "Open" },
-  { key: "inProgress", label: "In Progress" },
-  { key: "completed", label: "Completed" },
-  { key: "resolved", label: "Resolved" },
-  { key: "closed", label: "Closed" },
+  { key: 'open', label: 'Open' },
+  { key: 'inProgress', label: 'In Progress' },
+  { key: 'completed', label: 'Completed' },
+  { key: 'resolved', label: 'Resolved' },
+  { key: 'closed', label: 'Closed' },
 ] satisfies Array<{ key: TicketStatusKey; label: string }>;
 
 const buildLast12Months = () => {
   const now = new Date();
   return Array.from({ length: 12 }).map((_, i) => {
     const date = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
-    return monthShort[date.getMonth()] ?? "";
+    return monthShort[date.getMonth()] ?? '';
   });
 };
 
 const formatMonthLabel = (value: unknown): string | null => {
-  if (typeof value === "number" && Number.isFinite(value)) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
     const idx = Math.max(1, Math.min(12, Math.trunc(value))) - 1;
     return monthShort[idx] ?? null;
   }
 
-  if (typeof value !== "string") return null;
+  if (typeof value !== 'string') return null;
   const trimmed = value.trim();
   if (!trimmed) return null;
 
@@ -60,11 +60,11 @@ const formatMonthLabel = (value: unknown): string | null => {
   return trimmed;
 };
 
-const normalizeKey = (k: string) => k.replace(/[\s_-]/g, "").toLowerCase();
+const normalizeKey = (k: string) => k.replace(/[\s_-]/g, '').toLowerCase();
 
 const pickNumber = (value: unknown): number => {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim() !== "") {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() !== '') {
     const n = Number(value);
     return Number.isFinite(n) ? n : 0;
   }
@@ -72,7 +72,7 @@ const pickNumber = (value: unknown): number => {
 };
 
 const pickRecord = (value: unknown): Record<string, unknown> | null => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   return value as Record<string, unknown>;
 };
 
@@ -83,9 +83,9 @@ const getStatusCandidates = (key: TicketStatusKey) => {
     key,
     lower,
     snake,
-    snake.replace(/_/g, "-"),
-    snake.replace(/_/g, " "),
-    lower.replace(/_/g, ""),
+    snake.replace(/_/g, '-'),
+    snake.replace(/_/g, ' '),
+    lower.replace(/_/g, ''),
   ];
 };
 
@@ -149,7 +149,7 @@ const normalizeTicketStatusChartResponse = (
         : uniqueInOrder(
             base
               .map((item) => {
-                if (!item || typeof item !== "object") return null;
+                if (!item || typeof item !== 'object') return null;
                 const row = item as Record<string, unknown>;
                 return (
                   formatMonthLabel(
@@ -165,7 +165,7 @@ const normalizeTicketStatusChartResponse = (
     const points = initPoints(months);
 
     for (const item of base) {
-      if (!item || typeof item !== "object") continue;
+      if (!item || typeof item !== 'object') continue;
       const row = item as Record<string, unknown>;
       const counts = pickRecord(row.counts);
       const rowForValues = counts ? { ...row, ...counts } : row;
@@ -188,7 +188,7 @@ const normalizeTicketStatusChartResponse = (
     return points;
   }
 
-  if (base && typeof base === "object") {
+  if (base && typeof base === 'object') {
     const months =
       monthsFromApi.length > 0 ? monthsFromApi : buildLast12Months();
     const points = initPoints(months);
@@ -219,10 +219,10 @@ const normalizeTicketStatusChartResponse = (
         for (let i = 0; i < points.length; i += 1) {
           points[i][s.key] = pickNumber(v[i]);
         }
-      } else if (v && typeof v === "object") {
+      } else if (v && typeof v === 'object') {
         const byMonth = v as Record<string, unknown>;
         for (let i = 0; i < points.length; i += 1) {
-          const monthLabel = points[i].label ?? "";
+          const monthLabel = points[i].label ?? '';
           const direct = byMonth[monthLabel];
           if (direct !== undefined) {
             points[i][s.key] = pickNumber(direct);
@@ -266,7 +266,7 @@ const SupportTicketStatusChart: React.FC = () => {
   );
 
   const data: any[] = [
-    ["Month", "Open", "In Progress", "Completed", "Resolved", "Closed"],
+    ['Month', 'Open', 'In Progress', 'Completed', 'Resolved', 'Closed'],
     ...points.map((p) => [
       p.label,
       p.open,
@@ -278,89 +278,84 @@ const SupportTicketStatusChart: React.FC = () => {
   ];
 
   const options = {
-    backgroundColor: "transparent",
-    chartArea: { left: 44, top: 18, width: "88%", height: "72%" },
+    backgroundColor: 'transparent',
+    chartArea: { left: 44, top: 18, width: '88%', height: '72%' },
     legend: {
-      position: "bottom" as const,
-      alignment: "center" as const,
+      position: 'bottom' as const,
+      alignment: 'center' as const,
       textStyle: { fontSize: 12 },
     },
-    colors: ["#e74b2b", "#ea9200", "#308e87", "#51bb25", "#57375d"],
-    lineWidth: 3,
-    pointSize: 4,
-    curveType: "function" as const,
+    bar: { groupWidth: '62%' },
+    isStacked: false,
+    colors: ['#e74b2b', '#ea9200', '#308e87', '#51bb25', '#57375d'],
     hAxis: {
       textStyle: { fontSize: 11 },
     },
     vAxis: {
       minValue: 0,
-      viewWindowMode: "explicit" as const,
-      viewWindow: { min: 0 },
-      baseline: 0,
-      gridlines: { color: "#f1f1f1" },
+      gridlines: { color: '#f1f1f1' },
       textStyle: { fontSize: 12 },
-      format: "0",
+      format: '0',
     },
     tooltip: {
-      isHtml: false,
       textStyle: { fontSize: 12 },
     },
   };
 
   const loader = (
-    <div className="p-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
+    <div className='p-4'>
+      <div className='d-flex justify-content-between align-items-center mb-3'>
         <div
-          className="skeleton-loading"
-          style={{ width: "50%", height: 14 }}
+          className='skeleton-loading'
+          style={{ width: '50%', height: 14 }}
         />
-        <div className="skeleton-loading" style={{ width: 90, height: 14 }} />
+        <div className='skeleton-loading' style={{ width: 90, height: 14 }} />
       </div>
       <div
-        className="skeleton-loading"
-        style={{ width: "100%", height: 260 }}
+        className='skeleton-loading'
+        style={{ width: '100%', height: 260 }}
       />
     </div>
   );
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="bg-transparent border-0 pb-0">
-        <h3 className="mb-1">Ticket Status</h3>
-        <small className="text-muted">Monthly trend by status</small>
+    <Card className='border-0 shadow-sm'>
+      <CardHeader className='bg-transparent border-0 pb-0'>
+        <h3 className='mb-1'>Ticket Status</h3>
+        <small className='text-muted'>Monthly trend by status</small>
       </CardHeader>
-      <CardBody className="google-chart">
+      <CardBody className='google-chart'>
         {isLoading || isFetching ? (
           loader
         ) : isError ? (
           <div
-            className="w-100 text-center"
-            style={{ height: 320, display: "grid", placeItems: "center" }}
+            className='w-100 text-center'
+            style={{ height: 320, display: 'grid', placeItems: 'center' }}
           >
             <div>
-              <h6 className="mb-1 text-danger">Unable to load chart</h6>
-              <small className="text-muted">
+              <h6 className='mb-1 text-danger'>Unable to load chart</h6>
+              <small className='text-muted'>
                 Please try again in a moment.
               </small>
             </div>
           </div>
         ) : allValuesZero ? (
           <div
-            className="w-100 text-center"
-            style={{ height: 320, display: "grid", placeItems: "center" }}
+            className='w-100 text-center'
+            style={{ height: 320, display: 'grid', placeItems: 'center' }}
           >
             <div>
-              <h6 className="mb-1">No ticket data yet</h6>
-              <small className="text-muted">
+              <h6 className='mb-1'>No ticket data yet</h6>
+              <small className='text-muted'>
                 Once tickets are created, trends will appear here.
               </small>
             </div>
           </div>
         ) : (
           <Chart
-            chartType="LineChart"
-            width="100%"
-            height="320px"
+            chartType='ColumnChart'
+            width='100%'
+            height='320px'
             data={data}
             options={options}
             loader={loader}

@@ -1,48 +1,48 @@
-import { useGetSuperAdminDashboardSupportTicketTypeChartQuery } from "@/Redux/Reducers/SuperAdmin/Dashboard/DashboardApi";
-import type { TicketType } from "@/Types/Common/SupportTicket/SupportTicketTypes";
-import dynamic from "next/dynamic";
-import React from "react";
-import { Card, CardBody, CardHeader } from "reactstrap";
+import { useGetSuperAdminDashboardSupportTicketTypeChartQuery } from '@/Redux/Reducers/SuperAdmin/Dashboard/DashboardApi';
+import type { TicketType } from '@/Types/Common/SupportTicket/SupportTicketTypes';
+import dynamic from 'next/dynamic';
+import React from 'react';
+import { Card, CardBody, CardHeader } from 'reactstrap';
 
 // Dynamically import Google Charts with SSR disabled
-const Chart = dynamic(() => import("react-google-charts"), { ssr: false });
+const Chart = dynamic(() => import('react-google-charts'), { ssr: false });
 
 const monthShort = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 const ticketTypes = [
-  { value: "FEEDBACK", label: "Feedback" },
-  { value: "BUG_REPORT", label: "Bug Report" },
-  { value: "FEATURE_REQUEST", label: "Feature Request" },
+  { value: 'FEEDBACK', label: 'Feedback' },
+  { value: 'BUG_REPORT', label: 'Bug Report' },
+  { value: 'FEATURE_REQUEST', label: 'Feature Request' },
 ] satisfies Array<{ value: TicketType; label: string }>;
 
 const buildLast12Months = () => {
   const now = new Date();
   return Array.from({ length: 12 }).map((_, i) => {
     const date = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
-    return monthShort[date.getMonth()] ?? "";
+    return monthShort[date.getMonth()] ?? '';
   });
 };
 
 const formatMonthLabel = (value: unknown): string | null => {
-  if (typeof value === "number" && Number.isFinite(value)) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
     const idx = Math.max(1, Math.min(12, Math.trunc(value))) - 1;
     return monthShort[idx] ?? null;
   }
 
-  if (typeof value !== "string") return null;
+  if (typeof value !== 'string') return null;
   const trimmed = value.trim();
   if (!trimmed) return null;
 
@@ -55,11 +55,11 @@ const formatMonthLabel = (value: unknown): string | null => {
   return trimmed;
 };
 
-const normalizeKey = (k: string) => k.replace(/[\s_-]/g, "").toLowerCase();
+const normalizeKey = (k: string) => k.replace(/[\s_-]/g, '').toLowerCase();
 
 const pickNumber = (value: unknown): number => {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim() !== "") {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() !== '') {
     const n = Number(value);
     return Number.isFinite(n) ? n : 0;
   }
@@ -73,8 +73,8 @@ const getTicketTypeCandidates = (type: TicketType) => {
     type,
     lower,
     camel,
-    lower.replace(/_/g, "-"),
-    lower.replace(/_/g, " "),
+    lower.replace(/_/g, '-'),
+    lower.replace(/_/g, ' '),
   ];
 };
 
@@ -92,7 +92,7 @@ const readTypeValue = (row: Record<string, unknown>, type: TicketType) => {
 };
 
 const pickRecord = (value: unknown): Record<string, unknown> | null => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   return value as Record<string, unknown>;
 };
 
@@ -112,7 +112,7 @@ const normalizeTicketTypeChartResponse = (
   const inferMonthsFromRows = (rows: unknown[]): string[] => {
     const inferred: string[] = [];
     for (const item of rows) {
-      if (!item || typeof item !== "object") continue;
+      if (!item || typeof item !== 'object') continue;
       const row = item as Record<string, unknown>;
       const label =
         formatMonthLabel(
@@ -139,7 +139,7 @@ const normalizeTicketTypeChartResponse = (
 
   if (Array.isArray(base)) {
     for (const item of base) {
-      if (!item || typeof item !== "object") continue;
+      if (!item || typeof item !== 'object') continue;
       const row = item as Record<string, unknown>;
 
       const counts = pickRecord(row.counts);
@@ -161,7 +161,7 @@ const normalizeTicketTypeChartResponse = (
     return { months, series };
   }
 
-  if (base && typeof base === "object") {
+  if (base && typeof base === 'object') {
     const obj = base as Record<string, unknown>;
 
     for (const t of ticketTypes) {
@@ -183,10 +183,10 @@ const normalizeTicketTypeChartResponse = (
 
       if (Array.isArray(v)) {
         series[t.value] = months.map((_, i) => pickNumber(v[i]));
-      } else if (v && typeof v === "object") {
+      } else if (v && typeof v === 'object') {
         const byMonth = v as Record<string, unknown>;
         for (let i = 0; i < months.length; i += 1) {
-          const monthLabel = months[i] ?? "";
+          const monthLabel = months[i] ?? '';
           const direct = byMonth[monthLabel];
           if (direct !== undefined) {
             series[t.value][i] = pickNumber(direct);
@@ -223,7 +223,7 @@ const SupportTicketTypeChart: React.FC = () => {
   );
 
   const data: any[] = [
-    ["Month", ...ticketTypes.map((t) => t.label)],
+    ['Month', ...ticketTypes.map((t) => t.label)],
     ...months.map((label, i) => [
       label,
       ...ticketTypes.map((t) => series[t.value]?.[i] ?? 0),
@@ -231,25 +231,25 @@ const SupportTicketTypeChart: React.FC = () => {
   ];
 
   const options = {
-    title: "",
-    backgroundColor: "transparent",
+    title: '',
+    backgroundColor: 'transparent',
     legend: {
-      position: "bottom" as const,
-      alignment: "center" as const,
+      position: 'bottom' as const,
+      alignment: 'center' as const,
       textStyle: { fontSize: 12 },
     },
-    chartArea: { left: 44, top: 18, width: "88%", height: "72%" },
-    bar: { groupWidth: "62%" },
+    chartArea: { left: 44, top: 18, width: '88%', height: '72%' },
+    bar: { groupWidth: '62%' },
     isStacked: false,
-    colors: ["#308e87", "#ea9200", "#51bb25"],
+    colors: ['#308e87', '#ea9200', '#51bb25'],
     hAxis: {
       textStyle: { fontSize: 11 },
     },
     vAxis: {
       minValue: 0,
-      gridlines: { color: "#f1f1f1" },
+      gridlines: { color: '#f1f1f1' },
       textStyle: { fontSize: 12 },
-      format: "0",
+      format: '0',
     },
     tooltip: {
       textStyle: {
@@ -259,59 +259,59 @@ const SupportTicketTypeChart: React.FC = () => {
   };
 
   const loader = (
-    <div className="p-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
+    <div className='p-4'>
+      <div className='d-flex justify-content-between align-items-center mb-3'>
         <div
-          className="skeleton-loading"
-          style={{ width: "45%", height: 14 }}
+          className='skeleton-loading'
+          style={{ width: '45%', height: 14 }}
         />
-        <div className="skeleton-loading" style={{ width: 60, height: 14 }} />
+        <div className='skeleton-loading' style={{ width: 60, height: 14 }} />
       </div>
       <div
-        className="skeleton-loading"
-        style={{ width: "100%", height: 260 }}
+        className='skeleton-loading'
+        style={{ width: '100%', height: 260 }}
       />
     </div>
   );
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="bg-transparent border-0 pb-0">
-        <h3 className="mb-1">Ticket Types</h3>
-        <small className="text-muted">Monthly breakdown by type</small>
+    <Card className='border-0 shadow-sm'>
+      <CardHeader className='bg-transparent border-0 pb-0'>
+        <h3 className='mb-1'>Ticket Types</h3>
+        <small className='text-muted'>Monthly breakdown by type</small>
       </CardHeader>
-      <CardBody className="google-chart">
+      <CardBody className='google-chart'>
         {isLoading || isFetching ? (
           loader
         ) : isError ? (
           <div
-            className="w-100 text-center"
-            style={{ height: 320, display: "grid", placeItems: "center" }}
+            className='w-100 text-center'
+            style={{ height: 320, display: 'grid', placeItems: 'center' }}
           >
             <div>
-              <h6 className="mb-1 text-danger">Unable to load chart</h6>
-              <small className="text-muted">
+              <h6 className='mb-1 text-danger'>Unable to load chart</h6>
+              <small className='text-muted'>
                 Please try again in a moment.
               </small>
             </div>
           </div>
         ) : allValuesZero ? (
           <div
-            className="w-100 text-center"
-            style={{ height: 320, display: "grid", placeItems: "center" }}
+            className='w-100 text-center'
+            style={{ height: 320, display: 'grid', placeItems: 'center' }}
           >
             <div>
-              <h6 className="mb-1">No ticket data yet</h6>
-              <small className="text-muted">
+              <h6 className='mb-1'>No ticket data yet</h6>
+              <small className='text-muted'>
                 Once activity is available, it will appear here.
               </small>
             </div>
           </div>
         ) : (
           <Chart
-            chartType="ColumnChart"
-            width="100%"
-            height="320px"
+            chartType='ColumnChart'
+            width='100%'
+            height='320px'
             data={data}
             options={options}
             loader={loader}
