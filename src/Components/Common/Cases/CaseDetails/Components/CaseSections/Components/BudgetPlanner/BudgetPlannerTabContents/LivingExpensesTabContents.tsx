@@ -4,7 +4,6 @@ import getCurrencySign from "@/utils/currency";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
-import { FaEdit } from "react-icons/fa";
 import {
   Button,
   Col,
@@ -81,6 +80,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     Clothing: "clothing",
     "Medical Expenses": "medical_expenses",
     Education: "education",
+    Savings: "savings",
     "Other Living Costs": "other_living_costs",
   };
 

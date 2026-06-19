@@ -1,9 +1,9 @@
-import { BudgetPlanner } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { BudgetPlanner } from '@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Initial state matching your data structure
 const initialState: BudgetPlanner = {
-  note: "",
+  note: '',
   current_income: {
     applicant_one_net_monthly_income: 0,
     applicant_two_net_monthly_income: 0,
@@ -109,6 +109,7 @@ const initialState: BudgetPlanner = {
     clothing: 0,
     medical_expenses: 0,
     education: 0,
+    savings: 0,
     other_living_costs: 0,
     total_living_expenses: 0,
   },
@@ -135,6 +136,7 @@ const initialState: BudgetPlanner = {
     clothing: 0,
     medical_expenses: 0,
     education: 0,
+    savings: 0,
     other_living_costs: 0,
     total_living_expenses: 0,
   },
@@ -175,7 +177,7 @@ const initialState: BudgetPlanner = {
     available_income: 0,
   },
   disclaimer: false,
-  disclaimer_details: "",
+  disclaimer_details: '',
 
   // Store any server-side API validation errors keyed by field
   api_errors: {},
@@ -183,7 +185,7 @@ const initialState: BudgetPlanner = {
 
 // Create the slice
 const budgetPlannerSlice = createSlice({
-  name: "budgetPlanner",
+  name: 'budgetPlanner',
   initialState,
   reducers: {
     // Update specific BudgetPlanner section
@@ -195,35 +197,35 @@ const budgetPlannerSlice = createSlice({
       }>,
     ) => {
       const { section, data } = action.payload;
-      if (section === "disclaimer") {
+      if (section === 'disclaimer') {
         state.disclaimer = Boolean(data);
         return;
       }
 
-      if (section === "disclaimer_details") {
-        state.disclaimer_details = String(data ?? "");
+      if (section === 'disclaimer_details') {
+        state.disclaimer_details = String(data ?? '');
         return;
       }
 
-      if (section === "note") {
-        state.note = String(data ?? "");
+      if (section === 'note') {
+        state.note = String(data ?? '');
         return;
       }
 
-      if (typeof data === "object" && data !== null) {
+      if (typeof data === 'object' && data !== null) {
         // Ensure required fields have default values
         const updatedData = {
           ...data,
-          ...(section === "current_debt_repayments" && {
+          ...(section === 'current_debt_repayments' && {
             total_debt_repayment: data.total_debt_repayment ?? 0,
           }),
-          ...(section === "post_debt_repayments" && {
+          ...(section === 'post_debt_repayments' && {
             total_debt_repayment: data.total_debt_repayment ?? 0,
           }),
-          ...(section === "current_sub_total" && {
+          ...(section === 'current_sub_total' && {
             available_income: data.available_income ?? 0,
           }),
-          ...(section === "post_sub_total" && {
+          ...(section === 'post_sub_total' && {
             available_income: data.available_income ?? 0,
           }),
         };
@@ -265,11 +267,11 @@ const budgetPlannerSlice = createSlice({
       }>,
     ) => {
       const { section, field, value } = action.payload;
-      if (section === "disclaimer") {
+      if (section === 'disclaimer') {
         state.disclaimer = value as boolean;
-      } else if (section === "disclaimer_details") {
+      } else if (section === 'disclaimer_details') {
         state.disclaimer_details = value as string;
-      } else if (section === "note") {
+      } else if (section === 'note') {
         state.note = value as string;
       } else {
         (state[section] as any)[field] = value;

@@ -111,6 +111,7 @@ export interface BudgetPlanner {
     clothing: number | null;
     medical_expenses: number | null;
     education: number | null;
+    savings: number | null;
     other_living_costs: number | null;
     total_living_expenses: number | null;
   };
@@ -137,6 +138,7 @@ export interface BudgetPlanner {
     clothing: number | null;
     medical_expenses: number | null;
     education: number | null;
+    savings: number | null;
     other_living_costs: number | null;
     total_living_expenses: number | null;
   };
