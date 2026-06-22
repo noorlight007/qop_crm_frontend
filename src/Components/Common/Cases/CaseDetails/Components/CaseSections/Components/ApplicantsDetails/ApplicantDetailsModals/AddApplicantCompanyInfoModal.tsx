@@ -34,6 +34,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   case_alias,
   applicantDetails_alias,
 }) => {
+  const { data: session } = useSession();
   const { data, isLoading, isError } = useGetCompanyDetailsQuery({
     case_alias,
     applicantDetails_alias,
@@ -47,8 +48,6 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     { case_alias: case_alias },
     { skip: !case_alias },
   );
-
-  const { data: session } = useSession();
 
   const [formData, setFormData] = useState<ApplicantCompanyProps>({
     company_name: '',
@@ -495,6 +494,9 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     }
   }, [error, shouldFetch]);
 
+  // const isApplicantEditable =
+  //   session?.user?.role !== 'APPLICANT' && caseData?.is_editable === true;
+
   if (isLoading)
     return (
       <div>
@@ -875,12 +877,24 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   color='primary'
                   type='button'
                   onClick={handleUpdate}
-                  disabled={isCompanyDetailsUpdating}
+                  disabled={
+                    isCompanyDetailsUpdating ||
+                    (session?.user?.role === 'APPLICANT' &&
+                      !caseData?.is_editable)
+                  }
                 >
                   {isCompanyDetailsUpdating ? 'Updating...' : 'Update'}
                 </Button>
               ) : (
-                <Button color='primary' type='submit'>
+                <Button
+                  color='primary'
+                  type='submit'
+                  disabled={
+                    isCompanyDetailsAdding ||
+                    (session?.user?.role === 'APPLICANT' &&
+                      !caseData?.is_editable)
+                  }
+                >
                   {isCompanyDetailsAdding ? 'Adding...' : 'Submit'}
                 </Button>
               )}
