@@ -12,7 +12,7 @@ import {
 } from '@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes';
 import { useSession } from 'next-auth/react';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   Button,
@@ -80,6 +80,9 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     { skip: !shouldFetch || !formData.company_registration_number },
   );
 
+  // so that shrinking then re-expanding the count restores real data instead of blank rows.
+  const loadedDirectorsRef = useRef<any[]>([]);
+
   useEffect(() => {
     if (data && data[0]) {
       const loadedDirectors = Array.isArray(data[0].directors_shareholders)
@@ -87,6 +90,10 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
             ...d,
           }))
         : [];
+
+      // Save loaded directors to ref so they can be restored when count changes
+      loadedDirectorsRef.current = loadedDirectors;
+
       setFormData({
         company_name: data[0].company_name || '',
         company_registration_number: data[0].company_registration_number || '',
@@ -160,27 +167,30 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   }, [data]);
 
   useEffect(() => {
-    // ensure directors_shareholders array length matches numberOfDirectors (parsed)
     const count = parseInt(numberOfDirectors, 10);
     const target = isNaN(count) || count < 0 ? 0 : count;
+
     setFormData((prev) => {
-      const directors_shareholders = prev.directors_shareholders
+      const existing = prev.directors_shareholders
         ? [...prev.directors_shareholders]
         : [];
-      if (target > directors_shareholders.length) {
-        for (let i = directors_shareholders.length; i < target; i++) {
-          directors_shareholders.push({
-            full_name: '',
-            percentage_share: '',
-            role: '',
-          });
+
+      if (target > existing.length) {
+        for (let i = existing.length; i < target; i++) {
+          const saved = loadedDirectorsRef.current[i];
+          existing.push(
+            saved
+              ? { ...saved }
+              : { full_name: '', percentage_share: '', role: '' },
+          );
         }
-      } else if (target < directors_shareholders.length) {
-        directors_shareholders.splice(target);
+      } else if (target < existing.length) {
+        existing.splice(target);
       }
+
       return {
         ...prev,
-        directors_shareholders,
+        directors_shareholders: existing,
         number_of_directors_shareholders: target,
       };
     });
@@ -463,7 +473,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
           mapCompanyType(companyDetails.company_type) || 'PRIVATE_LIMITED',
         trade_business_type: companyDetails.trade_business_type || '',
         sic_code: companyDetails.sic_codes?.join(', ') || '',
-        is_spv: formData.is_spv, // Keep this as user might have set it
+        is_spv: formData.is_spv,
         postcode: companyDetails.postcode || '',
         house_number_or_name: companyDetails.house_number_or_name || '',
         address_line1: companyDetails.address_line1 || '',
@@ -473,6 +483,8 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
       };
 
       if (mappedDirectors.length > 0) {
+        // Save fetched directors to ref so count changes can restore them
+        loadedDirectorsRef.current = mappedDirectors;
         updated.directors_shareholders = mappedDirectors;
         updated.number_of_directors_shareholders = directorCount;
         setNumberOfDirectors(String(directorCount));
