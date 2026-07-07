@@ -1,19 +1,19 @@
-import SVG from "@/CommonComponent/SVG";
-import { notificationData } from "@/Data/Layout/HeaderData";
+import SVG from '@/CommonComponent/SVG';
+import { notificationData } from '@/Data/Layout/HeaderData';
 import {
   useGetNotificationsQuery,
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
   useReadNotificationMutation,
-} from "@/Redux/Reducers/Common/Notification/NotificationApi";
-import { UINotification } from "@/Types/Common/Notification/NotificationType";
+} from '@/Redux/Reducers/Common/Notification/NotificationApi';
+import { UINotification } from '@/Types/Common/Notification/NotificationType';
 import { formatDate, formatTime } from '@/utils/dateAndTimeFormatter';
-import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
-import type { Session } from "next-auth";
-import { getSession } from "next-auth/react";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { Badge } from "reactstrap";
+import { getNotificationTargetUrl } from '@/utils/notificationRedirect';
+import type { Session } from 'next-auth';
+import { getSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+import { Badge } from 'reactstrap';
 
 const toSafeDateTime = (input?: string) => {
   const safeInput = input ?? new Date().toISOString();
@@ -36,7 +36,7 @@ const normalizeNotification = (
 
   const { date, time } = toSafeDateTime(createdAt);
   const payloadData =
-    typeof item.data === "object" && item.data !== null
+    typeof item.data === 'object' && item.data !== null
       ? (item.data as Record<string, unknown>)
       : null;
 
@@ -44,19 +44,19 @@ const normalizeNotification = (
     item.is_read === false || item.read === false || item.unread === true;
 
   const eventTimePart =
-    typeof item.timestamp === "string"
+    typeof item.timestamp === 'string'
       ? item.timestamp
-      : typeof item.created_at === "string"
+      : typeof item.created_at === 'string'
         ? item.created_at
-        : typeof item.createdAt === "string"
+        : typeof item.createdAt === 'string'
           ? item.createdAt
-          : "";
+          : '';
   const eventMessagePart =
-    typeof item.message === "string"
+    typeof item.message === 'string'
       ? item.message
-      : typeof item.body === "string"
+      : typeof item.body === 'string'
         ? item.body
-        : "";
+        : '';
 
   const eventKeySource =
     (item.notification_id as string | undefined) ||
@@ -78,21 +78,21 @@ const normalizeNotification = (
     ),
     date,
     time,
-    dotColor: isUnread ? "warning" : "primary",
-    fontColor: isUnread ? "warning" : "primary",
+    dotColor: isUnread ? 'warning' : 'primary',
+    fontColor: isUnread ? 'warning' : 'primary',
     notification_type: String(
       item.title ??
         item.notification_type ??
         payloadData?.subject ??
         item.sender_name ??
-        "Notification",
+        'Notification',
     ),
-    message: String(item.message ?? item.body ?? item.description ?? ""),
+    message: String(item.message ?? item.body ?? item.description ?? ''),
     is_read: item.is_read === true,
     dataType:
-      typeof payloadData?.type === "string" ? payloadData.type : undefined,
+      typeof payloadData?.type === 'string' ? payloadData.type : undefined,
     dataAlias:
-      typeof payloadData?.alias === "string" ? payloadData.alias : undefined,
+      typeof payloadData?.alias === 'string' ? payloadData.alias : undefined,
   };
 };
 
@@ -100,18 +100,18 @@ const readList = (data: unknown): Record<string, unknown>[] => {
   if (Array.isArray(data)) {
     return data.filter(
       (item): item is Record<string, unknown> =>
-        typeof item === "object" && item !== null,
+        typeof item === 'object' && item !== null,
     );
   }
 
-  if (typeof data === "object" && data !== null) {
+  if (typeof data === 'object' && data !== null) {
     const source = data as Record<string, unknown>;
     const candidate = source.results ?? source.notifications ?? source.data;
 
     if (Array.isArray(candidate)) {
       return candidate.filter(
         (item): item is Record<string, unknown> =>
-          typeof item === "object" && item !== null,
+          typeof item === 'object' && item !== null,
       );
     }
   }
@@ -120,23 +120,23 @@ const readList = (data: unknown): Record<string, unknown>[] => {
 };
 
 const readUnreadCount = (data: unknown): number => {
-  if (typeof data === "number") return data;
-  if (typeof data !== "object" || data === null) return 0;
+  if (typeof data === 'number') return data;
+  if (typeof data !== 'object' || data === null) return 0;
 
   const source = data as Record<string, unknown>;
   const count = source.unread_count ?? source.unreadCount ?? source.count;
-  return typeof count === "number" ? count : 0;
+  return typeof count === 'number' ? count : 0;
 };
 
 const socketUrlsFromApiBase = (baseUrl: string, token: string) => {
   const normalizedBase =
-    baseUrl.startsWith("http://") || baseUrl.startsWith("https://")
+    baseUrl.startsWith('http://') || baseUrl.startsWith('https://')
       ? baseUrl
       : `https://${baseUrl}`;
   const parsed = new URL(normalizedBase);
-  const wsProtocol = parsed.protocol === "https:" ? "wss:" : "ws:";
+  const wsProtocol = parsed.protocol === 'https:' ? 'wss:' : 'ws:';
   const wsBase = `${wsProtocol}//${parsed.host}`;
-  const pathPrefix = parsed.pathname.replace(/\/+$/, "");
+  const pathPrefix = parsed.pathname.replace(/\/+$/, '');
 
   const candidates = [
     `${wsBase}/ws/notifications/?token=${encodeURIComponent(token)}`,
@@ -228,7 +228,7 @@ const NotificationHeader = () => {
   }, [show, refetchNotifications, refetchUnreadCount]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
     let socket: WebSocket | null = null;
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -243,13 +243,13 @@ const NotificationHeader = () => {
     };
 
     const getAuthToken = async () => {
-      const localToken = localStorage.getItem("token");
+      const localToken = localStorage.getItem('token');
       if (localToken) return localToken;
 
       try {
         const session = await getSession();
         const sessionToken = session?.user?.accessToken;
-        return typeof sessionToken === "string" ? sessionToken : null;
+        return typeof sessionToken === 'string' ? sessionToken : null;
       } catch {
         return null;
       }
@@ -266,7 +266,7 @@ const NotificationHeader = () => {
 
       if (!baseUrl) {
         console.error(
-          "Missing NEXT_PUBLIC_API_BASE_URL for notifications socket",
+          'Missing NEXT_PUBLIC_API_BASE_URL for notifications socket',
         );
         scheduleReconnect(5000);
         return;
@@ -276,7 +276,7 @@ const NotificationHeader = () => {
       try {
         socketUrls = socketUrlsFromApiBase(baseUrl, token);
       } catch (error) {
-        console.error("Invalid websocket base URL", error);
+        console.error('Invalid websocket base URL', error);
         scheduleReconnect(5000);
         return;
       }
@@ -300,17 +300,17 @@ const NotificationHeader = () => {
             let hasUnreadFromPayload = false;
 
             if (
-              typeof payload === "object" &&
+              typeof payload === 'object' &&
               payload !== null &&
-              "notification" in payload
+              'notification' in payload
             ) {
               const source = payload as Record<string, unknown>;
               const notification = source.notification;
-              if (typeof notification === "object" && notification !== null) {
+              if (typeof notification === 'object' && notification !== null) {
                 incoming = [notification as Record<string, unknown>];
               }
 
-              if (typeof source.unread_count === "number") {
+              if (typeof source.unread_count === 'number') {
                 hasUnreadFromPayload = true;
                 setUnreadCount(source.unread_count);
               }
@@ -318,7 +318,7 @@ const NotificationHeader = () => {
               incoming = readList(payload);
               if (
                 incoming.length === 0 &&
-                typeof payload === "object" &&
+                typeof payload === 'object' &&
                 payload !== null
               ) {
                 incoming = [payload as Record<string, unknown>];
@@ -341,12 +341,12 @@ const NotificationHeader = () => {
               }
             }
           } catch (error) {
-            console.error("Notification socket parse error", error);
+            console.error('Notification socket parse error', error);
           }
         };
 
         socket.onerror = (error) => {
-          console.error("Notification socket error", error);
+          console.error('Notification socket error', error);
         };
 
         socket.onclose = () => {
@@ -369,7 +369,7 @@ const NotificationHeader = () => {
     };
 
     const handleStorage = (event: StorageEvent) => {
-      if (event.key !== "token") return;
+      if (event.key !== 'token') return;
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.close();
       } else {
@@ -383,15 +383,15 @@ const NotificationHeader = () => {
       }
     };
 
-    window.addEventListener("storage", handleStorage);
-    window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('focus', handleWindowFocus);
 
     void connect();
 
     return () => {
       shouldReconnect = false;
-      window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("focus", handleWindowFocus);
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleWindowFocus);
       if (reconnectTimer) {
         clearTimeout(reconnectTimer);
       }
@@ -412,19 +412,19 @@ const NotificationHeader = () => {
     };
 
     const handleEscapeKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && show) {
+      if (e.key === 'Escape' && show) {
         setShow(false);
       }
     };
 
     if (show) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [show]);
   const fallbackItems: UINotification[] = notificationData.map(
@@ -432,8 +432,8 @@ const NotificationHeader = () => {
       id: `fallback-${index}`,
       date: item.date,
       time: item.time,
-      dotColor: item.dotColor === "secondary" ? "warning" : "primary",
-      fontColor: item.fontColor === "secondary" ? "warning" : "primary",
+      dotColor: item.dotColor === 'secondary' ? 'warning' : 'primary',
+      fontColor: item.fontColor === 'secondary' ? 'warning' : 'primary',
       message: item.message,
       is_read: false,
     }),
@@ -451,20 +451,20 @@ const NotificationHeader = () => {
         prev.map((item) => ({
           ...item,
           is_read: true,
-          dotColor: "primary",
-          fontColor: "primary",
+          dotColor: 'primary',
+          fontColor: 'primary',
         })),
       );
       void refetchNotifications();
       void refetchUnreadCount();
     } catch {
       // No-op on failure; leave state unchanged.
-      console.warn("Failed to mark all notifications as read");
+      console.warn('Failed to mark all notifications as read');
     }
   };
 
   const handleReadNotification = async (item: UINotification) => {
-    if (item.id.startsWith("fallback-") || item.is_read) return;
+    if (item.id.startsWith('fallback-') || item.is_read) return;
 
     try {
       await readNotification({
@@ -478,47 +478,47 @@ const NotificationHeader = () => {
   };
 
   return (
-    <li className="custom-dropdown" ref={wrapperRef}>
+    <li className='custom-dropdown' ref={wrapperRef}>
       <a
-        href="#javascript"
+        href='#javascript'
         onClick={(e) => {
           e.preventDefault();
           setShow(!show);
         }}
       >
-        <SVG iconId="notification" />
+        <SVG iconId='notification' />
       </a>
       {unreadCount > 0 && (
-        <Badge pill color="warning">
+        <Badge pill color='warning'>
           {unreadCount}
         </Badge>
       )}
       <div
         className={`custom-menu notification-dropdown py-0 overflow-hidden shadow ${
-          show ? "show" : ""
+          show ? 'show' : ''
         }`}
       >
-        <div className="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
-          <span className="fw-semibold">Notifications</span>
+        <div className='d-flex align-items-center justify-content-between px-3 py-2 border-bottom'>
+          <span className='fw-semibold'>Notifications</span>
           <button
-            type="button"
-            className="btn btn-sm btn-primary"
+            type='button'
+            className='btn btn-sm btn-primary'
             onClick={handleMakeAllRead}
             disabled={isMarkingAllRead || unreadCount === 0}
           >
-            {isMarkingAllRead ? "Reading..." : "Make All Read"}
+            {isMarkingAllRead ? 'Reading...' : 'Make All Read'}
           </button>
         </div>
-        <ul className="activity-timeline">
+        <ul className='activity-timeline'>
           {visibleNotifications.map((item) => (
-            <li className="d-flex align-items-start" key={item.id}>
+            <li className='d-flex align-items-start' key={item.id}>
               <a
                 href={getNotificationTargetUrl(item, sessionData)}
-                className="d-flex align-items-start text-decoration-none text-reset w-100"
+                className='d-flex align-items-start text-decoration-none text-reset w-100'
                 onClick={() => {
                   setShow(false);
 
-                  if (!item.id.startsWith("fallback-") && !item.is_read) {
+                  if (!item.id.startsWith('fallback-') && !item.is_read) {
                     setUnreadCount((prev) => Math.max(0, prev - 1));
                   }
 
@@ -528,8 +528,8 @@ const NotificationHeader = () => {
                         ? {
                             ...n,
                             is_read: true,
-                            dotColor: "primary",
-                            fontColor: "primary",
+                            dotColor: 'primary',
+                            fontColor: 'primary',
                           }
                         : n,
                     ),
@@ -540,16 +540,17 @@ const NotificationHeader = () => {
                   void refetchUnreadCount();
                 }}
               >
-                <div className="activity-line" />
+                <div className='activity-line' />
                 <div className={`activity-dot-${item.dotColor}`} />
-                <div className="flex-grow-1">
+                <div className='flex-grow-1'>
                   <h6
                     className={`f-w-600 font-${item.fontColor} text-${item.fontColor}`}
                   >
                     {item.date}
+                    {','}
                     <span>{item.time}</span>
                   </h6>
-                  <h5>{item.notification_type || ""}</h5>
+                  <h5>{item.notification_type || ''}</h5>
                   <p>{item.message}</p>
                 </div>
               </a>
@@ -557,10 +558,10 @@ const NotificationHeader = () => {
           ))}
         </ul>
         {hasMoreNotifications && (
-          <div className="text-center p-2 border-top">
+          <div className='text-center p-2 border-top'>
             <Link
-              href="/notifications"
-              className="btn btn-outline-primary btn-sm"
+              href='/notifications'
+              className='btn btn-outline-primary btn-sm'
               onClick={() => {
                 setShow(false);
               }}
