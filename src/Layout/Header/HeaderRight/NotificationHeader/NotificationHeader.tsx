@@ -7,6 +7,7 @@ import {
   useReadNotificationMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { UINotification } from "@/Types/Common/Notification/NotificationType";
+import { formatDate, formatTime } from '@/utils/dateAndTimeFormatter';
 import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
 import type { Session } from "next-auth";
 import { getSession } from "next-auth/react";
@@ -15,15 +16,11 @@ import { useEffect, useRef, useState } from "react";
 import { Badge } from "reactstrap";
 
 const toSafeDateTime = (input?: string) => {
-  const parsed = input ? new Date(input) : new Date();
-  const validDate = Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+  const safeInput = input ?? new Date().toISOString();
 
   return {
-    date: validDate.toLocaleDateString(),
-    time: validDate.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    date: formatDate(safeInput),
+    time: formatTime(safeInput),
   };
 };
 
@@ -551,9 +548,6 @@ const NotificationHeader = () => {
                   >
                     {item.date}
                     <span>{item.time}</span>
-                    {/* <span className={`circle-dot-${item.dotColor} float-end`}>
-                      <SVG className="circle-color" iconId="circle" />
-                    </span> */}
                   </h6>
                   <h5>{item.notification_type || ""}</h5>
                   <p>{item.message}</p>
