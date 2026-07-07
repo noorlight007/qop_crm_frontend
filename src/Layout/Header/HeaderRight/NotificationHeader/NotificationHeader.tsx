@@ -13,7 +13,7 @@ import type { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Badge } from 'reactstrap';
+import { Badge, Button } from 'reactstrap';
 
 const toSafeDateTime = (input?: string) => {
   const safeInput = input ?? new Date().toISOString();
@@ -500,14 +500,14 @@ const NotificationHeader = () => {
       >
         <div className='d-flex align-items-center justify-content-between px-3 py-2 border-bottom'>
           <span className='fw-semibold'>Notifications</span>
-          <button
-            type='button'
-            className='btn btn-sm btn-primary'
+          <Button
+            color='primary'
+            size='sm'
             onClick={handleMakeAllRead}
             disabled={isMarkingAllRead || unreadCount === 0}
           >
             {isMarkingAllRead ? 'Reading...' : 'Make All Read'}
-          </button>
+          </Button>
         </div>
         <ul className='activity-timeline'>
           {visibleNotifications.map((item) => (
