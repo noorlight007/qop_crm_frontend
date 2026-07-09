@@ -84,7 +84,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
         payload.phone = form.phone || null;
       }
 
-      const updatedUserData = await editUserData({ payload }).unwrap();
+      await editUserData({ payload }).unwrap();
 
       // Update session with new profile data
       if (updateSession) {
