@@ -1,7 +1,8 @@
-import { useAddLeadsOrApplicantsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
-import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
-import React, { useState } from "react";
-import { toast } from "react-toastify";
+import { TITLE_OPTIONS } from '@/Data/Common/TitleOptions';
+import { useAddLeadsOrApplicantsMutation } from '@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi';
+import { AddLeadsModalProps } from '@/Types/Common/CommonUsers/LeadsOrApplicantsTypes';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Col,
@@ -14,7 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
-} from "reactstrap";
+} from 'reactstrap';
 
 const AddLeadModal: React.FC<AddLeadsModalProps> = ({
   isOpen,
@@ -29,25 +30,25 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     useAddLeadsOrApplicantsMutation();
 
   const [formData, setFormData] = useState({
-    title: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    source: "",
-    other_source: "",
-    enquiry_type: "",
-    other_enquiry_type: "",
-    note: "",
+    title: '',
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    source: '',
+    other_source: '',
+    enquiry_type: '',
+    other_enquiry_type: '',
+    note: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [createdLeadData, setCreatedLeadData] = useState<any | null>(null);
-  const [submitType, setSubmitType] = useState<"lead" | "case" | null>(null);
+  const [submitType, setSubmitType] = useState<'lead' | 'case' | null>(null);
 
   const extractErrorDetail = (err: any): string => {
-    if (!err) return "An error occurred. Please try again.";
+    if (!err) return 'An error occurred. Please try again.';
     if (err.error) {
       const data =
         (err.error as any).data ||
@@ -63,7 +64,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     return (
       (data && (data.detail || data?.message)) ||
       err.message ||
-      "An error occurred. Please try again."
+      'An error occurred. Please try again.'
     );
   };
 
@@ -81,9 +82,9 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
       if (!prev) return prev;
       const copy = { ...prev };
       delete copy[name];
-      if (name === "firstName") delete copy["first_name"];
-      if (name === "middleName") delete copy["middle_name"];
-      if (name === "lastName") delete copy["last_name"];
+      if (name === 'firstName') delete copy['first_name'];
+      if (name === 'middleName') delete copy['middle_name'];
+      if (name === 'lastName') delete copy['last_name'];
       return copy;
     });
   };
@@ -96,7 +97,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
       err?.data ||
       err;
 
-    if (data?.user && typeof data.user === "object") {
+    if (data?.user && typeof data.user === 'object') {
       const user = data.user as Record<string, any>;
       if (user.first_name)
         newErrors.firstName = Array.isArray(user.first_name)
@@ -171,7 +172,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
         ? data.note
         : [String(data.note)];
 
-    if (data?.detail && typeof data.detail === "string")
+    if (data?.detail && typeof data.detail === 'string')
       newErrors._general = [data.detail];
 
     return newErrors;
@@ -185,8 +186,8 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     last_name: formData.lastName,
     email: formData.email,
     phone: formData.phone || null,
-    role: "LEAD",
-    source: formData.source || "",
+    role: 'LEAD',
+    source: formData.source || '',
     other_source: formData.other_source,
     enquiry_type: formData.enquiry_type,
     other_enquiry_type: formData.other_enquiry_type,
@@ -195,17 +196,17 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      source: "",
-      other_source: "",
-      enquiry_type: "",
-      other_enquiry_type: "",
-      note: "",
+      title: '',
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      source: '',
+      other_source: '',
+      enquiry_type: '',
+      other_enquiry_type: '',
+      note: '',
     });
   };
 
@@ -216,22 +217,22 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     try {
       const result = await addLeadsOrApplicants({ payload });
       if (result.data) {
-        toast.success("Lead added successfully.");
+        toast.success('Lead added successfully.');
         if (onLeadCreated && result.data) onLeadCreated(result.data as any);
         setCreatedLeadData(result.data);
         resetForm();
         setErrors({});
         toggle();
-      } else if ("error" in result) {
+      } else if ('error' in result) {
         const normalized = normalizeApiErrors(result);
         setErrors(normalized);
         const firstMsg =
           Object.values(normalized).flat()[0] ||
           extractErrorDetail(result) ||
-          "Invalid Request...";
+          'Invalid Request...';
         toast.error(firstMsg);
       } else {
-        toast.error("Invalid Request...");
+        toast.error('Invalid Request...');
       }
     } catch (error: any) {
       const normalized = normalizeApiErrors(error);
@@ -239,9 +240,9 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
       const firstMsg =
         Object.values(normalized).flat()[0] ||
         extractErrorDetail(error) ||
-        "An error occurred. Please try again.";
+        'An error occurred. Please try again.';
       toast.error(firstMsg);
-      console.error("Error creating lead:", error);
+      console.error('Error creating lead:', error);
     } finally {
       setSubmitType(null);
     }
@@ -255,7 +256,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
         createdLeadData.user.last_name,
       ]
         .filter(Boolean)
-        .join(" ")
+        .join(' ')
     : createdLeadData
       ? [
           createdLeadData.title,
@@ -264,9 +265,9 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
           createdLeadData.last_name,
         ]
           .filter(Boolean)
-          .join(" ")
+          .join(' ')
       : formData.firstName || formData.lastName
-        ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
+        ? `${formData.title ? formData.title + ' ' : ''}${formData.firstName}${formData.middleName ? ' ' + formData.middleName : ''} ${formData.lastName}`.trim()
         : undefined;
 
   const handleSaveAndCreateCase = async (e: React.FormEvent) => {
@@ -276,7 +277,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     try {
       const result = await addLeadsOrApplicants({ payload });
       if (result.data) {
-        toast.success("Lead added successfully.");
+        toast.success('Lead added successfully.');
         const leadId =
           (result.data as any)?.id ?? (result.data as any)?.user?.id;
         setCreatedLeadData(result.data);
@@ -287,7 +288,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
           const u = d?.user || d;
           return [u?.title, u?.first_name, u?.middle_name, u?.last_name]
             .filter(Boolean)
-            .join(" ");
+            .join(' ');
         })();
 
         onOpenCase?.({
@@ -298,16 +299,16 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
         resetForm();
         setErrors({});
         toggle();
-      } else if ("error" in result) {
+      } else if ('error' in result) {
         const normalized = normalizeApiErrors(result);
         setErrors(normalized);
         const firstMsg =
           Object.values(normalized).flat()[0] ||
           extractErrorDetail(result) ||
-          "Invalid Request...";
+          'Invalid Request...';
         toast.error(firstMsg);
       } else {
-        toast.error("Invalid Request...");
+        toast.error('Invalid Request...');
       }
     } catch (error: any) {
       const normalized = normalizeApiErrors(error);
@@ -315,24 +316,24 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
       const firstMsg =
         Object.values(normalized).flat()[0] ||
         extractErrorDetail(error) ||
-        "An error occurred. Please try again.";
+        'An error occurred. Please try again.';
       toast.error(firstMsg);
-      console.error("Error creating lead:", error);
+      console.error('Error creating lead:', error);
     } finally {
       setSubmitType(null);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
+    <Modal isOpen={isOpen} toggle={toggle} size='lg' centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Add {header}</span>
+        <span className='fs-4 text-primary'>Add {header}</span>
       </ModalHeader>
       <Form
         onSubmit={(e) => {
-          if (submitType === "lead") {
+          if (submitType === 'lead') {
             handleSaveLead(e);
-          } else if (submitType === "case") {
+          } else if (submitType === 'case') {
             handleSaveAndCreateCase(e);
           }
         }}
@@ -341,128 +342,123 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="title">
-                  Title<span className="text-danger">*</span>
+                <Label for='title'>
+                  Title<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="title"
-                  name="title"
-                  type="select"
-                  value={formData.title || ""}
+                  id='title'
+                  name='title'
+                  type='select'
+                  value={formData.title || ''}
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="">Select...</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="DR">Dr</option>
-                  <option value="MISS">Miss</option>
-                  <option value="MADAM">Madam</option>
-                  <option value="MAIDEN">Maiden</option>
-                  <option value="PROFESSOR">Professor</option>
-                  <option value="DOCTOR">Doctor</option>
+                  {TITLE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Input>
                 {errors.title && (
-                  <div className="text-danger small mt-1">
-                    {errors.title.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.title.join(' ')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="firstName">
-                  First Name<span className="text-danger">*</span>
+                <Label for='firstName'>
+                  First Name<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
+                  id='firstName'
+                  name='firstName'
+                  type='text'
                   value={formData.firstName}
                   onChange={handleInputChange}
                   required
                 />
                 {errors.firstName && (
-                  <div className="text-danger small mt-1">
-                    {errors.firstName.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.firstName.join(' ')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="middleName">Middle Name(s)</Label>
+                <Label for='middleName'>Middle Name(s)</Label>
                 <Input
-                  id="middleName"
-                  name="middleName"
-                  type="text"
-                  value={formData.middleName || ""}
+                  id='middleName'
+                  name='middleName'
+                  type='text'
+                  value={formData.middleName || ''}
                   onChange={handleInputChange}
                 />
                 {errors.middleName && (
-                  <div className="text-danger small mt-1">
-                    {errors.middleName.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.middleName.join(' ')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="lastName">
-                  Last Name<span className="text-danger">*</span>
+                <Label for='lastName'>
+                  Last Name<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
+                  id='lastName'
+                  name='lastName'
+                  type='text'
                   value={formData.lastName}
                   onChange={handleInputChange}
                   required
                 />
                 {errors.lastName && (
-                  <div className="text-danger small mt-1">
-                    {errors.lastName.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.lastName.join(' ')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="email">
-                  Email<span className="text-danger">*</span>
+                <Label for='email'>
+                  Email<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
+                  id='email'
+                  name='email'
+                  type='email'
                   value={formData.email}
                   onChange={handleInputChange}
                   required
                 />
                 {errors.email && (
-                  <div className="text-danger small mt-1">
-                    {errors.email.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.email.join(' ')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="phone">
-                  Mobile Number<span className="text-danger">*</span>
+                <Label for='phone'>
+                  Mobile Number<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="phone"
-                  name="phone"
-                  type="number"
-                  value={formData.phone || ""}
+                  id='phone'
+                  name='phone'
+                  type='number'
+                  value={formData.phone || ''}
                   onChange={handleInputChange}
                   required
                 />
                 {errors.phone && (
-                  <div className="text-danger small mt-1">
-                    {errors.phone.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.phone.join(' ')}
                   </div>
                 )}
               </FormGroup>
@@ -470,90 +466,90 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
 
             <Col md={6}>
               <FormGroup>
-                <Label for="source">Source</Label>
+                <Label for='source'>Source</Label>
                 <Input
-                  id="source"
-                  name="source"
-                  type="select"
-                  value={formData.source || ""}
+                  id='source'
+                  name='source'
+                  type='select'
+                  value={formData.source || ''}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select...</option>
-                  <option value="GOOGLE">Google</option>
-                  <option value="SOCIAL_MEDIA">Social Media</option>
-                  <option value="REFERRAL">Referral</option>
-                  <option value="WEBSITE">Website</option>
-                  <option value="OTHER">Other</option>
+                  <option value=''>Select...</option>
+                  <option value='GOOGLE'>Google</option>
+                  <option value='SOCIAL_MEDIA'>Social Media</option>
+                  <option value='REFERRAL'>Referral</option>
+                  <option value='WEBSITE'>Website</option>
+                  <option value='OTHER'>Other</option>
                 </Input>
                 {errors.source && (
-                  <div className="text-danger small mt-1">
-                    {errors.source.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.source.join(' ')}
                   </div>
                 )}
               </FormGroup>
             </Col>
-            {formData.source === "OTHER" && (
+            {formData.source === 'OTHER' && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="other_source">Other Source</Label>
+                  <Label for='other_source'>Other Source</Label>
                   <Input
-                    id="other_source"
-                    name="other_source"
-                    type="text"
-                    value={formData.other_source || ""}
+                    id='other_source'
+                    name='other_source'
+                    type='text'
+                    value={formData.other_source || ''}
                     onChange={handleInputChange}
                   />
                   {errors.other_source && (
-                    <div className="text-danger small mt-1">
-                      {errors.other_source.join(" ")}
+                    <div className='text-danger small mt-1'>
+                      {errors.other_source.join(' ')}
                     </div>
                   )}
                 </FormGroup>
               </Col>
             )}
             <Col md={6}>
-              <Label for="reasonForEnquiry">Enquiry Type</Label>
+              <Label for='reasonForEnquiry'>Enquiry Type</Label>
               <FormGroup>
                 <Input
-                  id="reasonForEnquiry"
-                  name="enquiry_type"
-                  type="select"
-                  value={formData.enquiry_type || ""}
+                  id='reasonForEnquiry'
+                  name='enquiry_type'
+                  type='select'
+                  value={formData.enquiry_type || ''}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select...</option>
-                  <option value="PURCHASE">Purchase</option>
-                  <option value="REMORTGAGE">Remortgage</option>
-                  <option value="BUY_TO_LET">Buy to Let</option>
-                  <option value="FIRST_TIME_BUYER">First Time Buyer</option>
-                  <option value="COMMERCIAL_MORTGAGE">
+                  <option value=''>Select...</option>
+                  <option value='PURCHASE'>Purchase</option>
+                  <option value='REMORTGAGE'>Remortgage</option>
+                  <option value='BUY_TO_LET'>Buy to Let</option>
+                  <option value='FIRST_TIME_BUYER'>First Time Buyer</option>
+                  <option value='COMMERCIAL_MORTGAGE'>
                     Commercial Mortgage
                   </option>
-                  <option value="PROTECTION">Protection</option>
-                  <option value="GENERAL_INSURANCE">General Insurance</option>
-                  <option value="OTHER">Other</option>
+                  <option value='PROTECTION'>Protection</option>
+                  <option value='GENERAL_INSURANCE'>General Insurance</option>
+                  <option value='OTHER'>Other</option>
                 </Input>
                 {errors.enquiry_type && (
-                  <div className="text-danger small mt-1">
-                    {errors.enquiry_type.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.enquiry_type.join(' ')}
                   </div>
                 )}
               </FormGroup>
             </Col>
-            {formData.enquiry_type === "OTHER" && (
+            {formData.enquiry_type === 'OTHER' && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="other_enquiry_type">Other Enquiry Type</Label>
+                  <Label for='other_enquiry_type'>Other Enquiry Type</Label>
                   <Input
-                    id="other_enquiry_type"
-                    name="other_enquiry_type"
-                    type="text"
-                    value={formData.other_enquiry_type || ""}
+                    id='other_enquiry_type'
+                    name='other_enquiry_type'
+                    type='text'
+                    value={formData.other_enquiry_type || ''}
                     onChange={handleInputChange}
                   />
                   {errors.other_enquiry_type && (
-                    <div className="text-danger small mt-1">
-                      {errors.other_enquiry_type.join(" ")}
+                    <div className='text-danger small mt-1'>
+                      {errors.other_enquiry_type.join(' ')}
                     </div>
                   )}
                 </FormGroup>
@@ -561,17 +557,17 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
             )}
             <Col md={12}>
               <FormGroup>
-                <Label for="note">Note</Label>
+                <Label for='note'>Note</Label>
                 <Input
-                  id="note"
-                  name="note"
-                  type="textarea"
-                  value={formData.note || ""}
+                  id='note'
+                  name='note'
+                  type='textarea'
+                  value={formData.note || ''}
                   onChange={handleInputChange}
                 />
                 {errors.note && (
-                  <div className="text-danger small mt-1">
-                    {errors.note.join(" ")}
+                  <div className='text-danger small mt-1'>
+                    {errors.note.join(' ')}
                   </div>
                 )}
               </FormGroup>
@@ -580,28 +576,28 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
         </ModalBody>
         <ModalFooter>
           <Button
-            type="submit"
-            color="primary"
+            type='submit'
+            color='primary'
             disabled={isAddingLeadsOrApplicants}
-            onClick={() => setSubmitType("lead")}
+            onClick={() => setSubmitType('lead')}
           >
-            {isAddingLeadsOrApplicants && submitType === "lead"
-              ? "Saving..."
+            {isAddingLeadsOrApplicants && submitType === 'lead'
+              ? 'Saving...'
               : `Save ${header}`}
           </Button>
-          {header === "Lead" && (
+          {header === 'Lead' && (
             <Button
-              type="submit"
-              color="secondary"
+              type='submit'
+              color='secondary'
               disabled={isAddingLeadsOrApplicants}
-              onClick={() => setSubmitType("case")}
+              onClick={() => setSubmitType('case')}
             >
-              {isAddingLeadsOrApplicants && submitType === "case"
-                ? "Saving..."
-                : "Save & Create Case"}
+              {isAddingLeadsOrApplicants && submitType === 'case'
+                ? 'Saving...'
+                : 'Save & Create Case'}
             </Button>
           )}
-          <Button color="danger" onClick={toggle}>
+          <Button color='danger' onClick={toggle}>
             Cancel
           </Button>
         </ModalFooter>

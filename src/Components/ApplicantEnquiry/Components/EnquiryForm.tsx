@@ -1,12 +1,13 @@
-import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { useSubmitEnquiryMutation } from "@/Redux/Reducers/PublicEnquiry/PublicEnquiryApi";
-import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
-import getCurrencySign from "@/utils/currency";
-import formatChoiceFieldValue from "@/utils/formatters";
-import React, { useRef, useState } from "react";
-import { FaCheck } from "react-icons/fa";
-import { TbCircleX } from "react-icons/tb";
-import { toast } from "react-toastify";
+import { TITLE_OPTIONS } from '@/Data/Common/TitleOptions';
+import { useGetPublicAppranceQuery } from '@/Redux/Reducers/Appearance/AppearanceApi';
+import { useSubmitEnquiryMutation } from '@/Redux/Reducers/PublicEnquiry/PublicEnquiryApi';
+import { InitialEnquiryData } from '@/Types/Enquiry/EnquiryTypes';
+import getCurrencySign from '@/utils/currency';
+import formatChoiceFieldValue from '@/utils/formatters';
+import React, { useRef, useState } from 'react';
+import { FaCheck } from 'react-icons/fa';
+import { TbCircleX } from 'react-icons/tb';
+import { toast } from 'react-toastify';
 import {
   Alert,
   Button,
@@ -22,13 +23,13 @@ import {
   NavLink,
   Progress,
   Row,
-} from "reactstrap";
+} from 'reactstrap';
 
 const EnquiryForm: React.FC = () => {
   const OPTIONAL_FIELDS = new Set([
-    "estimated_property_value",
-    "approximate_mortgage_required",
-    "approximate_deposit_available",
+    'estimated_property_value',
+    'approximate_mortgage_required',
+    'approximate_deposit_available',
   ]);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -38,22 +39,22 @@ const EnquiryForm: React.FC = () => {
   const formRef = useRef<HTMLFormElement>(null);
 
   const INITIAL_FORM_DATA: InitialEnquiryData = {
-    title: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    phone: "",
-    email: "",
-    enquiry_type: "",
-    other_enquiry_type: "",
-    estimated_property_value: "",
-    approximate_mortgage_required: "",
-    approximate_deposit_available: "",
-    source: "",
-    other_source: "",
-    notes: "",
+    title: '',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    phone: '',
+    email: '',
+    enquiry_type: '',
+    other_enquiry_type: '',
+    estimated_property_value: '',
+    approximate_mortgage_required: '',
+    approximate_deposit_available: '',
+    source: '',
+    other_source: '',
+    notes: '',
     contact_consent: false,
-    referral_user: "",
+    referral_user: '',
   };
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
   const [formData, setFormData] =
@@ -63,20 +64,20 @@ const EnquiryForm: React.FC = () => {
 
   const initialEnquiryTabTitleData = [
     {
-      id: "1",
-      nav: "Applicant Details",
+      id: '1',
+      nav: 'Applicant Details',
     },
     {
-      id: "2",
-      nav: "Mortgage Requirements",
+      id: '2',
+      nav: 'Mortgage Requirements',
     },
     {
-      id: "3",
-      nav: "Additional Information",
+      id: '3',
+      nav: 'Additional Information',
     },
     {
-      id: "4",
-      nav: "Review & Confirm",
+      id: '4',
+      nav: 'Review & Confirm',
     },
   ];
 
@@ -94,7 +95,7 @@ const EnquiryForm: React.FC = () => {
     }
 
     if (mortgageValue > propertyValue) {
-      return "Approximate Mortgage Required cannot be more than the Estimated Property Value";
+      return 'Approximate Mortgage Required cannot be more than the Estimated Property Value';
     }
 
     return null;
@@ -106,7 +107,7 @@ const EnquiryForm: React.FC = () => {
     const { name, value, type } = e.target;
 
     const updatedValue =
-      type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
+      type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
 
     setFormData((prev) => {
       const nextData = {
@@ -115,8 +116,8 @@ const EnquiryForm: React.FC = () => {
       };
 
       if (
-        name === "estimated_property_value" ||
-        name === "approximate_mortgage_required"
+        name === 'estimated_property_value' ||
+        name === 'approximate_mortgage_required'
       ) {
         const mortgageError = validateMortgageRequired(
           nextData.estimated_property_value,
@@ -149,7 +150,7 @@ const EnquiryForm: React.FC = () => {
     }
 
     if (!value) {
-      setErrors((prev) => ({ ...prev, [fieldName]: "This field is required" }));
+      setErrors((prev) => ({ ...prev, [fieldName]: 'This field is required' }));
     } else {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -160,18 +161,18 @@ const EnquiryForm: React.FC = () => {
   };
 
   const getErrorMessage = (err: any) => {
-    if (!err) return "Unknown error";
-    if (typeof err === "string") return err;
-    if (typeof err?.data === "string") return err.data;
+    if (!err) return 'Unknown error';
+    if (typeof err === 'string') return err;
+    if (typeof err?.data === 'string') return err.data;
 
     const collect = (value: any): string[] => {
       if (value == null) return [];
-      if (typeof value === "string") return [value];
+      if (typeof value === 'string') return [value];
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v),
+          typeof v === 'string' ? v : JSON.stringify(v),
         );
-      if (typeof value === "object") {
+      if (typeof value === 'object') {
         try {
           return Object.values(value).flatMap((v) => collect(v));
         } catch {
@@ -183,14 +184,14 @@ const EnquiryForm: React.FC = () => {
 
     if (err?.data?.message) return String(err.data.message);
 
-    if (err?.data && typeof err.data === "object") {
+    if (err?.data && typeof err.data === 'object') {
       const msgs = collect(err.data);
-      if (msgs.length) return msgs.join(", ");
+      if (msgs.length) return msgs.join(', ');
     }
 
     if (err?.error) return String(err.error);
     if (err?.message) {
-      if (/status code/i.test(err.message)) return "Server returned an error";
+      if (/status code/i.test(err.message)) return 'Server returned an error';
       return String(err.message);
     }
 
@@ -256,17 +257,17 @@ const EnquiryForm: React.FC = () => {
 
     switch (step) {
       case 1:
-        if (!formData.title) newErrors.title = "This field is required";
+        if (!formData.title) newErrors.title = 'This field is required';
         if (!formData.first_name)
-          newErrors.first_name = "This field is required";
-        if (!formData.last_name) newErrors.last_name = "This field is required";
-        if (!formData.email) newErrors.email = "This field is required";
-        if (!formData.phone) newErrors.phone = "This field is required";
+          newErrors.first_name = 'This field is required';
+        if (!formData.last_name) newErrors.last_name = 'This field is required';
+        if (!formData.email) newErrors.email = 'This field is required';
+        if (!formData.phone) newErrors.phone = 'This field is required';
         break;
 
       case 2:
         if (!formData.enquiry_type)
-          newErrors.enquiry_type = "This field is required";
+          newErrors.enquiry_type = 'This field is required';
         {
           const mortgageError = validateMortgageRequired(
             formData.estimated_property_value,
@@ -279,12 +280,12 @@ const EnquiryForm: React.FC = () => {
         break;
 
       case 3:
-        if (!formData.source) newErrors.source = "This field is required";
+        if (!formData.source) newErrors.source = 'This field is required';
         break;
 
       case 4:
         if (!formData.contact_consent)
-          newErrors.contact_consent = "This field is required";
+          newErrors.contact_consent = 'This field is required';
         break;
     }
 
@@ -355,40 +356,40 @@ const EnquiryForm: React.FC = () => {
           formData.approximate_mortgage_required || null,
         approximate_deposit_available:
           formData.approximate_deposit_available || null,
-        other_enquiry_type: formData.other_enquiry_type || "",
-        other_source: formData.other_source || "",
-        referral_user: formData.referral_user || "",
+        other_enquiry_type: formData.other_enquiry_type || '',
+        other_source: formData.other_source || '',
+        referral_user: formData.referral_user || '',
       };
 
       await submitEnquiry({ payload: cleanedData }).unwrap();
-      toast.success("Form submitted successfully");
+      toast.success('Form submitted successfully');
       setShowSuccess(true);
     } catch (err) {
       const e: any = err;
-      console.error("Submission failed", e);
+      console.error('Submission failed', e);
 
       const newFieldErrors: Record<string, string> = {};
       let newApiErrors: string[] = [];
 
       const apiData = e?.data ?? (e?.originalStatus ? e : null);
 
-      if (apiData && typeof apiData === "object") {
+      if (apiData && typeof apiData === 'object') {
         Object.entries(apiData).forEach(([key, value]) => {
           if (
-            key === "non_field_errors" ||
-            key === "detail" ||
-            key === "message"
+            key === 'non_field_errors' ||
+            key === 'detail' ||
+            key === 'message'
           ) {
-            const msg = Array.isArray(value) ? value.join(" ") : String(value);
+            const msg = Array.isArray(value) ? value.join(' ') : String(value);
             if (msg) newApiErrors.push(msg);
             return;
           }
 
           if (Array.isArray(value)) {
-            newFieldErrors[key] = value.join(" ");
-          } else if (typeof value === "string") {
+            newFieldErrors[key] = value.join(' ');
+          } else if (typeof value === 'string') {
             newFieldErrors[key] = value;
-          } else if (typeof value === "object") {
+          } else if (typeof value === 'object') {
             const nested = getErrorMessage({ data: value });
             if (nested) newFieldErrors[key] = nested;
           } else {
@@ -428,42 +429,42 @@ const EnquiryForm: React.FC = () => {
   return (
     <>
       {showSuccess ? (
-        <div className="d-flex align-items-center justify-content-center p-4">
-          <div style={{ maxWidth: "500px", width: "100%" }}>
+        <div className='d-flex align-items-center justify-content-center p-4'>
+          <div style={{ maxWidth: '500px', width: '100%' }}>
             {/* Success Card */}
-            <Card className="border-0 shadow-lg">
+            <Card className='border-0 shadow-lg'>
               <button
                 onClick={handleCloseSuccess}
-                className="btn btn-link position-absolute top-0 end-0 text-secondary p-3"
+                className='btn btn-link position-absolute top-0 end-0 text-secondary p-3'
                 style={{
-                  fontSize: "1.25rem",
-                  textDecoration: "none",
+                  fontSize: '1.25rem',
+                  textDecoration: 'none',
                   zIndex: 10,
                 }}
-                aria-label="Close"
+                aria-label='Close'
               >
                 <TbCircleX size={24} />
               </button>
-              <CardBody className="text-center py-5 px-4">
+              <CardBody className='text-center py-5 px-4'>
                 {/* Success Icon */}
-                <div className="mb-4">
+                <div className='mb-4'>
                   <div
-                    className="d-inline-flex align-items-center justify-content-center rounded-circle border-success"
-                    style={{ width: "100px", height: "100px" }}
+                    className='d-inline-flex align-items-center justify-content-center rounded-circle border-success'
+                    style={{ width: '100px', height: '100px' }}
                   >
-                    <FaCheck className="text-success" size={30} />
+                    <FaCheck className='text-success' size={30} />
                   </div>
                 </div>
 
                 {/* Title */}
-                <h2 className="mb-3 fw-bold text-success">
+                <h2 className='mb-3 fw-bold text-success'>
                   Submission Successful
                 </h2>
 
                 {/* Description */}
                 <p
-                  className="text-primary mb-0"
-                  style={{ fontSize: "1.05rem" }}
+                  className='text-primary mb-0'
+                  style={{ fontSize: '1.05rem' }}
                 >
                   Your enquiry has been received
                 </p>
@@ -473,41 +474,41 @@ const EnquiryForm: React.FC = () => {
         </div>
       ) : (
         <Card
-          className="shadow-lg border-0 justify-content-center"
+          className='shadow-lg border-0 justify-content-center'
           style={{
-            minHeight: "560px",
-            display: "flex",
-            flexDirection: "column",
+            minHeight: '560px',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           <CardBody
-            className="p-4"
-            style={{ display: "flex", flexDirection: "column", flex: 1 }}
+            className='p-4'
+            style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
           >
             {apiErrors.length > 0 && (
-              <div className="mb-3">
-                <Alert color="danger" toggle={() => setApiErrors([])}>
+              <div className='mb-3'>
+                <Alert color='danger' toggle={() => setApiErrors([])}>
                   {apiErrors.map((m, i) => (
                     <div key={i}>{m}</div>
                   ))}
                 </Alert>
               </div>
             )}
-            <Nav className="mb-4 d-flex justify-content-center align-items-center gap-2 pb-2 pt-4">
+            <Nav className='mb-4 d-flex justify-content-center align-items-center gap-2 pb-2 pt-4'>
               {initialEnquiryTabTitleData.map((item, index) => {
                 const step = index + 1;
 
                 return (
-                  <NavItem key={index} className="pb-3">
+                  <NavItem key={index} className='pb-3'>
                     <NavLink
-                      role="button"
+                      role='button'
                       onClick={() => setCurrentStep(step)}
                       className={`px-3 py-1 rounded-pill small ${
                         currentStep === step
-                          ? "bg-primary text-white border-primary"
-                          : "bg-white text-dark border-primary"
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-white text-dark border-primary'
                       }`}
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                     >
                       {item.nav}
                     </NavLink>
@@ -517,15 +518,15 @@ const EnquiryForm: React.FC = () => {
 
               <Progress
                 value={(currentStep / 4) * 100}
-                color="primary"
-                style={{ height: "8px", width: "100%" }}
+                color='primary'
+                style={{ height: '8px', width: '100%' }}
               />
             </Nav>
 
             <Form
               innerRef={formRef}
               onSubmit={handleSubmit}
-              style={{ display: "flex", flexDirection: "column", flex: 1 }}
+              style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
             >
               {/* STEP 1 */}
               {currentStep === 1 && (
@@ -534,29 +535,24 @@ const EnquiryForm: React.FC = () => {
                     <Col md={6}>
                       <FormGroup>
                         <Label>
-                          Title<span className="text-danger">*</span>
+                          Title<span className='text-danger'>*</span>
                         </Label>
                         <Input
-                          type="select"
-                          name="title"
+                          type='select'
+                          name='title'
                           value={formData.title}
-                          onBlur={(e) => handleBlur("title", e.target.value)}
+                          onBlur={(e) => handleBlur('title', e.target.value)}
                           onChange={handleChange}
                           required
                         >
-                          <option value="">Select...</option>
-                          <option value="MR">Mr</option>
-                          <option value="MRS">Mrs</option>
-                          <option value="MS">Ms</option>
-                          <option value="DR">Dr</option>
-                          <option value="MISS">Miss</option>
-                          <option value="MADAM">Madam</option>
-                          <option value="MAIDEN">Maiden</option>
-                          <option value="PROFESSOR">Professor</option>
-                          <option value="DOCTOR">Doctor</option>
+                          {TITLE_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
                         </Input>
                         {errors.title && (
-                          <small className="text-danger">{errors.title}</small>
+                          <small className='text-danger'>{errors.title}</small>
                         )}
                       </FormGroup>
                     </Col>
@@ -564,19 +560,19 @@ const EnquiryForm: React.FC = () => {
                     <Col md={6}>
                       <FormGroup>
                         <Label>
-                          First Name<span className="text-danger">*</span>
+                          First Name<span className='text-danger'>*</span>
                         </Label>
                         <Input
-                          name="first_name"
+                          name='first_name'
                           value={formData.first_name}
                           onBlur={(e) =>
-                            handleBlur("first_name", e.target.value)
+                            handleBlur('first_name', e.target.value)
                           }
                           onChange={handleChange}
                           required
                         />
                         {errors.first_name && (
-                          <small className="text-danger">
+                          <small className='text-danger'>
                             {errors.first_name}
                           </small>
                         )}
@@ -587,7 +583,7 @@ const EnquiryForm: React.FC = () => {
                       <FormGroup>
                         <Label>Middle Name</Label>
                         <Input
-                          name="middle_name"
+                          name='middle_name'
                           value={formData.middle_name}
                           onChange={handleChange}
                         />
@@ -597,19 +593,19 @@ const EnquiryForm: React.FC = () => {
                     <Col md={6}>
                       <FormGroup>
                         <Label>
-                          Last Name<span className="text-danger">*</span>
+                          Last Name<span className='text-danger'>*</span>
                         </Label>
                         <Input
-                          name="last_name"
+                          name='last_name'
                           value={formData.last_name}
                           onBlur={(e) =>
-                            handleBlur("last_name", e.target.value)
+                            handleBlur('last_name', e.target.value)
                           }
                           onChange={handleChange}
                           required
                         />
                         {errors.last_name && (
-                          <small className="text-danger">
+                          <small className='text-danger'>
                             {errors.last_name}
                           </small>
                         )}
@@ -619,18 +615,18 @@ const EnquiryForm: React.FC = () => {
                     <Col md={6}>
                       <FormGroup>
                         <Label>
-                          Email<span className="text-danger">*</span>
+                          Email<span className='text-danger'>*</span>
                         </Label>
                         <Input
-                          type="email"
-                          name="email"
+                          type='email'
+                          name='email'
                           value={formData.email}
-                          onBlur={(e) => handleBlur("email", e.target.value)}
+                          onBlur={(e) => handleBlur('email', e.target.value)}
                           onChange={handleChange}
                           required
                         />
                         {errors.email && (
-                          <small className="text-danger">{errors.email}</small>
+                          <small className='text-danger'>{errors.email}</small>
                         )}
                       </FormGroup>
                     </Col>
@@ -638,17 +634,17 @@ const EnquiryForm: React.FC = () => {
                     <Col md={6}>
                       <FormGroup>
                         <Label>
-                          Mobile Number<span className="text-danger">*</span>
+                          Mobile Number<span className='text-danger'>*</span>
                         </Label>
                         <Input
-                          name="phone"
+                          name='phone'
                           value={formData.phone}
-                          onBlur={(e) => handleBlur("phone", e.target.value)}
+                          onBlur={(e) => handleBlur('phone', e.target.value)}
                           onChange={handleChange}
                           required
                         />
                         {errors.phone && (
-                          <small className="text-danger">{errors.phone}</small>
+                          <small className='text-danger'>{errors.phone}</small>
                         )}
                       </FormGroup>
                     </Col>
@@ -663,56 +659,56 @@ const EnquiryForm: React.FC = () => {
                     <Col md={6}>
                       <FormGroup>
                         <Label>
-                          Enquiry Type<span className="text-danger">*</span>
+                          Enquiry Type<span className='text-danger'>*</span>
                         </Label>
                         <Input
-                          type="select"
-                          name="enquiry_type"
+                          type='select'
+                          name='enquiry_type'
                           value={formData.enquiry_type}
                           onBlur={(e) =>
-                            handleBlur("enquiry_type", e.target.value)
+                            handleBlur('enquiry_type', e.target.value)
                           }
                           onChange={handleChange}
                           required
                         >
-                          <option value="">Select...</option>
-                          <option value="PURCHASE">Purchase</option>
-                          <option value="REMORTGAGE">Remortgage</option>
-                          <option value="BUY_TO_LET">Buy-to-Let</option>
-                          <option value="FIRST_TIME_BUYER">
+                          <option value=''>Select...</option>
+                          <option value='PURCHASE'>Purchase</option>
+                          <option value='REMORTGAGE'>Remortgage</option>
+                          <option value='BUY_TO_LET'>Buy-to-Let</option>
+                          <option value='FIRST_TIME_BUYER'>
                             First-Time Buyer
                           </option>
-                          <option value="PROTECTION">Protection</option>
-                          <option value="GENERAL_INSURANCE">
+                          <option value='PROTECTION'>Protection</option>
+                          <option value='GENERAL_INSURANCE'>
                             General Insurance
                           </option>
-                          <option value="OTHER">Other</option>
+                          <option value='OTHER'>Other</option>
                         </Input>
                         {errors.enquiry_type && (
-                          <small className="text-danger">
+                          <small className='text-danger'>
                             {errors.enquiry_type}
                           </small>
                         )}
                       </FormGroup>
                     </Col>
-                    {formData.enquiry_type === "OTHER" && (
+                    {formData.enquiry_type === 'OTHER' && (
                       <Col md={6}>
                         <FormGroup>
-                          <Label for="other_enquiry_type">
+                          <Label for='other_enquiry_type'>
                             Other Enquiery Type
                           </Label>
                           <Input
-                            id="other_enquiry_type"
-                            name="other_enquiry_type"
-                            type="text"
-                            value={formData.other_enquiry_type || ""}
+                            id='other_enquiry_type'
+                            name='other_enquiry_type'
+                            type='text'
+                            value={formData.other_enquiry_type || ''}
                             onBlur={(e) =>
-                              handleBlur("enquiry_type", e.target.value)
+                              handleBlur('enquiry_type', e.target.value)
                             }
                             onChange={handleChange}
                           />
                           {errors.enquiry_type && (
-                            <small className="text-danger">
+                            <small className='text-danger'>
                               {errors.enquiry_type}
                             </small>
                           )}
@@ -726,19 +722,19 @@ const EnquiryForm: React.FC = () => {
                           Estimated Property Value ({getCurrencySign()})
                         </Label>
                         <Input
-                          name="estimated_property_value"
-                          type="number"
+                          name='estimated_property_value'
+                          type='number'
                           value={formData.estimated_property_value}
                           onBlur={(e) =>
                             handleBlur(
-                              "estimated_property_value",
+                              'estimated_property_value',
                               e.target.value,
                             )
                           }
                           onChange={handleChange}
                         />
                         {errors.estimated_property_value && (
-                          <small className="text-danger">
+                          <small className='text-danger'>
                             {errors.estimated_property_value}
                           </small>
                         )}
@@ -751,19 +747,19 @@ const EnquiryForm: React.FC = () => {
                           Approximate Mortgage Required ({getCurrencySign()})
                         </Label>
                         <Input
-                          name="approximate_mortgage_required"
-                          type="number"
+                          name='approximate_mortgage_required'
+                          type='number'
                           value={formData.approximate_mortgage_required}
                           onBlur={(e) =>
                             handleBlur(
-                              "approximate_mortgage_required",
+                              'approximate_mortgage_required',
                               e.target.value,
                             )
                           }
                           onChange={handleChange}
                         />
                         {errors.approximate_mortgage_required && (
-                          <small className="text-danger">
+                          <small className='text-danger'>
                             {errors.approximate_mortgage_required}
                           </small>
                         )}
@@ -777,19 +773,19 @@ const EnquiryForm: React.FC = () => {
                           %)
                         </Label>
                         <Input
-                          name="approximate_deposit_available"
-                          type="number"
+                          name='approximate_deposit_available'
+                          type='number'
                           value={formData.approximate_deposit_available}
                           onBlur={(e) =>
                             handleBlur(
-                              "approximate_deposit_available",
+                              'approximate_deposit_available',
                               e.target.value,
                             )
                           }
                           onChange={handleChange}
                         />
                         {errors.approximate_deposit_available && (
-                          <small className="text-danger">
+                          <small className='text-danger'>
                             {errors.approximate_deposit_available}
                           </small>
                         )}
@@ -805,50 +801,50 @@ const EnquiryForm: React.FC = () => {
                   <FormGroup>
                     <Label>
                       How did you hear about us?
-                      <span className="text-danger">*</span>
+                      <span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="select"
-                      name="source"
+                      type='select'
+                      name='source'
                       required
                       value={formData.source}
-                      onBlur={(e) => handleBlur("source", e.target.value)}
+                      onBlur={(e) => handleBlur('source', e.target.value)}
                       onChange={handleChange}
                     >
-                      <option value="">Select...</option>
-                      <option value="GOOGLE">Google</option>
-                      <option value="SOCIAL_MEDIA">Social Media</option>
+                      <option value=''>Select...</option>
+                      <option value='GOOGLE'>Google</option>
+                      <option value='SOCIAL_MEDIA'>Social Media</option>
                       {appearanceData?.is_network === false && (
-                        <option value="REFERRAL">Referral</option>
+                        <option value='REFERRAL'>Referral</option>
                       )}
-                      <option value="WEBSITE">Website</option>
-                      <option value="OTHER">Other</option>
+                      <option value='WEBSITE'>Website</option>
+                      <option value='OTHER'>Other</option>
                     </Input>
                     {errors.source && (
-                      <small className="text-danger">{errors.source}</small>
+                      <small className='text-danger'>{errors.source}</small>
                     )}
                   </FormGroup>
-                  {formData.source === "OTHER" && (
+                  {formData.source === 'OTHER' && (
                     <FormGroup>
-                      <Label for="other_source">Other Source</Label>
+                      <Label for='other_source'>Other Source</Label>
                       <Input
-                        id="other_source"
-                        name="other_source"
-                        type="text"
-                        value={formData.other_source || ""}
-                        onBlur={(e) => handleBlur("source", e.target.value)}
+                        id='other_source'
+                        name='other_source'
+                        type='text'
+                        value={formData.other_source || ''}
+                        onBlur={(e) => handleBlur('source', e.target.value)}
                         onChange={handleChange}
                       />
                       {errors.source && (
-                        <small className="text-danger">{errors.source}</small>
+                        <small className='text-danger'>{errors.source}</small>
                       )}
                     </FormGroup>
                   )}
                   <FormGroup>
                     <Label>Notes / Additional Comments</Label>
                     <Input
-                      type="textarea"
-                      name="notes"
+                      type='textarea'
+                      name='notes'
                       value={formData.notes}
                       onChange={handleChange}
                       rows={4}
@@ -860,66 +856,66 @@ const EnquiryForm: React.FC = () => {
               {/* STEP 4 */}
               {currentStep === 4 && (
                 <>
-                  <Row className="mb-4">
+                  <Row className='mb-4'>
                     {/* PERSONAL INFO */}
                     <Col md={6}>
-                      <div className="border rounded p-3 h-100">
-                        <h6 className="fw-bold mb-3">Personal Information</h6>
+                      <div className='border rounded p-3 h-100'>
+                        <h6 className='fw-bold mb-3'>Personal Information</h6>
                         <p>
-                          <strong>Title:</strong>{" "}
-                          {formatChoiceFieldValue(formData.title || "Not Set")}
+                          <strong>Title:</strong>{' '}
+                          {formatChoiceFieldValue(formData.title || 'Not Set')}
                         </p>
                         <p>
-                          <strong>First Name:</strong>{" "}
-                          {formData.first_name || "Not Set"}
+                          <strong>First Name:</strong>{' '}
+                          {formData.first_name || 'Not Set'}
                         </p>
                         <p>
-                          <strong>Middle Name:</strong>{" "}
-                          {formData.middle_name || "Not Set"}
+                          <strong>Middle Name:</strong>{' '}
+                          {formData.middle_name || 'Not Set'}
                         </p>
                         <p>
-                          <strong>Last Name:</strong>{" "}
-                          {formData.last_name || "Not Set"}
+                          <strong>Last Name:</strong>{' '}
+                          {formData.last_name || 'Not Set'}
                         </p>
                         <p>
-                          <strong>Email:</strong> {formData.email || "Not Set"}
+                          <strong>Email:</strong> {formData.email || 'Not Set'}
                         </p>
                         <p>
-                          <strong>Phone:</strong> {formData.phone || "Not Set"}
+                          <strong>Phone:</strong> {formData.phone || 'Not Set'}
                         </p>
                       </div>
                     </Col>
 
                     {/* Enquiry INFO */}
                     <Col md={6}>
-                      <div className="border rounded p-3 h-100">
-                        <h6 className="fw-bold mb-3">Enquiry Information</h6>
+                      <div className='border rounded p-3 h-100'>
+                        <h6 className='fw-bold mb-3'>Enquiry Information</h6>
                         <p>
-                          <strong>Enquiry Type:</strong>{" "}
+                          <strong>Enquiry Type:</strong>{' '}
                           {formatChoiceFieldValue(
-                            formData.enquiry_type || "Not Set",
+                            formData.enquiry_type || 'Not Set',
                           )}
                         </p>
-                        {formData.enquiry_type === "OTHER" && (
+                        {formData.enquiry_type === 'OTHER' && (
                           <p>
-                            <strong>Other Enquiry Type:</strong>{" "}
-                            {formData.other_enquiry_type || "Not Specified"}
+                            <strong>Other Enquiry Type:</strong>{' '}
+                            {formData.other_enquiry_type || 'Not Specified'}
                           </p>
                         )}
                         <p>
-                          <strong>How did you hear about us?:</strong>{" "}
-                          {formatChoiceFieldValue(formData.source || "Not Set")}
+                          <strong>How did you hear about us?:</strong>{' '}
+                          {formatChoiceFieldValue(formData.source || 'Not Set')}
                         </p>
-                        {formData.source === "OTHER" && (
+                        {formData.source === 'OTHER' && (
                           <p>
-                            <strong>Other Source:</strong>{" "}
-                            {formData.other_source || "Not Specified"}
+                            <strong>Other Source:</strong>{' '}
+                            {formData.other_source || 'Not Specified'}
                           </p>
                         )}
-                        {formData.source === "REFERRAL" && (
+                        {formData.source === 'REFERRAL' && (
                           <p>
-                            <strong>Referral User:</strong>{" "}
-                            {formData.referral_user || "Not Specified"}
+                            <strong>Referral User:</strong>{' '}
+                            {formData.referral_user || 'Not Specified'}
                           </p>
                         )}
 
@@ -928,12 +924,12 @@ const EnquiryForm: React.FC = () => {
                           {formData.estimated_property_value || 0}
                         </p>
                         <p>
-                          <strong>Mortgage Required:</strong>{" "}
+                          <strong>Mortgage Required:</strong>{' '}
                           {getCurrencySign()}
                           {formData.approximate_mortgage_required || 0}
                         </p>
                         <p>
-                          <strong>Deposit Available:</strong>{" "}
+                          <strong>Deposit Available:</strong>{' '}
                           {getCurrencySign()}
                           {formData.approximate_deposit_available || 0}
                         </p>
@@ -942,17 +938,17 @@ const EnquiryForm: React.FC = () => {
                   </Row>
 
                   {/* CONSENT */}
-                  <div className="border rounded p-3">
+                  <div className='border rounded p-3'>
                     <FormGroup check>
                       <Input
-                        id="contact_consent"
-                        type="checkbox"
-                        name="contact_consent"
+                        id='contact_consent'
+                        type='checkbox'
+                        name='contact_consent'
                         checked={formData.contact_consent}
                         onChange={handleChange}
-                        className="border-primary"
+                        className='border-primary'
                       />
-                      <Label for="contact_consent" check className="ms-2">
+                      <Label for='contact_consent' check className='ms-2'>
                         I consent to be contacted by telephone, email, or SMS in
                         relation to my mortgage enquiry.
                       </Label>
@@ -961,14 +957,14 @@ const EnquiryForm: React.FC = () => {
                 </>
               )}
 
-              <hr className="my-3" />
+              <hr className='my-3' />
 
-              <div className="d-flex justify-content-between">
+              <div className='d-flex justify-content-between'>
                 {currentStep > 1 && (
                   <Button
-                    color="secondary"
-                    type="button"
-                    className="my-3"
+                    color='secondary'
+                    type='button'
+                    className='my-3'
                     outline
                     onClick={handlePrev}
                   >
@@ -978,9 +974,9 @@ const EnquiryForm: React.FC = () => {
 
                 {currentStep < 4 ? (
                   <Button
-                    color="primary"
-                    className="ms-auto my-3"
-                    type="button"
+                    color='primary'
+                    className='ms-auto my-3'
+                    type='button'
                     onClick={handleNext}
                     disabled={
                       (currentStep === 1 && !formData.first_name) ||
@@ -991,12 +987,12 @@ const EnquiryForm: React.FC = () => {
                   </Button>
                 ) : (
                   <Button
-                    type="submit"
-                    color="primary"
-                    className="ms-auto my-3"
+                    type='submit'
+                    color='primary'
+                    className='ms-auto my-3'
                     disabled={!formData.contact_consent}
                   >
-                    {isLoading ? "Submitting..." : "Submit Application"}
+                    {isLoading ? 'Submitting...' : 'Submit Application'}
                   </Button>
                 )}
               </div>

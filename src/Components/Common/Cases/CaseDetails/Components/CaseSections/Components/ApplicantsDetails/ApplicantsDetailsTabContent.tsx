@@ -1,5 +1,6 @@
 'use client';
 import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
+import { TITLE_OPTIONS } from '@/Data/Common/TitleOptions';
 import { useAppDispatch, useAppSelector } from '@/Redux/Hooks';
 import { useGetPreviousAddressQuery } from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantPreviousAddressApi';
 import { useUpdateApplicantDetailsMutation } from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi';
@@ -174,8 +175,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const isApplicant = session?.user?.role === 'APPLICANT';
   const isEditable = caseData?.is_editable !== false;
   const isLocked = isApplicant && !isEditable;
-
-  console.log("TEST:::", caseData?.case_stage)
 
   // Only require the core contact fields while the case is still at the
   // ENQUIRY stage. Once it progresses past ENQUIRY, all the usual fields
@@ -751,16 +750,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       }
                       required
                     >
-                      <option value=''>Select...</option>
-                      <option value='MR'>Mr</option>
-                      <option value='MRS'>Mrs</option>
-                      <option value='MS'>Ms</option>
-                      <option value='DR'>Dr</option>
-                      <option value='MISS'>Miss</option>
-                      <option value='MADAM'>Madam</option>
-                      <option value='MAIDEN'>Maiden</option>
-                      <option value='PROFESSOR'>Professor</option>
-                      <option value='DOCTOR'>Doctor</option>
+                      {TITLE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </Input>
                     {getFieldError('customer.title') && (
                       <div className='text-danger small'>

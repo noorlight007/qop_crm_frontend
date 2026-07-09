@@ -1,9 +1,10 @@
-import { useUpdateJointApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
-import { UpdateJointApplicantModalProps } from "@/Types/Common/Cases/CaseDetails/JointApplicant/JointApplicantTypes";
-import { isEqual } from "lodash";
-import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { TITLE_OPTIONS } from '@/Data/Common/TitleOptions';
+import { useUpdateJointApplicantInfoMutation } from '@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi';
+import { UpdateJointApplicantModalProps } from '@/Types/Common/Cases/CaseDetails/JointApplicant/JointApplicantTypes';
+import { isEqual } from 'lodash';
+import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Col,
@@ -16,7 +17,7 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
-} from "reactstrap";
+} from 'reactstrap';
 
 const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
   isOpen,
@@ -30,45 +31,45 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
     useUpdateJointApplicantInfoMutation();
 
   const [formData, setFormData] = useState({
-    title: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    relationship: "",
-    other_relationship: "",
-    notes: "",
+    title: '',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    relationship: '',
+    other_relationship: '',
+    notes: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const sanitize = (s: string) => (s || "").replace(/^\s*\d+,\s*/g, "").trim();
-  const flattenErrors = (value: any, path = ""): Record<string, string> => {
+  const sanitize = (s: string) => (s || '').replace(/^\s*\d+,\s*/g, '').trim();
+  const flattenErrors = (value: any, path = ''): Record<string, string> => {
     const out: Record<string, string> = {};
     if (value == null) return out;
-    if (typeof value === "string") {
-      out[path || ""] = sanitize(value);
+    if (typeof value === 'string') {
+      out[path || ''] = sanitize(value);
       return out;
     }
     if (Array.isArray(value)) {
-      out[path || ""] = sanitize(
+      out[path || ''] = sanitize(
         value
-          .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
-          .join(", "),
+          .map((v) => (typeof v === 'string' ? v : JSON.stringify(v)))
+          .join(', '),
       );
       return out;
     }
-    if (typeof value === "object") {
+    if (typeof value === 'object') {
       for (const k of Object.keys(value)) {
         const v = value[k];
         const newPath = path ? `${path}.${k}` : k;
-        if (typeof v === "string" || Array.isArray(v)) {
+        if (typeof v === 'string' || Array.isArray(v)) {
           out[newPath] = sanitize(
             (Array.isArray(v)
               ? v
-                  .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
-                  .join(", ")
+                  .map((x) => (typeof x === 'string' ? x : JSON.stringify(x)))
+                  .join(', ')
               : v) as string,
           );
         } else {
@@ -87,9 +88,9 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
     });
 
   const getErrorMessage = (err: any) => {
-    if (!err) return "Unknown error";
-    if (typeof err === "string") return err;
-    if (typeof err?.data === "string") return err.data;
+    if (!err) return 'Unknown error';
+    if (typeof err === 'string') return err;
+    if (typeof err?.data === 'string') return err.data;
     try {
       if (err?.data?.message) return String(err.data.message);
       if (err?.message) return String(err.message);
@@ -105,15 +106,15 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
   useEffect(() => {
     if (user) {
       setFormData({
-        title: user?.customer?.title || "",
-        first_name: user?.customer?.first_name || "",
-        middle_name: user?.customer?.middle_name || "",
-        last_name: user?.customer?.last_name || "",
-        email: user?.customer?.email || "",
-        phone: user?.customer?.phone || "",
-        relationship: user?.relationship || "",
-        other_relationship: user?.other_relationship || "",
-        notes: user?.notes || "",
+        title: user?.customer?.title || '',
+        first_name: user?.customer?.first_name || '',
+        middle_name: user?.customer?.middle_name || '',
+        last_name: user?.customer?.last_name || '',
+        email: user?.customer?.email || '',
+        phone: user?.customer?.phone || '',
+        relationship: user?.relationship || '',
+        other_relationship: user?.other_relationship || '',
+        notes: user?.notes || '',
       });
     }
   }, [user]);
@@ -126,7 +127,7 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
 
   const handleSave = async () => {
     // Determine if the email has changed
-    const originalEmail = user?.customer?.email || "";
+    const originalEmail = user?.customer?.email || '';
     const hasEmailChanged = formData.email !== originalEmail;
 
     // Prepare the payload, conditionally including the email field
@@ -154,20 +155,20 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
     if (res.data) {
       // clear errors and succeed
       setErrors({});
-      toast.success("Applicant updated successfully!");
+      toast.success('Applicant updated successfully!');
       if (onUpdateSuccess) {
         onUpdateSuccess(res.data);
       }
       toggle();
-      console.log("Update successful:", res.data);
-    } else if ("error" in res) {
+      console.log('Update successful:', res.data);
+    } else if ('error' in res) {
       const e: any = res.error;
       const dataErrors = e?.data?.errors ?? e?.data ?? e;
       try {
         const flat = flattenErrors(dataErrors);
         const normalized: Record<string, string> = {};
         Object.entries(flat).forEach(([k, v]) => {
-          const parts = k.split(".").filter(Boolean);
+          const parts = k.split('.').filter(Boolean);
           const last = parts[parts.length - 1];
           // use last segment as field key which matches formData snake_case
           normalized[last] = v;
@@ -179,75 +180,70 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
           return; // keep modal open
         }
       } catch (e2) {
-        console.error("Error parsing validation errors", e2);
+        console.error('Error parsing validation errors', e2);
       }
 
       toast.error(
-        getErrorMessage(res.error) || "Failed to update user information.",
+        getErrorMessage(res.error) || 'Failed to update user information.',
       );
     }
   };
 
   // Compare current data with the original data
   const hasChanges = !isEqual(formData, {
-    title: user?.customer?.title || "",
-    first_name: user?.customer?.first_name || "",
-    middle_name: user?.customer?.middle_name || "",
-    last_name: user?.customer?.last_name || "",
-    email: user?.customer?.email || "",
-    phone: user?.customer?.phone || "",
-    relationship: user?.relationship || "",
-    notes: user?.notes || "",
+    title: user?.customer?.title || '',
+    first_name: user?.customer?.first_name || '',
+    middle_name: user?.customer?.middle_name || '',
+    last_name: user?.customer?.last_name || '',
+    email: user?.customer?.email || '',
+    phone: user?.customer?.phone || '',
+    relationship: user?.relationship || '',
+    notes: user?.notes || '',
   });
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
+    <Modal isOpen={isOpen} toggle={toggle} size='lg' centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Joint Applicant</span>
+        <span className='fs-4 text-primary'>Update Joint Applicant</span>
       </ModalHeader>
       <ModalBody>
         <Form>
           <Row>
             <Col xl={6} md={12}>
               <FormGroup>
-                <Label for="title">
-                  Title<span className="text-danger">*</span>
+                <Label for='title'>
+                  Title<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  type="select"
-                  id="title"
-                  name="title"
+                  type='select'
+                  id='title'
+                  name='title'
                   value={formData.title}
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="">Select...</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="DR">Dr</option>
-                  <option value="MISS">Miss</option>
-                  <option value="MADAM">Madam</option>
-                  <option value="MAIDEN">Maiden</option>
-                  <option value="PROFESSOR">Professor</option>
-                  <option value="DOCTOR">Doctor</option>
+                  {TITLE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Input>
                 {errors.title && (
-                  <div className="text-danger small mt-1">{errors.title}</div>
+                  <div className='text-danger small mt-1'>{errors.title}</div>
                 )}
               </FormGroup>
             </Col>
             <Col xl={6} md={12}>
               <FormGroup>
-                <Label for="firstName">First Name</Label>
+                <Label for='firstName'>First Name</Label>
                 <Input
-                  id="firstName"
-                  name="first_name"
+                  id='firstName'
+                  name='first_name'
                   value={formData.first_name}
                   onChange={handleInputChange}
                 />
                 {errors.first_name && (
-                  <div className="text-danger small mt-1">
+                  <div className='text-danger small mt-1'>
                     {errors.first_name}
                   </div>
                 )}
@@ -255,15 +251,15 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
             </Col>
             <Col xl={6} md={12}>
               <FormGroup>
-                <Label for="middleName">Middle Name</Label>
+                <Label for='middleName'>Middle Name</Label>
                 <Input
-                  id="middleName"
-                  name="middle_name"
+                  id='middleName'
+                  name='middle_name'
                   value={formData.middle_name}
                   onChange={handleInputChange}
                 />
                 {errors.middle_name && (
-                  <div className="text-danger small mt-1">
+                  <div className='text-danger small mt-1'>
                     {errors.middle_name}
                   </div>
                 )}
@@ -272,15 +268,15 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
 
             <Col xl={6} md={12}>
               <FormGroup>
-                <Label for="lastName">Last Name</Label>
+                <Label for='lastName'>Last Name</Label>
                 <Input
-                  id="lastName"
-                  name="last_name"
+                  id='lastName'
+                  name='last_name'
                   value={formData.last_name}
                   onChange={handleInputChange}
                 />
                 {errors.last_name && (
-                  <div className="text-danger small mt-1">
+                  <div className='text-danger small mt-1'>
                     {errors.last_name}
                   </div>
                 )}
@@ -288,74 +284,74 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
             </Col>
             <Col xl={6} md={12}>
               <FormGroup>
-                <Label for="email">Email</Label>
+                <Label for='email'>Email</Label>
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
+                  id='email'
+                  name='email'
+                  type='email'
                   value={formData.email}
                   onChange={handleInputChange}
                 />
                 {errors.email && (
-                  <div className="text-danger small mt-1">{errors.email}</div>
+                  <div className='text-danger small mt-1'>{errors.email}</div>
                 )}
               </FormGroup>
             </Col>
             <Col xl={6} md={12}>
               <FormGroup>
-                <Label for="phone">Phone</Label>
+                <Label for='phone'>Phone</Label>
                 <Input
-                  id="phone"
-                  name="phone"
-                  type="number"
+                  id='phone'
+                  name='phone'
+                  type='number'
                   value={formData.phone}
                   onChange={handleInputChange}
                 />
                 {errors.phone && (
-                  <div className="text-danger small mt-1">{errors.phone}</div>
+                  <div className='text-danger small mt-1'>{errors.phone}</div>
                 )}
               </FormGroup>
             </Col>
             <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="relationship" className="small">
+                <Label for='relationship' className='small'>
                   Relationship
                 </Label>
                 <Input
-                  type="select"
-                  name="relationship"
-                  id="relationship"
+                  type='select'
+                  name='relationship'
+                  id='relationship'
                   value={formData.relationship}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select...</option>
-                  <option value="SPOUSE">Spouse</option>
-                  <option value="SIBLING">Sibling</option>
-                  <option value="OTHER">Other</option>
+                  <option value=''>Select...</option>
+                  <option value='SPOUSE'>Spouse</option>
+                  <option value='SIBLING'>Sibling</option>
+                  <option value='OTHER'>Other</option>
                 </Input>
                 {errors.relationship && (
-                  <div className="text-danger small mt-1">
+                  <div className='text-danger small mt-1'>
                     {errors.relationship}
                   </div>
                 )}
               </FormGroup>
             </Col>
-            {formData.relationship === "OTHER" && (
+            {formData.relationship === 'OTHER' && (
               <Col xs={12} md={6}>
                 <FormGroup>
-                  <Label for="other_relationship" className="small">
+                  <Label for='other_relationship' className='small'>
                     Other Relationship
                   </Label>
                   <Input
-                    type="text"
-                    name="other_relationship"
-                    id="other_relationship"
+                    type='text'
+                    name='other_relationship'
+                    id='other_relationship'
                     value={formData.other_relationship}
                     onChange={handleInputChange}
-                    placeholder="Specify other relationship"
+                    placeholder='Specify other relationship'
                   />
                   {errors.other_relationship && (
-                    <div className="text-danger small mt-1">
+                    <div className='text-danger small mt-1'>
                       {errors.other_relationship}
                     </div>
                   )}
@@ -364,16 +360,16 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
             )}
             <Col xl={6} md={12}>
               <FormGroup>
-                <Label for="notes">Note</Label>
+                <Label for='notes'>Note</Label>
                 <Input
-                  type="textarea"
-                  id="notes"
-                  name="notes"
+                  type='textarea'
+                  id='notes'
+                  name='notes'
                   value={formData.notes}
                   onChange={handleInputChange}
                 />
                 {errors.notes && (
-                  <div className="text-danger small mt-1">{errors.notes}</div>
+                  <div className='text-danger small mt-1'>{errors.notes}</div>
                 )}
               </FormGroup>
             </Col>
@@ -381,15 +377,15 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggle}>
+        <Button color='secondary' onClick={toggle}>
           Cancel
-        </Button>{" "}
+        </Button>{' '}
         <Button
-          color="primary"
+          color='primary'
           onClick={handleSave}
           disabled={!hasChanges || isLoading}
         >
-          {isLoading ? "Saving..." : "Save Changes"}
+          {isLoading ? 'Saving...' : 'Save Changes'}
         </Button>
       </ModalFooter>
     </Modal>
