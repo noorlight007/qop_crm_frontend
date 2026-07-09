@@ -224,7 +224,7 @@ const NeedsAndPreferencesContent: React.FC = () => {
       have_you_a_will_in_place_note: formData.have_you_a_will_in_place_note,
       mortgage_requirements_note: formData.mortgage_requirements_note,
       mortgage_requirements: formData.mortgage_requirements,
-      notes: formData.notes,
+      note: formData.note,
     };
 
     try {
@@ -2091,12 +2091,12 @@ const NeedsAndPreferencesContent: React.FC = () => {
                   <Input
                     type="textarea"
                     rows={4}
-                    name="notes"
-                    value={formData?.notes || ""}
+                    name="note"
+                    value={formData?.note || ""}
                     onChange={handleInputChange}
                   />
-                  {errors.notes && (
-                    <div className="text-danger">{errors.notes}</div>
+                  {errors.note && (
+                    <div className="text-danger">{errors.note}</div>
                   )}
                 </FormGroup>
 
