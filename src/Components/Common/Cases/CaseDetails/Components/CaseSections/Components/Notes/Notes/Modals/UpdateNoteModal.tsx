@@ -32,7 +32,7 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({
   toggle,
   selectedNote,
 }) => {
-  console.log("Selected note for editing:", selectedNote);
+  // console.log("Selected note for editing:", selectedNote);
   const { casealias } = useParams();
   const caseAlias = Array.isArray(casealias) ? casealias[0] : (casealias ?? "");
   const [brokerVisible, setBrokerVisible] = useState(false);
