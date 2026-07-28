@@ -29,6 +29,11 @@ import {
 import { toast } from 'react-toastify';
 import { Button, Card, CardBody, Col, Form, Input, Row } from 'reactstrap';
 
+// ─── File constraints ────────────────────────────────────────────────────────
+const ACCEPTED_FILE_TYPES = 'image/*,video/*';
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+const MAX_FILE_SIZE_LABEL = '50MB';
+
 const SupportTicketComments: React.FC = () => {
   const { supportticketalias } = useParams();
   const { data: session } = useSession();
@@ -74,11 +79,50 @@ const SupportTicketComments: React.FC = () => {
   const isLocked =
     session?.user?.role !== 'SUPER_ADMIN' && ticketDetails?.status === 'CLOSED';
 
+  // ─── File helpers ─────────────────────────────────────────────────────────────
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  // Splits files into those within the size limit and those that exceed it.
+  // Shows a toast warning for any rejected files.
+  const filterFilesBySize = (files: File[]) => {
+    const validFiles: File[] = [];
+    const oversizedFiles: File[] = [];
+
+    files.forEach((file) => {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        oversizedFiles.push(file);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (oversizedFiles.length > 0) {
+      const names = oversizedFiles
+        .map((file) => `${file.name} (${formatFileSize(file.size)})`)
+        .join(', ');
+      toast.warning(
+        `The following file(s) exceed the ${MAX_FILE_SIZE_LABEL} limit and were not added: ${names}`,
+      );
+    }
+
+    return validFiles;
+  };
+
   // ─── File handlers ───────────────────────────────────────────────────────────
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isLocked) return;
-    if (e.target.files) setSelectedFiles(Array.from(e.target.files));
+    if (e.target.files) {
+      const validFiles = filterFilesBySize(Array.from(e.target.files));
+      setSelectedFiles(validFiles);
+    }
+    // Reset input value so re-selecting the same file(s) after a rejection re-triggers onChange
+    e.target.value = '';
   };
 
   const handleReplyFileSelect = (
@@ -87,11 +131,13 @@ const SupportTicketComments: React.FC = () => {
   ) => {
     if (isLocked) return;
     if (e.target.files) {
+      const validFiles = filterFilesBySize(Array.from(e.target.files));
       setReplyFiles((prev) => ({
         ...prev,
-        [commentId]: Array.from(e.target.files || []),
+        [commentId]: validFiles,
       }));
     }
+    e.target.value = '';
   };
 
   const handleRemoveFile = (index: number) => {
@@ -622,7 +668,9 @@ const SupportTicketComments: React.FC = () => {
                             style={{ fontSize: '0.875rem' }}
                           >
                             <FaFileAlt className='text-muted' />
-                            <span>{file.name}</span>
+                            <span>
+                              {file.name} ({formatFileSize(file.size)})
+                            </span>
                             <FaTimes
                               className='text-danger cursor-pointer'
                               style={{ cursor: 'pointer' }}
@@ -636,15 +684,20 @@ const SupportTicketComments: React.FC = () => {
                     )}
 
                   <div className='d-flex gap-2'>
-                    <Input
-                      type='file'
-                      multiple
-                      onChange={(e) => handleReplyFileSelect(e, comment.id)}
-                      className='form-control-sm'
-                      style={{ maxWidth: '200px' }}
-                      accept='image/*,.pdf,.doc,.docx'
-                      disabled={isLocked || isReplyLoading}
-                    />
+                    <div>
+                      <Input
+                        type='file'
+                        multiple
+                        onChange={(e) => handleReplyFileSelect(e, comment.id)}
+                        className='form-control-sm'
+                        style={{ maxWidth: '200px' }}
+                        accept={ACCEPTED_FILE_TYPES}
+                        disabled={isLocked || isReplyLoading}
+                      />
+                      <small className='text-muted d-block mt-1'>
+                        Images & videos, max {MAX_FILE_SIZE_LABEL} each
+                      </small>
+                    </div>
                     <Button
                       color='primary'
                       size='sm'
@@ -760,7 +813,7 @@ const SupportTicketComments: React.FC = () => {
                               className='text-truncate flex-grow-1'
                               style={{ fontSize: '0.875rem' }}
                             >
-                              {file.name}
+                              {file.name} ({formatFileSize(file.size)})
                             </span>
                             <FaTimes
                               className='text-danger cursor-pointer'
@@ -775,15 +828,20 @@ const SupportTicketComments: React.FC = () => {
                 )}
 
                 <div className='d-flex gap-2 align-items-center'>
-                  <Input
-                    type='file'
-                    multiple
-                    onChange={handleFileSelect}
-                    className='form-control-sm'
-                    style={{ maxWidth: '250px' }}
-                    accept='image/*,.pdf,.doc,.docx'
-                    disabled={isLocked || isCommentLoading}
-                  />
+                  <div>
+                    <Input
+                      type='file'
+                      multiple
+                      onChange={handleFileSelect}
+                      className='form-control-sm'
+                      style={{ maxWidth: '250px' }}
+                      accept={ACCEPTED_FILE_TYPES}
+                      disabled={isLocked || isCommentLoading}
+                    />
+                    <small className='text-muted d-block mt-1'>
+                      Images & videos, max {MAX_FILE_SIZE_LABEL} each
+                    </small>
+                  </div>
                   <Button
                     color='primary'
                     type='submit'
