@@ -1,11 +1,12 @@
-import { useAddOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
+import { TITLE_OPTIONS } from '@/Data/Common/TitleOptions';
+import { useAddOrganisationMutation } from '@/Redux/Reducers/Common/Organisations/OrganisationListApi';
 import {
   AddOrganisationModalProps,
   AddOrganisationProps,
-} from "@/Types/Common/Organisations/OrganisationsTypes";
-import { countries } from "@/utils/Countries";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+} from '@/Types/Common/Organisations/OrganisationsTypes';
+import { countries } from '@/utils/Countries';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Col,
@@ -24,19 +25,19 @@ import {
   Row,
   TabContent,
   TabPane,
-} from "reactstrap";
+} from 'reactstrap';
 
 const getErrorMessage = (err: any) => {
-  if (!err) return "Unknown error";
-  if (typeof err === "string") return err;
-  if (typeof err?.data === "string") return err.data;
+  if (!err) return 'Unknown error';
+  if (typeof err === 'string') return err;
+  if (typeof err?.data === 'string') return err.data;
 
   const collect = (value: any): string[] => {
     if (value == null) return [];
-    if (typeof value === "string") return [value];
+    if (typeof value === 'string') return [value];
     if (Array.isArray(value))
-      return value.map((v) => (typeof v === "string" ? v : JSON.stringify(v)));
-    if (typeof value === "object") {
+      return value.map((v) => (typeof v === 'string' ? v : JSON.stringify(v)));
+    if (typeof value === 'object') {
       try {
         return Object.values(value).flatMap((v) => collect(v));
       } catch {
@@ -46,21 +47,21 @@ const getErrorMessage = (err: any) => {
     return [String(value)];
   };
 
-  if (err && typeof err === "object") {
+  if (err && typeof err === 'object') {
     const msgs = collect(err);
-    if (msgs.length) return msgs.join(", ");
+    if (msgs.length) return msgs.join(', ');
   }
 
   if (err?.data?.message) return String(err.data.message);
 
-  if (err?.data && typeof err.data === "object") {
+  if (err?.data && typeof err.data === 'object') {
     const msgs = collect(err.data);
-    if (msgs.length) return msgs.join(", ");
+    if (msgs.length) return msgs.join(', ');
   }
 
   if (err?.error) return String(err.error);
   if (err?.message) {
-    if (/status code/i.test(err.message)) return "Server returned an error";
+    if (/status code/i.test(err.message)) return 'Server returned an error';
     return String(err.message);
   }
 
@@ -77,30 +78,30 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<AddOrganisationProps>({
     organization: {
-      name: "",
-      subdomain: "",
-      primary_mobile: "",
-      email: "",
-      other_contact: "",
-      contact_person: "",
-      contact_person_designation: "",
-      website: "",
-      license_no: "",
+      name: '',
+      subdomain: '',
+      primary_mobile: '',
+      email: '',
+      other_contact: '',
+      contact_person: '',
+      contact_person_designation: '',
+      website: '',
+      license_no: '',
     },
     address: {
-      postcode: "",
-      house_name_or_number: "",
-      address_line_1: "",
-      city: "",
-      country: "",
+      postcode: '',
+      house_name_or_number: '',
+      address_line_1: '',
+      city: '',
+      country: '',
     },
     user: {
-      email: "",
-      phone: "",
+      email: '',
+      phone: '',
       title: null,
-      first_name: "",
-      middle_name: "",
-      last_name: "",
+      first_name: '',
+      middle_name: '',
+      last_name: '',
     },
   });
   // API validation errors keyed by dot-notated field paths
@@ -115,16 +116,16 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     const { name, value } = e.target;
 
     // Special handling for subdomain: allow lowercase letters, numbers and hyphen; show specific validation messages
-    if (name === "subdomain") {
-      const sanitized = value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+    if (name === 'subdomain') {
+      const sanitized = value.toLowerCase().replace(/[^a-z0-9-]/g, '');
       // Show a small message when user typed disallowed characters or broke other rules
       let error: string | null = null;
       if (value && sanitized !== value) {
-        error = "Only lowercase letters, numbers and hyphen (-) are allowed";
-      } else if (value && (value.startsWith("-") || value.endsWith("-"))) {
-        error = "Subdomain cannot start or end with a hyphen.";
+        error = 'Only lowercase letters, numbers and hyphen (-) are allowed';
+      } else if (value && (value.startsWith('-') || value.endsWith('-'))) {
+        error = 'Subdomain cannot start or end with a hyphen.';
       } else if (value && value.length > 63) {
-        error = "Subdomain must be at most 63 characters long.";
+        error = 'Subdomain must be at most 63 characters long.';
       } else {
         error = null;
       }
@@ -142,11 +143,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     }
 
     const addressFields = new Set([
-      "postcode",
-      "house_name_or_number",
-      "address_line_1",
-      "city",
-      "country",
+      'postcode',
+      'house_name_or_number',
+      'address_line_1',
+      'city',
+      'country',
     ]);
 
     if (addressFields.has(name)) {
@@ -174,7 +175,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
-    const fieldValue: any = type === "checkbox" ? checked : value;
+    const fieldValue: any = type === 'checkbox' ? checked : value;
     setFormData((prevState) => ({
       ...prevState,
       user: {
@@ -185,7 +186,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   };
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<string>("organisation");
+  const [activeTab, setActiveTab] = useState<string>('organisation');
   const [orgValidated, setOrgValidated] = useState(false);
   const [addressValidated, setAddressValidated] = useState(false);
   // Local validation message for subdomain (client-side only)
@@ -195,7 +196,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    setActiveTab("organisation");
+    setActiveTab('organisation');
     setApiErrors({});
     setOrgValidated(false);
     setAddressValidated(false);
@@ -208,14 +209,14 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   // Validate required organisation fields
   const validateOrganisation = () => {
     // Return true if required organisation fields are non-empty and valid.
-    const name = ((formData as any).organization?.name || "").toString().trim();
-    const subdomain = ((formData as any).organization?.subdomain || "")
+    const name = ((formData as any).organization?.name || '').toString().trim();
+    const subdomain = ((formData as any).organization?.subdomain || '')
       .toString()
       .trim();
-    const primary = ((formData as any).organization?.primary_mobile || "")
+    const primary = ((formData as any).organization?.primary_mobile || '')
       .toString()
       .trim();
-    const email = ((formData as any).organization?.email || "")
+    const email = ((formData as any).organization?.email || '')
       .toString()
       .trim();
 
@@ -224,18 +225,18 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     let subdomainValid = subdomainRegex.test(subdomain);
     if (!subdomain) {
       subdomainValid = false;
-      setSubdomainError("Subdomain is required");
+      setSubdomainError('Subdomain is required');
     } else if (!subdomainRegex.test(subdomain)) {
       subdomainValid = false;
       setSubdomainError(
-        "Only lowercase letters, numbers and hyphen (-) are allowed",
+        'Only lowercase letters, numbers and hyphen (-) are allowed',
       );
-    } else if (subdomain.startsWith("-") || subdomain.endsWith("-")) {
+    } else if (subdomain.startsWith('-') || subdomain.endsWith('-')) {
       subdomainValid = false;
-      setSubdomainError("Subdomain cannot start or end with a hyphen.");
+      setSubdomainError('Subdomain cannot start or end with a hyphen.');
     } else if (subdomain.length > 63) {
       subdomainValid = false;
-      setSubdomainError("Subdomain must be at most 63 characters long.");
+      setSubdomainError('Subdomain must be at most 63 characters long.');
     } else {
       subdomainValid = true;
       setSubdomainError(null);
@@ -245,25 +246,25 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   };
 
   const validateAddress = () => {
-    const postcode = ((formData as any).address?.postcode || "")
+    const postcode = ((formData as any).address?.postcode || '')
       .toString()
       .trim();
-    const house = ((formData as any).address?.house_name_or_number || "")
+    const house = ((formData as any).address?.house_name_or_number || '')
       .toString()
       .trim();
-    const addressLine1 = ((formData as any).address?.address_line_1 || "")
+    const addressLine1 = ((formData as any).address?.address_line_1 || '')
       .toString()
       .trim();
-    const city = ((formData as any).address?.city || "").toString().trim();
+    const city = ((formData as any).address?.city || '').toString().trim();
 
     return !!(postcode && house && addressLine1 && city);
   };
 
   const onNext = async () => {
-    if (activeTab === "organisation") {
+    if (activeTab === 'organisation') {
       if (!validateOrganisation()) {
         if (formRef.current) {
-          const ids = ["name", "subdomain", "primary_mobile", "email"];
+          const ids = ['name', 'subdomain', 'primary_mobile', 'email'];
           for (const id of ids) {
             const el = formRef.current.querySelector<HTMLInputElement>(
               `#${id}`,
@@ -282,18 +283,18 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       // Server-side validation (e.g. subdomain uniqueness) happens on final submit.
       setApiErrors({});
       setOrgValidated(true);
-      toggleTab("address");
+      toggleTab('address');
       return;
     }
 
-    if (activeTab === "address") {
+    if (activeTab === 'address') {
       if (!validateAddress()) {
         if (formRef.current) {
           const ids = [
-            "postcode",
-            "house_name_or_number",
-            "address_line_1",
-            "city",
+            'postcode',
+            'house_name_or_number',
+            'address_line_1',
+            'city',
           ];
           for (const id of ids) {
             const el = formRef.current.querySelector<HTMLInputElement>(
@@ -310,38 +311,38 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       }
 
       setAddressValidated(true);
-      toggleTab("user");
+      toggleTab('user');
       return;
     }
   };
 
   const onBack = () => {
-    if (activeTab === "user") {
-      toggleTab("address");
+    if (activeTab === 'user') {
+      toggleTab('address');
       return;
     }
-    toggleTab("organisation");
+    toggleTab('organisation');
   };
 
   // Helper to flatten nested validation error payloads into [{ field, messages[] }]
   const flattenErrors = (
     value: any,
-    prefix = "",
+    prefix = '',
   ): Array<{ field: string; messages: string[] }> => {
     const out: Array<{ field: string; messages: string[] }> = [];
 
     const pushMessages = (fieldPath: string, msgs: any) => {
       if (msgs == null) return;
-      if (typeof msgs === "string")
+      if (typeof msgs === 'string')
         out.push({ field: fieldPath, messages: [msgs] });
       else if (Array.isArray(msgs))
         out.push({
           field: fieldPath,
           messages: msgs.map((m) =>
-            typeof m === "string" ? m : JSON.stringify(m),
+            typeof m === 'string' ? m : JSON.stringify(m),
           ),
         });
-      else if (typeof msgs === "object") {
+      else if (typeof msgs === 'object') {
         Object.entries(msgs).forEach(([k, v]) => {
           const next = fieldPath ? `${fieldPath}.${k}` : k;
           out.push(...flattenErrors(v, next));
@@ -349,7 +350,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       } else out.push({ field: fieldPath, messages: [String(msgs)] });
     };
 
-    if (value && typeof value === "object" && !Array.isArray(value)) {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
       Object.entries(value).forEach(([k, v]) => {
         const next = prefix ? `${prefix}.${k}` : k;
         out.push(...flattenErrors(v, next));
@@ -358,8 +359,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     }
 
     if (prefix) pushMessages(prefix, value);
-    else if (Array.isArray(value) || typeof value === "string")
-      pushMessages("error", value);
+    else if (Array.isArray(value) || typeof value === 'string')
+      pushMessages('error', value);
 
     return out;
   };
@@ -370,7 +371,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     // final validation: ensure organisation required fields
     if (!validateOrganisation()) {
       if (formRef.current) {
-        const ids = ["name", "subdomain", "primary_mobile", "email"];
+        const ids = ['name', 'subdomain', 'primary_mobile', 'email'];
         for (const id of ids) {
           const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
           if (el && !el.checkValidity()) {
@@ -400,65 +401,65 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       const response = await addOrganisation(payload).unwrap();
 
       if (response) {
-        toast.success("Organisation added successfully!");
+        toast.success('Organisation added successfully!');
         // Clear the form data after submission
         setFormData({
           organization: {
-            name: "",
-            subdomain: "",
-            primary_mobile: "",
-            email: "",
-            other_contact: "",
-            contact_person: "",
-            contact_person_designation: "",
-            website: "",
-            license_no: "",
+            name: '',
+            subdomain: '',
+            primary_mobile: '',
+            email: '',
+            other_contact: '',
+            contact_person: '',
+            contact_person_designation: '',
+            website: '',
+            license_no: '',
           },
           address: {
-            postcode: "",
-            house_name_or_number: "",
-            address_line_1: "",
-            city: "",
-            country: "",
+            postcode: '',
+            house_name_or_number: '',
+            address_line_1: '',
+            city: '',
+            country: '',
           },
           user: {
-            email: "",
-            phone: "",
+            email: '',
+            phone: '',
             title: null,
-            first_name: "",
-            middle_name: "",
-            last_name: "",
+            first_name: '',
+            middle_name: '',
+            last_name: '',
           },
         });
         toggleModal();
       }
     } catch (error: any) {
-      console.error("Add organisation error:", error);
+      console.error('Add organisation error:', error);
 
       // Try to extract field errors and show toasts
       const source =
-        error?.data && typeof error.data === "object" ? error.data : error;
+        error?.data && typeof error.data === 'object' ? error.data : error;
       const flattened = flattenErrors(source);
       if (flattened.length) {
         // Build a map for rendering under inputs and show a toast for each field
         const map: Record<string, string[]> = {};
         flattened.forEach((entry) => {
-          const field = entry.field || "error";
+          const field = entry.field || 'error';
           map[field] = map[field]
             ? [...map[field], ...entry.messages]
             : [...entry.messages];
-          const body = entry.messages.join(", ");
+          const body = entry.messages.join(', ');
           // toast.error(body);
         });
         setApiErrors(map);
 
         // Switch to the relevant tab based on error field paths
         const firstField = flattened[0]?.field || Object.keys(map)[0];
-        if (firstField && firstField.startsWith("user")) {
-          toggleTab("user");
+        if (firstField && firstField.startsWith('user')) {
+          toggleTab('user');
         } else {
           // default to organisation tab for organization / generic errors
-          toggleTab("organisation");
+          toggleTab('organisation');
         }
         return;
       }
@@ -466,119 +467,119 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       // Fallback: show aggregated message
       const msg =
         getErrorMessage(error) ||
-        "Failed to add organisation. Please try again.";
+        'Failed to add organisation. Please try again.';
       toast.error(msg);
     }
   };
 
   const handlePostcodeLookup = () => {
-    toast.info("Postcode lookup is not available yet.");
+    toast.info('Postcode lookup is not available yet.');
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggleModal} size="lg" centered>
+    <Modal isOpen={isOpen} toggle={toggleModal} size='lg' centered>
       <ModalHeader toggle={toggleModal}>
-        <h3 className="text-primary">Add New Organisation</h3>{" "}
+        <h3 className='text-primary'>Add New Organisation</h3>{' '}
       </ModalHeader>
       <Form innerRef={formRef} onSubmit={handleSubmit}>
         <ModalBody>
-          <Nav pills className="d-flex justify-content-center gap-2">
+          <Nav pills className='d-flex justify-content-center gap-2'>
             <NavItem>
               <NavLink
-                active={activeTab === "organisation"}
-                onClick={() => toggleTab("organisation")}
-                style={{ cursor: "pointer" }}
-                className={`${activeTab === "organisation" ? "bg-primary" : "text-primary border-primary"}`}
+                active={activeTab === 'organisation'}
+                onClick={() => toggleTab('organisation')}
+                style={{ cursor: 'pointer' }}
+                className={`${activeTab === 'organisation' ? 'bg-primary' : 'text-primary border-primary'}`}
               >
                 Information
               </NavLink>
             </NavItem>
             <NavItem>
               <NavLink
-                active={activeTab === "address"}
+                active={activeTab === 'address'}
                 onClick={() => {
                   if (orgValidated) {
-                    toggleTab("address");
+                    toggleTab('address');
                   } else {
                     onNext();
                   }
                 }}
-                style={{ cursor: "pointer" }}
-                className={`${activeTab === "address" ? "bg-primary" : "text-primary border-primary"}`}
+                style={{ cursor: 'pointer' }}
+                className={`${activeTab === 'address' ? 'bg-primary' : 'text-primary border-primary'}`}
               >
                 Address
               </NavLink>
             </NavItem>
             <NavItem>
               <NavLink
-                active={activeTab === "user"}
+                active={activeTab === 'user'}
                 onClick={() => {
-                  if (activeTab === "address") {
+                  if (activeTab === 'address') {
                     onNext();
                   } else if (orgValidated && addressValidated) {
-                    toggleTab("user");
+                    toggleTab('user');
                   } else {
                     onNext();
                   }
                 }}
-                style={{ cursor: "pointer" }}
-                className={`${activeTab === "user" ? "bg-primary" : "text-primary border-primary"}`}
+                style={{ cursor: 'pointer' }}
+                className={`${activeTab === 'user' ? 'bg-primary' : 'text-primary border-primary'}`}
               >
                 Director
               </NavLink>
             </NavItem>
           </Nav>
 
-          <TabContent activeTab={activeTab} className="mt-3">
-            <TabPane tabId="organisation">
+          <TabContent activeTab={activeTab} className='mt-3'>
+            <TabPane tabId='organisation'>
               <Row>
                 {/* 1st colunm  */}
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="name">
+                    <Label for='name'>
                       Organisation Name
-                      <span className="text-danger">*</span>
+                      <span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="text"
-                      id="name"
-                      name="name"
+                      type='text'
+                      id='name'
+                      name='name'
                       value={formData.organization.name}
                       onChange={handleChange}
-                      placeholder="Enter organisation name"
+                      placeholder='Enter organisation name'
                       required
                     />
-                    {apiErrors["organization.name"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["organization.name"].join(", ")}
+                    {apiErrors['organization.name'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['organization.name'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="subdomain">
+                    <Label for='subdomain'>
                       Sub Domain
-                      <span className="text-danger">*</span>
+                      <span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="text"
-                      id="subdomain"
-                      name="subdomain"
+                      type='text'
+                      id='subdomain'
+                      name='subdomain'
                       value={formData.organization.subdomain}
                       onChange={handleChange}
-                      placeholder="Enter organisation sub domain"
+                      placeholder='Enter organisation sub domain'
                       required
-                      pattern="[a-z0-9-]+"
+                      pattern='[a-z0-9-]+'
                       maxLength={63}
-                      title="Only lowercase letters, numbers and hyphen (-) are allowed. Cannot start/end with hyphen. Max 63 chars."
+                      title='Only lowercase letters, numbers and hyphen (-) are allowed. Cannot start/end with hyphen. Max 63 chars.'
                     />
-                    {apiErrors["organization.subdomain"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["organization.subdomain"].join(", ")}
+                    {apiErrors['organization.subdomain'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['organization.subdomain'].join(', ')}
                       </div>
                     ) : subdomainError ? (
-                      <div className="text-danger small mt-1">
+                      <div className='text-danger small mt-1'>
                         {subdomainError}
                       </div>
                     ) : null}
@@ -586,39 +587,39 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="primary_mobile">
-                      Primary Mobile<span className="text-danger">*</span>
+                    <Label for='primary_mobile'>
+                      Primary Mobile<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="text"
-                      id="primary_mobile"
-                      name="primary_mobile"
+                      type='text'
+                      id='primary_mobile'
+                      name='primary_mobile'
                       value={formData.organization.primary_mobile}
                       onChange={handleChange}
-                      placeholder="Enter primary mobile number"
+                      placeholder='Enter primary mobile number'
                       required
                     />
-                    {apiErrors["organization.primary_mobile"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["organization.primary_mobile"].join(", ")}
+                    {apiErrors['organization.primary_mobile'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['organization.primary_mobile'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="other_contact">Other Contact</Label>
+                    <Label for='other_contact'>Other Contact</Label>
                     <Input
-                      type="text"
-                      id="other_contact"
-                      name="other_contact"
+                      type='text'
+                      id='other_contact'
+                      name='other_contact'
                       value={formData.organization.other_contact}
                       onChange={handleChange}
                       placeholder="Enter other contact person's phone"
                     />
-                    {apiErrors["organization.other_contact"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["organization.other_contact"].join(", ")}
+                    {apiErrors['organization.other_contact'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['organization.other_contact'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -626,18 +627,18 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="license_no">License Number</Label>
+                    <Label for='license_no'>License Number</Label>
                     <Input
-                      type="text"
-                      id="license_no"
-                      name="license_no"
+                      type='text'
+                      id='license_no'
+                      name='license_no'
                       value={formData.organization.license_no}
                       onChange={handleChange}
-                      placeholder="Enter license number"
+                      placeholder='Enter license number'
                     />
-                    {apiErrors["organization.license_no"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["organization.license_no"].join(", ")}
+                    {apiErrors['organization.license_no'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['organization.license_no'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -646,21 +647,21 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 {/* 2nd Column  */}
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="email">
-                      Email<span className="text-danger">*</span>
+                    <Label for='email'>
+                      Email<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="email"
-                      id="email"
-                      name="email"
+                      type='email'
+                      id='email'
+                      name='email'
                       value={formData.organization.email}
                       onChange={handleChange}
-                      placeholder="Enter email"
+                      placeholder='Enter email'
                       required
                     />
-                    {apiErrors["organization.email"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["organization.email"].join(", ")}
+                    {apiErrors['organization.email'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['organization.email'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -690,40 +691,40 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 </Col> */}
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="contact_person">Contact Person</Label>
+                    <Label for='contact_person'>Contact Person</Label>
                     <Input
-                      type="text"
-                      id="contact_person"
-                      name="contact_person"
+                      type='text'
+                      id='contact_person'
+                      name='contact_person'
                       value={formData.organization.contact_person}
                       onChange={handleChange}
                       placeholder="Enter contact person's name"
                     />
-                    {apiErrors["organization.contact_person"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["organization.contact_person"].join(", ")}
+                    {apiErrors['organization.contact_person'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['organization.contact_person'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="contact_person_designation">
+                    <Label for='contact_person_designation'>
                       Contact Person Designation
                     </Label>
                     <Input
-                      type="text"
-                      id="contact_person_designation"
-                      name="contact_person_designation"
+                      type='text'
+                      id='contact_person_designation'
+                      name='contact_person_designation'
                       value={formData.organization.contact_person_designation}
                       onChange={handleChange}
                       placeholder="Enter contact person's designation"
                     />
-                    {apiErrors["organization.contact_person_designation"] ? (
-                      <div className="text-danger small mt-1">
+                    {apiErrors['organization.contact_person_designation'] ? (
+                      <div className='text-danger small mt-1'>
                         {apiErrors[
-                          "organization.contact_person_designation"
-                        ].join(", ")}
+                          'organization.contact_person_designation'
+                        ].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -731,99 +732,99 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
               </Row>
             </TabPane>
             {/* Address Tab */}
-            <TabPane tabId="address">
+            <TabPane tabId='address'>
               <Row>
                 <Col md={12} xs={12}>
                   <FormGroup>
-                    <Label for="postcode">
-                      Postcode<span className="text-danger">*</span>
+                    <Label for='postcode'>
+                      Postcode<span className='text-danger'>*</span>
                     </Label>
                     <InputGroup>
                       <Input
-                        type="text"
-                        id="postcode"
-                        name="postcode"
+                        type='text'
+                        id='postcode'
+                        name='postcode'
                         value={formData.address.postcode}
                         onChange={handleChange}
-                        placeholder="Enter postcode"
-                        className="rounded-end-0"
+                        placeholder='Enter postcode'
+                        className='rounded-end-0'
                         required
                       />
                       <Button
-                        color="info"
-                        type="button"
-                        className="text-nowrap rounded-start-0"
+                        color='info'
+                        type='button'
+                        className='text-nowrap rounded-start-0'
                         onClick={handlePostcodeLookup}
                       >
                         Lookup
                       </Button>
                     </InputGroup>
-                    {apiErrors["address.postcode"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["address.postcode"].join(", ")}
+                    {apiErrors['address.postcode'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['address.postcode'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="house_name_or_number">
-                      House Name/Number<span className="text-danger">*</span>
+                    <Label for='house_name_or_number'>
+                      House Name/Number<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="text"
-                      id="house_name_or_number"
-                      name="house_name_or_number"
+                      type='text'
+                      id='house_name_or_number'
+                      name='house_name_or_number'
                       value={formData.address.house_name_or_number}
                       onChange={handleChange}
-                      placeholder="Enter house name or number"
+                      placeholder='Enter house name or number'
                       required
                     />
-                    {apiErrors["address.house_name_or_number"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["address.house_name_or_number"].join(", ")}
+                    {apiErrors['address.house_name_or_number'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['address.house_name_or_number'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="address_line_1">
-                      Address Line 1<span className="text-danger">*</span>
+                    <Label for='address_line_1'>
+                      Address Line 1<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="text"
-                      id="address_line_1"
-                      name="address_line_1"
+                      type='text'
+                      id='address_line_1'
+                      name='address_line_1'
                       value={formData.address.address_line_1}
                       onChange={handleChange}
-                      placeholder="Enter address line 1"
+                      placeholder='Enter address line 1'
                       required
                     />
-                    {apiErrors["address.address_line_1"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["address.address_line_1"].join(", ")}
+                    {apiErrors['address.address_line_1'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['address.address_line_1'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="city">
-                      City<span className="text-danger">*</span>
+                    <Label for='city'>
+                      City<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="text"
-                      id="city"
-                      name="city"
+                      type='text'
+                      id='city'
+                      name='city'
                       value={formData.address.city}
                       onChange={handleChange}
-                      placeholder="Enter city"
+                      placeholder='Enter city'
                       required
                     />
-                    {apiErrors["address.city"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["address.city"].join(", ")}
+                    {apiErrors['address.city'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['address.city'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -831,25 +832,25 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="country">Country</Label>
+                    <Label for='country'>Country</Label>
                     <Input
-                      type="select"
-                      id="country"
-                      name="country"
+                      type='select'
+                      id='country'
+                      name='country'
                       value={formData.address.country}
                       onChange={handleChange}
-                      placeholder="Enter country"
+                      placeholder='Enter country'
                     >
-                      <option value="">Select...</option>
+                      <option value=''>Select...</option>
                       {countries.map((c) => (
                         <option key={c.code} value={c.code}>
                           {c.name}
                         </option>
                       ))}
                     </Input>
-                    {apiErrors["address.country"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["address.country"].join(", ")}
+                    {apiErrors['address.country'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['address.country'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -858,134 +859,129 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             </TabPane>
 
             {/* User Tab */}
-            <TabPane tabId="user">
+            <TabPane tabId='user'>
               <Row>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="user_title">
-                      Title<span className="text-danger">*</span>
+                    <Label for='user_title'>
+                      Title<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      id="user_title"
-                      name="title"
-                      type="select"
-                      value={formData.user.title ?? ""}
+                      id='user_title'
+                      name='title'
+                      type='select'
+                      value={formData.user.title ?? ''}
                       onChange={handleUserChange}
                       required
                     >
-                      <option value="">Select...</option>
-                      <option value="MR">Mr</option>
-                      <option value="MRS">Mrs</option>
-                      <option value="MS">Ms</option>
-                      <option value="DR">Dr</option>
-                      <option value="MISS">Miss</option>
-                      <option value="MADAM">Madam</option>
-                      <option value="MAIDEN">Maiden</option>
-                      <option value="PROFESSOR">Professor</option>
-                      <option value="DOCTOR">Doctor</option>
+                      {TITLE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </Input>
-                    {apiErrors["user.title"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["user.title"].join(", ")}
+                    {apiErrors['user.title'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['user.title'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="user_first_name">
-                      First Name<span className="text-danger">*</span>
+                    <Label for='user_first_name'>
+                      First Name<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="text"
-                      id="user_first_name"
-                      name="first_name"
+                      type='text'
+                      id='user_first_name'
+                      name='first_name'
                       value={formData.user?.first_name}
                       onChange={handleUserChange}
-                      placeholder="Enter first name"
+                      placeholder='Enter first name'
                       required
                     />
-                    {apiErrors["user.first_name"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["user.first_name"].join(", ")}
+                    {apiErrors['user.first_name'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['user.first_name'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="user_middle_name">Middle Name</Label>
+                    <Label for='user_middle_name'>Middle Name</Label>
                     <Input
-                      type="text"
-                      id="user_middle_name"
-                      name="middle_name"
+                      type='text'
+                      id='user_middle_name'
+                      name='middle_name'
                       value={formData.user?.middle_name}
                       onChange={handleUserChange}
-                      placeholder="Enter middle name"
+                      placeholder='Enter middle name'
                     />
-                    {apiErrors["user.middle_name"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["user.middle_name"].join(", ")}
+                    {apiErrors['user.middle_name'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['user.middle_name'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="user_last_name">
-                      Last Name<span className="text-danger">*</span>
+                    <Label for='user_last_name'>
+                      Last Name<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="text"
-                      id="user_last_name"
-                      name="last_name"
+                      type='text'
+                      id='user_last_name'
+                      name='last_name'
                       value={formData.user?.last_name}
                       onChange={handleUserChange}
-                      placeholder="Enter last name"
+                      placeholder='Enter last name'
                       required
                     />
-                    {apiErrors["user.last_name"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["user.last_name"].join(", ")}
+                    {apiErrors['user.last_name'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['user.last_name'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="user_email">
-                      Email<span className="text-danger">*</span>
+                    <Label for='user_email'>
+                      Email<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      type="email"
-                      id="user_email"
-                      name="email"
+                      type='email'
+                      id='user_email'
+                      name='email'
                       value={formData.user?.email}
                       onChange={handleUserChange}
-                      placeholder="Enter user email"
+                      placeholder='Enter user email'
                       required
                     />
-                    {apiErrors["user.email"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["user.email"].join(", ")}
+                    {apiErrors['user.email'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['user.email'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
                   <FormGroup>
-                    <Label for="user_phone">Phone</Label>
+                    <Label for='user_phone'>Phone</Label>
                     <Input
-                      type="text"
-                      id="user_phone"
-                      name="phone"
+                      type='text'
+                      id='user_phone'
+                      name='phone'
                       value={formData.user?.phone}
                       onChange={handleUserChange}
-                      placeholder="Enter user phone"
+                      placeholder='Enter user phone'
                     />
-                    {apiErrors["user.phone"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["user.phone"].join(", ")}
+                    {apiErrors['user.phone'] ? (
+                      <div className='text-danger small mt-1'>
+                        {apiErrors['user.phone'].join(', ')}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -994,25 +990,25 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             </TabPane>
           </TabContent>
         </ModalBody>
-        <ModalFooter className="d-flex justify-content-between">
+        <ModalFooter className='d-flex justify-content-between'>
           <div>
-            {activeTab === "user" ? (
-              <Button color="secondary" type="button" onClick={onBack}>
+            {activeTab === 'user' ? (
+              <Button color='secondary' type='button' onClick={onBack}>
                 Back
               </Button>
             ) : null}
           </div>
-          <div className="d-flex gap-1">
-            <Button color="warning" onClick={toggleModal}>
+          <div className='d-flex gap-1'>
+            <Button color='warning' onClick={toggleModal}>
               Cancel
             </Button>
-            {activeTab === "organisation" || activeTab === "address" ? (
-              <Button color="primary" type="button" onClick={onNext}>
+            {activeTab === 'organisation' || activeTab === 'address' ? (
+              <Button color='primary' type='button' onClick={onNext}>
                 Go Next
               </Button>
             ) : (
-              <Button color="primary" type="submit">
-                {isLoading ? "Saving..." : "Save Organisation"}
+              <Button color='primary' type='submit'>
+                {isLoading ? 'Saving...' : 'Save Organisation'}
               </Button>
             )}
           </div>

@@ -1,12 +1,13 @@
-"use client";
-import { useUpdateNetworkMemberMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworkMembersApi";
+'use client';
+import { TITLE_OPTIONS } from '@/Data/Common/TitleOptions';
+import { useUpdateNetworkMemberMutation } from '@/Redux/Reducers/SuperAdmin/Networks/NetworkMembersApi';
 import {
   NetworkMemberType,
   UpdateNetworkMemberModalProps,
-} from "@/Types/SuperAdmin/Networks/NetworkMemberTypes";
-import formatChoiceFieldValue from "@/utils/formatters";
-import React, { useEffect, useMemo, useState } from "react";
-import { toast } from "react-toastify";
+} from '@/Types/SuperAdmin/Networks/NetworkMemberTypes';
+import formatChoiceFieldValue from '@/utils/formatters';
+import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Col,
@@ -19,7 +20,7 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
-} from "reactstrap";
+} from 'reactstrap';
 
 const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
   isOpen,
@@ -29,16 +30,16 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
   selectedMember,
 }) => {
   const [formData, setFormData] = useState<NetworkMemberType>({
-    alias: "",
-    title: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    name: "",
-    email: "",
-    phone: "",
-    joining_date: "",
-    note: "",
+    alias: '',
+    title: '',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    name: '',
+    email: '',
+    phone: '',
+    joining_date: '',
+    note: '',
   });
   const [originalData, setOriginalData] = useState<NetworkMemberType>({});
   const [isModified, setIsModified] = useState(false);
@@ -47,40 +48,40 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
 
   useEffect(() => {
     setFormData({
-      alias: (selectedMember as any)?.alias ?? "",
-      title: (selectedMember as any)?.title ?? "",
-      first_name: (selectedMember as any)?.first_name ?? "",
-      middle_name: (selectedMember as any)?.middle_name ?? "",
-      last_name: (selectedMember as any)?.last_name ?? "",
-      name: (selectedMember as any)?.name ?? "",
-      email: (selectedMember as any)?.email ?? "",
-      phone: (selectedMember as any)?.phone ?? "",
-      joining_date: (selectedMember as any)?.joining_date ?? "",
-      note: (selectedMember as any)?.note ?? "",
+      alias: (selectedMember as any)?.alias ?? '',
+      title: (selectedMember as any)?.title ?? '',
+      first_name: (selectedMember as any)?.first_name ?? '',
+      middle_name: (selectedMember as any)?.middle_name ?? '',
+      last_name: (selectedMember as any)?.last_name ?? '',
+      name: (selectedMember as any)?.name ?? '',
+      email: (selectedMember as any)?.email ?? '',
+      phone: (selectedMember as any)?.phone ?? '',
+      joining_date: (selectedMember as any)?.joining_date ?? '',
+      note: (selectedMember as any)?.note ?? '',
     });
     setOriginalData({
-      alias: (selectedMember as any)?.alias ?? "",
-      title: (selectedMember as any)?.title ?? "",
-      first_name: (selectedMember as any)?.first_name ?? "",
-      middle_name: (selectedMember as any)?.middle_name ?? "",
-      last_name: (selectedMember as any)?.last_name ?? "",
-      name: (selectedMember as any)?.name ?? "",
-      email: (selectedMember as any)?.email ?? "",
-      phone: (selectedMember as any)?.phone ?? "",
-      joining_date: (selectedMember as any)?.joining_date ?? "",
-      note: (selectedMember as any)?.note ?? "",
+      alias: (selectedMember as any)?.alias ?? '',
+      title: (selectedMember as any)?.title ?? '',
+      first_name: (selectedMember as any)?.first_name ?? '',
+      middle_name: (selectedMember as any)?.middle_name ?? '',
+      last_name: (selectedMember as any)?.last_name ?? '',
+      name: (selectedMember as any)?.name ?? '',
+      email: (selectedMember as any)?.email ?? '',
+      phone: (selectedMember as any)?.phone ?? '',
+      joining_date: (selectedMember as any)?.joining_date ?? '',
+      note: (selectedMember as any)?.note ?? '',
     });
     setIsModified(false);
   }, [selectedMember]);
 
   const title = useMemo(() => {
     switch (role) {
-      case "COMPLIANCE":
-        return "Compliance";
-      case "ADVISER":
-        return "Adviser";
+      case 'COMPLIANCE':
+        return 'Compliance';
+      case 'ADVISER':
+        return 'Adviser';
       default:
-        return "User";
+        return 'User';
     }
   }, [role]);
 
@@ -98,7 +99,7 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Submitting form with data:", formData);
+    console.log('Submitting form with data:', formData);
 
     const memberAlias = formData.alias;
     if (!memberAlias) {
@@ -109,15 +110,15 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
     const payload: Record<string, any> = {};
 
     const fieldsToCheck: string[] = [
-      "title",
-      "first_name",
-      "middle_name",
-      "last_name",
-      "name",
-      "email",
-      "phone",
-      "joining_date",
-      "note",
+      'title',
+      'first_name',
+      'middle_name',
+      'last_name',
+      'name',
+      'email',
+      'phone',
+      'joining_date',
+      'note',
     ];
 
     fieldsToCheck.forEach((field) => {
@@ -127,7 +128,7 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
     });
 
     if (Object.keys(payload).length === 0) {
-      toast.info("No changes to save.");
+      toast.info('No changes to save.');
       return;
     }
 
@@ -141,27 +142,27 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
       if ((result as any)?.data) {
         toast.success(`${formatChoiceFieldValue(role)} updated successfully.`);
         toggle();
-      } else if ("error" in (result as any)) {
+      } else if ('error' in (result as any)) {
         const error = (result as any).error;
         const errorData = error?.data;
 
-        if (errorData && typeof errorData === "object") {
+        if (errorData && typeof errorData === 'object') {
           // Flatten all field errors into a single string
           const messages = Object.values(errorData)
             .map((msgs) =>
-              Array.isArray(msgs) ? msgs.join(", ") : String(msgs),
+              Array.isArray(msgs) ? msgs.join(', ') : String(msgs),
             )
-            .join("\n");
+            .join('\n');
 
           toast.error(messages);
         } else {
           toast.error(`Failed to update ${formatChoiceFieldValue(role)}.`);
         }
       } else {
-        toast.error("Invalid request.");
+        toast.error('Invalid request.');
       }
     } catch (error) {
-      console.error("Failed to update user", error);
+      console.error('Failed to update user', error);
       toast.error(
         `Failed to update ${formatChoiceFieldValue(role)}. Please try again.`,
       );
@@ -169,133 +170,128 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
+    <Modal isOpen={isOpen} toggle={toggle} size='lg' centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Info</span>
+        <span className='fs-4 text-primary'>Update Info</span>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <Row>
-            <Col md="6" sm="12">
+            <Col md='6' sm='12'>
               <FormGroup>
-                <Label for="title">
-                  Title<span className="text-danger">*</span>
+                <Label for='title'>
+                  Title<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="title"
-                  name="title"
-                  type="select"
-                  value={(formData as any)?.title ?? ""}
+                  id='title'
+                  name='title'
+                  type='select'
+                  value={(formData as any)?.title ?? ''}
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select...</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="DR">Dr</option>
-                  <option value="MISS">Miss</option>
-                  <option value="MADAM">Madam</option>
-                  <option value="MAIDEN">Maiden</option>
-                  <option value="PROFESSOR">Professor</option>
-                  <option value="DOCTOR">Doctor</option>
+                  {TITLE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Input>
               </FormGroup>
             </Col>
 
-            <Col md="6" sm="12">
+            <Col md='6' sm='12'>
               <FormGroup>
-                <Label for="first_name">
-                  First Name<span className="text-danger">*</span>
+                <Label for='first_name'>
+                  First Name<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="first_name"
-                  name="first_name"
-                  type="text"
-                  value={(formData as any)?.first_name ?? ""}
+                  id='first_name'
+                  name='first_name'
+                  type='text'
+                  value={(formData as any)?.first_name ?? ''}
                   onChange={handleChange}
                   required
                 />
               </FormGroup>
             </Col>
 
-            <Col md="6" sm="12">
+            <Col md='6' sm='12'>
               <FormGroup>
-                <Label for="middle_name">Middle Name(s)</Label>
+                <Label for='middle_name'>Middle Name(s)</Label>
                 <Input
-                  id="middle_name"
-                  name="middle_name"
-                  type="text"
-                  value={(formData as any)?.middle_name ?? ""}
+                  id='middle_name'
+                  name='middle_name'
+                  type='text'
+                  value={(formData as any)?.middle_name ?? ''}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
 
-            <Col md="6" sm="12">
+            <Col md='6' sm='12'>
               <FormGroup>
-                <Label for="last_name">
-                  Last Name<span className="text-danger">*</span>
+                <Label for='last_name'>
+                  Last Name<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="last_name"
-                  name="last_name"
-                  type="text"
-                  value={(formData as any)?.last_name ?? ""}
+                  id='last_name'
+                  name='last_name'
+                  type='text'
+                  value={(formData as any)?.last_name ?? ''}
                   onChange={handleChange}
                   required
                 />
               </FormGroup>
             </Col>
 
-            <Col md="6" sm="12">
+            <Col md='6' sm='12'>
               <FormGroup>
-                <Label for="email">Email</Label>
+                <Label for='email'>Email</Label>
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={(formData as any)?.email ?? ""}
+                  id='email'
+                  name='email'
+                  type='email'
+                  value={(formData as any)?.email ?? ''}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
 
-            <Col md="6" sm="12">
+            <Col md='6' sm='12'>
               <FormGroup>
-                <Label for="phone">Phone</Label>
+                <Label for='phone'>Phone</Label>
                 <Input
-                  id="phone"
-                  name="phone"
-                  type="text"
-                  value={(formData as any)?.phone ?? ""}
+                  id='phone'
+                  name='phone'
+                  type='text'
+                  value={(formData as any)?.phone ?? ''}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
 
-            <Col md="6" sm="12">
+            <Col md='6' sm='12'>
               <FormGroup>
-                <Label for="joining_date">Joining Date</Label>
+                <Label for='joining_date'>Joining Date</Label>
                 <Input
-                  id="joining_date"
-                  name="joining_date"
-                  type="date"
-                  value={(formData as any)?.joining_date ?? ""}
+                  id='joining_date'
+                  name='joining_date'
+                  type='date'
+                  value={(formData as any)?.joining_date ?? ''}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
 
-            <Col sm="12">
+            <Col sm='12'>
               <FormGroup>
-                <Label for="note">Note</Label>
+                <Label for='note'>Note</Label>
                 <Input
-                  id="note"
-                  name="note"
-                  type="textarea"
+                  id='note'
+                  name='note'
+                  type='textarea'
                   rows={3}
-                  value={(formData as any)?.note ?? ""}
+                  value={(formData as any)?.note ?? ''}
                   onChange={handleChange}
                 />
               </FormGroup>
@@ -304,15 +300,15 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button color="secondary" onClick={toggle} disabled={isLoading}>
+          <Button color='secondary' onClick={toggle} disabled={isLoading}>
             Cancel
           </Button>
           <Button
-            color="primary"
-            type="submit"
+            color='primary'
+            type='submit'
             disabled={isLoading || !isModified}
           >
-            {isLoading ? "Saving..." : "Save"}
+            {isLoading ? 'Saving...' : 'Save'}
           </Button>
         </ModalFooter>
       </Form>

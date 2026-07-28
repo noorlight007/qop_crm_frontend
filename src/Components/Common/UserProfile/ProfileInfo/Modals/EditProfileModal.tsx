@@ -1,8 +1,10 @@
-import { useUpdateUserDetailsMutation } from "@/Redux/Reducers/UserProfileAndSettings/UserProfileApi";
-import { UserProfileModalProps } from "@/Types/Common/UserProfile/UserProfileType";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { TITLE_OPTIONS } from '@/Data/Common/TitleOptions';
+import { useUpdateUserDetailsMutation } from '@/Redux/Reducers/UserProfileAndSettings/UserProfileApi';
+import { UserProfileModalProps } from '@/Types/Common/UserProfile/UserProfileType';
+import formatChoiceFieldValue from '@/utils/formatters';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Col,
@@ -15,7 +17,7 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
-} from "reactstrap";
+} from 'reactstrap';
 
 const EditProfileModal: React.FC<UserProfileModalProps> = ({
   isOpen,
@@ -23,16 +25,16 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
   initialData,
 }) => {
   const [form, setForm] = useState({
-    phone: "",
-    title: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    address: "",
-    city: "",
-    state: "",
-    country: "",
-    post_code: "",
+    phone: '',
+    title: '',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    address: '',
+    city: '',
+    state: '',
+    country: '',
+    post_code: '',
   });
 
   const [editUserData, { isLoading }] = useUpdateUserDetailsMutation();
@@ -41,16 +43,16 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
   useEffect(() => {
     if (initialData) {
       setForm({
-        phone: initialData.phone || "",
-        title: initialData.title || "",
-        first_name: initialData.first_name || "",
-        middle_name: initialData.middle_name || "",
-        last_name: initialData.last_name || "",
-        address: initialData.address || "",
-        city: initialData.city || "",
-        state: initialData.state || "",
-        country: initialData.country || "",
-        post_code: initialData.post_code || "",
+        phone: initialData.phone || '',
+        title: initialData.title || '',
+        first_name: initialData.first_name || '',
+        middle_name: initialData.middle_name || '',
+        last_name: initialData.last_name || '',
+        address: initialData.address || '',
+        city: initialData.city || '',
+        state: initialData.state || '',
+        country: initialData.country || '',
+        post_code: initialData.post_code || '',
       });
     }
   }, [initialData, isOpen]);
@@ -68,7 +70,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
       const payload: Record<string, any> = {
         title: form.title || null,
         first_name: form.first_name || null,
-        middle_name: form.middle_name || "",
+        middle_name: form.middle_name || '',
         last_name: form.last_name || null,
         address: form.address || null,
         city: form.city || null,
@@ -82,64 +84,45 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
         payload.phone = form.phone || null;
       }
 
-      const updatedUserData = await editUserData({ payload }).unwrap();
+      await editUserData({ payload }).unwrap();
 
       // Update session with new profile data
       if (updateSession) {
-        const formatChoiceFieldValue = (value: string) => {
-          const mapping: Record<string, string> = {
-            MR: "Mr",
-            MRS: "Mrs",
-            MS: "Ms",
-            DR: "Dr",
-            MISS: "Miss",
-            MADAM: "Madam",
-            MAIDEN: "Maiden",
-            PROFESSOR: "Professor",
-            DOCTOR: "Doctor",
-          };
-          return mapping[value] || value;
-        };
-
         const updatedName = `${
-          form.title ? formatChoiceFieldValue(form.title) + " " : ""
-        }${form.first_name || ""}${
-          form.middle_name ? " " + form.middle_name : ""
-        }${form.last_name ? " " + form.last_name : ""}`.trim();
+          form.title ? formatChoiceFieldValue(form.title) + ' ' : ''
+        }${form.first_name || ''}${
+          form.middle_name ? ' ' + form.middle_name : ''
+        }${form.last_name ? ' ' + form.last_name : ''}`.trim();
 
         const sessionUpdate = {
           name: updatedName,
         };
 
-        console.log("Updating session with:", sessionUpdate);
-
         // Trigger session update - NextAuth will merge this data
         await updateSession(sessionUpdate);
-
-        console.log("Session updated successfully");
       }
 
-      toast.success("Profile updated successfully");
+      toast.success('Profile updated successfully');
       onClose();
     } catch (err: any) {
-      console.error("Full error object:", err);
+      console.error('Full error object:', err);
 
-      let errorMessage = "Failed to update profile";
+      let errorMessage = 'Failed to update profile';
 
       // Handle field-level validation errors from API
-      if (err?.data && typeof err.data === "object") {
+      if (err?.data && typeof err.data === 'object') {
         const errorArray: string[] = [];
 
         Object.entries(err.data).forEach(([field, messages]: [string, any]) => {
           if (Array.isArray(messages)) {
             errorArray.push(...messages);
-          } else if (typeof messages === "string") {
+          } else if (typeof messages === 'string') {
             errorArray.push(messages);
           }
         });
 
         if (errorArray.length > 0) {
-          errorMessage = errorArray.join(" ");
+          errorMessage = errorArray.join(' ');
         }
       } else if (err?.message) {
         errorMessage = err.message;
@@ -151,133 +134,136 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={onClose} centered size="lg">
+    <Modal isOpen={isOpen} toggle={onClose} centered size='lg'>
       <ModalHeader toggle={onClose}>
-        <h3 className="text-primary">Edit Profile</h3>
+        <h3 className='text-primary'>Edit Profile</h3>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <Row>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="title">Title*</Label>
+                <Label for='title'>
+                  Title<span className='text-danger'>*</span>
+                </Label>
                 <Input
-                  id="title"
-                  name="title"
-                  type="select"
+                  id='title'
+                  name='title'
+                  type='select'
                   value={form.title}
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select...</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="DR">Dr</option>
-                  <option value="MISS">Miss</option>
-                  <option value="MADAM">Madam</option>
-                  <option value="MAIDEN">Maiden</option>
-                  <option value="PROFESSOR">Professor</option>
-                  <option value="DOCTOR">Doctor</option>
+                  {TITLE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Input>
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="first_name">First Name</Label>
+                <Label for='first_name'>
+                  First Name<span className='text-danger'>*</span>
+                </Label>
                 <Input
-                  name="first_name"
-                  id="first_name"
+                  name='first_name'
+                  id='first_name'
                   value={form.first_name}
                   onChange={handleChange}
+                  required
                 />
               </FormGroup>
             </Col>
 
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="middle_name">Middle Name</Label>
+                <Label for='middle_name'>Middle Name</Label>
                 <Input
-                  name="middle_name"
-                  id="middle_name"
+                  name='middle_name'
+                  id='middle_name'
                   value={form.middle_name}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="last_name">Last Name</Label>
+                <Label for='last_name'>
+                  Last Name<span className='text-danger'>*</span>
+                </Label>
                 <Input
-                  name="last_name"
-                  id="last_name"
+                  name='last_name'
+                  id='last_name'
                   value={form.last_name}
                   onChange={handleChange}
+                  required
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="phone">Phone</Label>
+                <Label for='phone'>Phone</Label>
                 <Input
-                  name="phone"
-                  id="phone"
-                  type="number"
+                  name='phone'
+                  id='phone'
+                  type='number'
                   value={form.phone}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="post_code">Postcode</Label>
+                <Label for='post_code'>Postcode</Label>
                 <Input
-                  name="post_code"
-                  id="post_code"
+                  name='post_code'
+                  id='post_code'
                   value={form.post_code}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="address">Address Line 1</Label>
+                <Label for='address'>Address Line 1</Label>
                 <Input
-                  name="address"
-                  id="address"
+                  name='address'
+                  id='address'
                   value={form.address}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="city">City</Label>
+                <Label for='city'>City</Label>
                 <Input
-                  name="city"
-                  id="city"
+                  name='city'
+                  id='city'
                   value={form.city}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="state">State</Label>
+                <Label for='state'>State</Label>
                 <Input
-                  name="state"
-                  id="state"
+                  name='state'
+                  id='state'
                   value={form.state}
                   onChange={handleChange}
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
+            <Col sm='12' md='6'>
               <FormGroup>
-                <Label for="country">Country</Label>
+                <Label for='country'>Country</Label>
                 <Input
-                  name="country"
-                  id="country"
+                  name='country'
+                  id='country'
                   value={form.country}
                   onChange={handleChange}
                 />
@@ -286,11 +272,11 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
           </Row>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={onClose} disabled={isLoading}>
+          <Button color='secondary' onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>
-          <Button color="primary" type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save Changes"}
+          <Button color='primary' type='submit' disabled={isLoading}>
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </ModalFooter>
       </Form>

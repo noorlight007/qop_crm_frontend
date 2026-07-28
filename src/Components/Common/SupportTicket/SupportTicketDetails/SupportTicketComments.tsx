@@ -17,6 +17,7 @@ import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import {
+  FaDownload,
   FaEdit,
   FaFileAlt,
   FaPaperPlane,
@@ -28,6 +29,11 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { Button, Card, CardBody, Col, Form, Input, Row } from 'reactstrap';
+
+// ─── File constraints ────────────────────────────────────────────────────────
+const ACCEPTED_FILE_TYPES = 'image/*,video/*';
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+const MAX_FILE_SIZE_LABEL = '50MB';
 
 const SupportTicketComments: React.FC = () => {
   const { supportticketalias } = useParams();
@@ -71,14 +77,58 @@ const SupportTicketComments: React.FC = () => {
   const [deleteReplyModalOpen, setDeleteReplyModalOpen] = useState(false);
   const [replyToDelete, setReplyToDelete] = useState<string | null>(null);
 
+  // Tracks file identifiers (alias) currently being downloaded, to show per-file loading state
+  const [downloadingFiles, setDownloadingFiles] = useState<Set<string>>(
+    new Set(),
+  );
+
   const isLocked =
     session?.user?.role !== 'SUPER_ADMIN' && ticketDetails?.status === 'CLOSED';
+
+  // ─── File helpers ─────────────────────────────────────────────────────────────
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  // Splits files into those within the size limit and those that exceed it.
+  // Shows a toast warning for any rejected files.
+  const filterFilesBySize = (files: File[]) => {
+    const validFiles: File[] = [];
+    const oversizedFiles: File[] = [];
+
+    files.forEach((file) => {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        oversizedFiles.push(file);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (oversizedFiles.length > 0) {
+      const names = oversizedFiles
+        .map((file) => `${file.name} (${formatFileSize(file.size)})`)
+        .join(', ');
+      toast.warning(
+        `The following file(s) exceed the ${MAX_FILE_SIZE_LABEL} limit and were not added: ${names}`,
+      );
+    }
+
+    return validFiles;
+  };
 
   // ─── File handlers ───────────────────────────────────────────────────────────
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isLocked) return;
-    if (e.target.files) setSelectedFiles(Array.from(e.target.files));
+    if (e.target.files) {
+      const validFiles = filterFilesBySize(Array.from(e.target.files));
+      setSelectedFiles(validFiles);
+    }
+    // Reset input value so re-selecting the same file(s) after a rejection re-triggers onChange
+    e.target.value = '';
   };
 
   const handleReplyFileSelect = (
@@ -87,11 +137,13 @@ const SupportTicketComments: React.FC = () => {
   ) => {
     if (isLocked) return;
     if (e.target.files) {
+      const validFiles = filterFilesBySize(Array.from(e.target.files));
       setReplyFiles((prev) => ({
         ...prev,
-        [commentId]: Array.from(e.target.files || []),
+        [commentId]: validFiles,
       }));
     }
+    e.target.value = '';
   };
 
   const handleRemoveFile = (index: number) => {
@@ -277,6 +329,42 @@ const SupportTicketComments: React.FC = () => {
   const getFileNameFromUrl = (url: string) =>
     url.split('/').pop() || 'Unknown file';
 
+  // Downloads the file directly instead of navigating to it / opening a new tab.
+  // fileKey uniquely identifies the file (its alias) so we can track its own loading state.
+  const handleDownloadFile = async (
+    url: string,
+    filename: string,
+    fileKey: string,
+  ) => {
+    if (downloadingFiles.has(fileKey)) return; // already downloading
+
+    setDownloadingFiles((prev) => new Set(prev).add(fileKey));
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to download file:', error);
+      toast.error('Failed to download file');
+    } finally {
+      setDownloadingFiles((prev) => {
+        const next = new Set(prev);
+        next.delete(fileKey);
+        return next;
+      });
+    }
+  };
+
   // ─── Render reply ─────────────────────────────────────────────────────────────
 
   const renderReply = (reply: SupportTicketCommentReply, depth: number = 0) => (
@@ -375,19 +463,39 @@ const SupportTicketComments: React.FC = () => {
 
               {reply.files && reply.files.length > 0 && (
                 <div className='mb-2'>
-                  {reply.files.map((file) => (
-                    <a
-                      key={file.alias}
-                      href={file.file}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
-                      style={{ fontSize: '0.875rem' }}
-                    >
-                      <FaFileAlt className='text-primary' />
-                      <span>{getFileNameFromUrl(file.file)}</span>
-                    </a>
-                  ))}
+                  {reply.files.map((file) => {
+                    const isDownloading = downloadingFiles.has(file.alias);
+                    return (
+                      <a
+                        key={file.alias}
+                        href={file.file}
+                        download={getFileNameFromUrl(file.file)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (isDownloading) return;
+                          handleDownloadFile(
+                            file.file,
+                            getFileNameFromUrl(file.file),
+                            file.alias,
+                          );
+                        }}
+                        className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
+                        style={{
+                          fontSize: '0.875rem',
+                          cursor: isDownloading ? 'default' : 'pointer',
+                          opacity: isDownloading ? 0.7 : 1,
+                        }}
+                      >
+                        <FaFileAlt className='text-primary' />
+                        <span>{getFileNameFromUrl(file.file)}</span>
+                        {isDownloading ? (
+                          <FaSpinner className='fa-spin text-primary' />
+                        ) : (
+                          <FaDownload className='text-primary' />
+                        )}
+                      </a>
+                    );
+                  })}
                 </div>
               )}
 
@@ -471,19 +579,39 @@ const SupportTicketComments: React.FC = () => {
 
             {comment.files && comment.files.length > 0 && (
               <div className='mb-3'>
-                {comment.files.map((file) => (
-                  <a
-                    key={file.alias}
-                    href={file.file}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
-                    style={{ fontSize: '0.875rem' }}
-                  >
-                    <FaFileAlt className='text-primary' />
-                    <span>{getFileNameFromUrl(file.file)}</span>
-                  </a>
-                ))}
+                {comment.files.map((file) => {
+                  const isDownloading = downloadingFiles.has(file.alias);
+                  return (
+                    <a
+                      key={file.alias}
+                      href={file.file}
+                      download={getFileNameFromUrl(file.file)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (isDownloading) return;
+                        handleDownloadFile(
+                          file.file,
+                          getFileNameFromUrl(file.file),
+                          file.alias,
+                        );
+                      }}
+                      className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
+                      style={{
+                        fontSize: '0.875rem',
+                        cursor: isDownloading ? 'default' : 'pointer',
+                        opacity: isDownloading ? 0.7 : 1,
+                      }}
+                    >
+                      <FaFileAlt className='text-primary' />
+                      <span>{getFileNameFromUrl(file.file)}</span>
+                      {isDownloading ? (
+                        <FaSpinner className='fa-spin text-primary' />
+                      ) : (
+                        <FaDownload className='text-primary' />
+                      )}
+                    </a>
+                  );
+                })}
               </div>
             )}
 
@@ -622,7 +750,9 @@ const SupportTicketComments: React.FC = () => {
                             style={{ fontSize: '0.875rem' }}
                           >
                             <FaFileAlt className='text-muted' />
-                            <span>{file.name}</span>
+                            <span>
+                              {file.name} ({formatFileSize(file.size)})
+                            </span>
                             <FaTimes
                               className='text-danger cursor-pointer'
                               style={{ cursor: 'pointer' }}
@@ -636,15 +766,20 @@ const SupportTicketComments: React.FC = () => {
                     )}
 
                   <div className='d-flex gap-2'>
-                    <Input
-                      type='file'
-                      multiple
-                      onChange={(e) => handleReplyFileSelect(e, comment.id)}
-                      className='form-control-sm'
-                      style={{ maxWidth: '200px' }}
-                      accept='image/*,.pdf,.doc,.docx'
-                      disabled={isLocked || isReplyLoading}
-                    />
+                    <div>
+                      <Input
+                        type='file'
+                        multiple
+                        onChange={(e) => handleReplyFileSelect(e, comment.id)}
+                        className='form-control-sm'
+                        style={{ maxWidth: '200px' }}
+                        accept={ACCEPTED_FILE_TYPES}
+                        disabled={isLocked || isReplyLoading}
+                      />
+                      <small className='text-muted d-block mt-1'>
+                        Images & videos, max {MAX_FILE_SIZE_LABEL} each
+                      </small>
+                    </div>
                     <Button
                       color='primary'
                       size='sm'
@@ -760,7 +895,7 @@ const SupportTicketComments: React.FC = () => {
                               className='text-truncate flex-grow-1'
                               style={{ fontSize: '0.875rem' }}
                             >
-                              {file.name}
+                              {file.name} ({formatFileSize(file.size)})
                             </span>
                             <FaTimes
                               className='text-danger cursor-pointer'
@@ -775,15 +910,20 @@ const SupportTicketComments: React.FC = () => {
                 )}
 
                 <div className='d-flex gap-2 align-items-center'>
-                  <Input
-                    type='file'
-                    multiple
-                    onChange={handleFileSelect}
-                    className='form-control-sm'
-                    style={{ maxWidth: '250px' }}
-                    accept='image/*,.pdf,.doc,.docx'
-                    disabled={isLocked || isCommentLoading}
-                  />
+                  <div>
+                    <Input
+                      type='file'
+                      multiple
+                      onChange={handleFileSelect}
+                      className='form-control-sm'
+                      style={{ maxWidth: '250px' }}
+                      accept={ACCEPTED_FILE_TYPES}
+                      disabled={isLocked || isCommentLoading}
+                    />
+                    <small className='text-muted d-block mt-1'>
+                      Images & videos, max {MAX_FILE_SIZE_LABEL} each
+                    </small>
+                  </div>
                   <Button
                     color='primary'
                     type='submit'

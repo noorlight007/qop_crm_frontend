@@ -1,10 +1,11 @@
-import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { TITLE_OPTIONS } from '@/Data/Common/TitleOptions';
+import { useUpdateAuthUserDetailsMutation } from '@/Redux/Reducers/Common/CommonUsers/AuthUsersApi';
 import {
   AuthUser,
   UpdateAuthUserModalProps,
-} from "@/Types/Common/CommonUsers/AuthUsersTypes";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+} from '@/Types/Common/CommonUsers/AuthUsersTypes';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Col,
@@ -17,7 +18,7 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
-} from "reactstrap";
+} from 'reactstrap';
 
 const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   isOpen,
@@ -71,18 +72,18 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   };
 
   const getErrorMessage = (err: any) => {
-    if (!err) return "Unknown error";
-    if (typeof err === "string") return err;
-    if (typeof err?.data === "string") return err.data;
+    if (!err) return 'Unknown error';
+    if (typeof err === 'string') return err;
+    if (typeof err?.data === 'string') return err.data;
 
     const collect = (value: any): string[] => {
       if (value == null) return [];
-      if (typeof value === "string") return [value];
+      if (typeof value === 'string') return [value];
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v),
+          typeof v === 'string' ? v : JSON.stringify(v),
         );
-      if (typeof value === "object") {
+      if (typeof value === 'object') {
         try {
           return Object.values(value).flatMap((v) => collect(v));
         } catch {
@@ -92,21 +93,21 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
       return [String(value)];
     };
 
-    if (err && typeof err === "object") {
+    if (err && typeof err === 'object') {
       const msgs = collect(err);
-      if (msgs.length) return msgs.join(", ");
+      if (msgs.length) return msgs.join(', ');
     }
 
     if (err?.data?.message) return String(err.data.message);
 
-    if (err?.data && typeof err.data === "object") {
+    if (err?.data && typeof err.data === 'object') {
       const msgs = collect(err.data);
-      if (msgs.length) return msgs.join(", ");
+      if (msgs.length) return msgs.join(', ');
     }
 
     if (err?.error) return String(err.error);
     if (err?.message) {
-      if (/status code/i.test(err.message)) return "Server returned an error";
+      if (/status code/i.test(err.message)) return 'Server returned an error';
       return String(err.message);
     }
 
@@ -129,16 +130,16 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
 
         // Check each field for changes
         const fieldsToCheck = [
-          "title",
-          "first_name",
-          "middle_name",
-          "last_name",
-          "email",
-          "phone",
-          "designation",
-          "joining_date",
-          "company_name",
-          "company_address",
+          'title',
+          'first_name',
+          'middle_name',
+          'last_name',
+          'email',
+          'phone',
+          'designation',
+          'joining_date',
+          'company_name',
+          'company_address',
         ];
 
         fieldsToCheck.forEach((field) => {
@@ -151,13 +152,13 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
         });
 
         // If joining_date is empty string, send null
-        if (payload.joining_date === "") {
+        if (payload.joining_date === '') {
           payload.joining_date = null;
         }
 
         // If no fields changed, show message
         if (Object.keys(payload).length === 0) {
-          toast.info("No changes to save.");
+          toast.info('No changes to save.');
           return;
         }
 
@@ -167,20 +168,20 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
         });
 
         if (result.data) {
-          toast.success("User updated successfully.");
+          toast.success('User updated successfully.');
           setErrors({});
           toggle();
-        } else if ("error" in result) {
+        } else if ('error' in result) {
           const errData = (result.error as any)?.data;
-          if (errData && typeof errData === "object") {
+          if (errData && typeof errData === 'object') {
             const collect = (value: any): string[] => {
               if (value == null) return [];
-              if (typeof value === "string") return [value];
+              if (typeof value === 'string') return [value];
               if (Array.isArray(value))
                 return value.map((v) =>
-                  typeof v === "string" ? v : JSON.stringify(v),
+                  typeof v === 'string' ? v : JSON.stringify(v),
                 );
-              if (typeof value === "object") {
+              if (typeof value === 'object') {
                 try {
                   return Object.values(value).flatMap((v) => collect(v));
                 } catch {
@@ -192,7 +193,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
             const fieldErrors: Record<string, string> = {};
             Object.entries(errData).forEach(([k, v]) => {
               const msgs = collect(v);
-              if (msgs.length) fieldErrors[k] = msgs.join(", ");
+              if (msgs.length) fieldErrors[k] = msgs.join(', ');
             });
             if (Object.keys(fieldErrors).length) {
               setErrors(fieldErrors);
@@ -207,224 +208,219 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
             toast.error(errorMessage);
           }
         } else {
-          toast.error("Invalid Request...");
+          toast.error('Invalid Request...');
         }
       }
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       toast.error(errorMessage);
-      console.error("Error saving admin:", error);
+      console.error('Error saving admin:', error);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
+    <Modal isOpen={isOpen} toggle={toggle} size='lg' centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">
+        <span className='fs-4 text-primary'>
           Update {userTitle.slice(0, -1)} Info
         </span>
       </ModalHeader>
       <Form
         onSubmit={(e) => handleUpdateAuthUser(e, authUserData)}
-        encType="multipart/form-data"
+        encType='multipart/form-data'
       >
         <ModalBody>
           <Row>
-            <Col md="6" sm="12">
+            <Col md='6' sm='12'>
               <FormGroup>
-                <Label for="title">
-                  Title<span className="text-danger">*</span>
+                <Label for='title'>
+                  Title<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  id="title"
-                  name="title"
-                  type="select"
-                  value={authUserData?.title || ""}
+                  id='title'
+                  name='title'
+                  type='select'
+                  value={authUserData?.title || ''}
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select...</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="DR">Dr</option>
-                  <option value="MISS">Miss</option>
-                  <option value="MADAM">Madam</option>
-                  <option value="MAIDEN">Maiden</option>
-                  <option value="PROFESSOR">Professor</option>
-                  <option value="DOCTOR">Doctor</option>
+                  {TITLE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Input>
-                {getFieldError("title") && (
-                  <div className="text-danger small mt-1">
-                    {getFieldError("title")}
+                {getFieldError('title') && (
+                  <div className='text-danger small mt-1'>
+                    {getFieldError('title')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="firstName">
-                  First Name<span className="text-danger">*</span>
+                <Label for='firstName'>
+                  First Name<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  type="text"
-                  id="firstName"
-                  name="first_name"
-                  placeholder="First Name"
-                  value={authUserData?.first_name || ""}
+                  type='text'
+                  id='firstName'
+                  name='first_name'
+                  placeholder='First Name'
+                  value={authUserData?.first_name || ''}
                   onChange={handleChange}
-                  className="mb-2"
+                  className='mb-2'
                   required
                 />
-                {getFieldError("first_name") && (
-                  <div className="text-danger small mt-1">
-                    {getFieldError("first_name")}
+                {getFieldError('first_name') && (
+                  <div className='text-danger small mt-1'>
+                    {getFieldError('first_name')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="middleName">Middle Name(s)</Label>
+                <Label for='middleName'>Middle Name(s)</Label>
                 <Input
-                  type="text"
-                  id="middleName"
-                  name="middle_name"
-                  placeholder="Middle Name(s)"
-                  value={authUserData?.middle_name || ""}
+                  type='text'
+                  id='middleName'
+                  name='middle_name'
+                  placeholder='Middle Name(s)'
+                  value={authUserData?.middle_name || ''}
                   onChange={handleChange}
-                  className="mb-2"
+                  className='mb-2'
                 />
-                {getFieldError("middle_name") && (
-                  <div className="text-danger small mt-1">
-                    {getFieldError("middle_name")}
+                {getFieldError('middle_name') && (
+                  <div className='text-danger small mt-1'>
+                    {getFieldError('middle_name')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="lastName">
-                  Last Name<span className="text-danger">*</span>
+                <Label for='lastName'>
+                  Last Name<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  type="text"
-                  id="lastName"
-                  name="last_name"
-                  placeholder="Last Name"
-                  value={authUserData?.last_name || ""}
+                  type='text'
+                  id='lastName'
+                  name='last_name'
+                  placeholder='Last Name'
+                  value={authUserData?.last_name || ''}
                   onChange={handleChange}
-                  className="mb-2"
+                  className='mb-2'
                   required
                 />
-                {getFieldError("last_name") && (
-                  <div className="text-danger small mt-1">
-                    {getFieldError("last_name")}
+                {getFieldError('last_name') && (
+                  <div className='text-danger small mt-1'>
+                    {getFieldError('last_name')}
                   </div>
                 )}
               </FormGroup>
             </Col>
-            <Col md="6" xs="12">
+            <Col md='6' xs='12'>
               <FormGroup>
-                <Label for="email">
-                  Email<span className="text-danger">*</span>
+                <Label for='email'>
+                  Email<span className='text-danger'>*</span>
                 </Label>
                 <Input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Email"
-                  value={authUserData?.email || ""}
+                  type='email'
+                  id='email'
+                  name='email'
+                  placeholder='Email'
+                  value={authUserData?.email || ''}
                   onChange={handleChange}
-                  className="mb-2"
+                  className='mb-2'
                   required
                 />
-                {getFieldError("email") && (
-                  <div className="text-danger small mt-1">
-                    {getFieldError("email")}
+                {getFieldError('email') && (
+                  <div className='text-danger small mt-1'>
+                    {getFieldError('email')}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="phone">Phone</Label>
+                <Label for='phone'>Phone</Label>
                 <Input
-                  type="number"
-                  id="phone"
-                  name="phone"
-                  placeholder="Phone"
-                  value={authUserData?.phone || ""}
+                  type='number'
+                  id='phone'
+                  name='phone'
+                  placeholder='Phone'
+                  value={authUserData?.phone || ''}
                   onChange={handleChange}
-                  className="mb-2"
+                  className='mb-2'
                 />
-                {getFieldError("phone") && (
-                  <div className="text-danger small mt-1">
-                    {getFieldError("phone")}
+                {getFieldError('phone') && (
+                  <div className='text-danger small mt-1'>
+                    {getFieldError('phone')}
                   </div>
                 )}
               </FormGroup>
             </Col>
-            {userRole === "Network Compliances" && (
+            {userRole === 'Network Compliances' && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="designation">
-                    Designation<span className="text-danger">*</span>
+                  <Label for='designation'>
+                    Designation<span className='text-danger'>*</span>
                   </Label>
                   <Input
-                    id="designation"
-                    name="designation"
-                    type="text"
-                    value={authUserData.designation || ""}
+                    id='designation'
+                    name='designation'
+                    type='text'
+                    value={authUserData.designation || ''}
                     onChange={handleChange}
                     required
                   />
-                  {getFieldError("designation") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("designation")}
+                  {getFieldError('designation') && (
+                    <div className='text-danger small mt-1'>
+                      {getFieldError('designation')}
                     </div>
                   )}
                 </FormGroup>
               </Col>
             )}
-            {userRole === "Introducers" && (
+            {userRole === 'Introducers' && (
               <>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="company_name">
-                      Company Name<span className="text-danger">*</span>
+                    <Label for='company_name'>
+                      Company Name<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      id="company_name"
-                      name="company_name"
-                      type="text"
+                      id='company_name'
+                      name='company_name'
+                      type='text'
                       value={authUserData.company_name}
                       onChange={handleChange}
                       required
                     />
-                    {getFieldError("company_name") && (
-                      <div className="text-danger small mt-1">
-                        {getFieldError("company_name")}
+                    {getFieldError('company_name') && (
+                      <div className='text-danger small mt-1'>
+                        {getFieldError('company_name')}
                       </div>
                     )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="company_address">
-                      Company Address<span className="text-danger">*</span>
+                    <Label for='company_address'>
+                      Company Address<span className='text-danger'>*</span>
                     </Label>
                     <Input
-                      id="company_address"
-                      name="company_address"
-                      type="text"
+                      id='company_address'
+                      name='company_address'
+                      type='text'
                       value={authUserData.company_address}
                       onChange={handleChange}
                       required
                     />
-                    {getFieldError("company_address") && (
-                      <div className="text-danger small mt-1">
-                        {getFieldError("company_address")}
+                    {getFieldError('company_address') && (
+                      <div className='text-danger small mt-1'>
+                        {getFieldError('company_address')}
                       </div>
                     )}
                   </FormGroup>
@@ -433,19 +429,19 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
             )}
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="joining_date">Joining Date</Label>
+                <Label for='joining_date'>Joining Date</Label>
                 <Input
-                  type="date"
-                  id="joining_date"
-                  name="joining_date"
-                  placeholder="Joining Date"
-                  value={authUserData?.joining_date || ""}
+                  type='date'
+                  id='joining_date'
+                  name='joining_date'
+                  placeholder='Joining Date'
+                  value={authUserData?.joining_date || ''}
                   onChange={handleChange}
-                  className="mb-2"
+                  className='mb-2'
                 />
-                {getFieldError("joining_date") && (
-                  <div className="text-danger small mt-1">
-                    {getFieldError("joining_date")}
+                {getFieldError('joining_date') && (
+                  <div className='text-danger small mt-1'>
+                    {getFieldError('joining_date')}
                   </div>
                 )}
               </FormGroup>
@@ -453,15 +449,15 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
           </Row>
         </ModalBody>
         <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
+          <Button type='button' color='secondary' onClick={toggle}>
             Cancel
           </Button>
           <Button
-            type="submit"
-            color="primary"
+            type='submit'
+            color='primary'
             disabled={!isModified || isLoading}
           >
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </ModalFooter>
       </Form>
