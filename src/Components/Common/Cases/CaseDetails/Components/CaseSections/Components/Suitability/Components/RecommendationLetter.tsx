@@ -189,7 +189,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           The mortgage amount is less than what you currently have outstanding
           on your mortgage, this is because you are making an overpayment of{' '}
           <span style={{ color: blue }}>
-            {formValues.mortgage_amount_overpayment || mortgageAmount}
+            {formValues.mortgage_amount_overpayment || "Add overpayment"}
           </span>
           .
         </>
