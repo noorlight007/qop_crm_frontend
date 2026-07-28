@@ -765,7 +765,7 @@ const SupportTicketComments: React.FC = () => {
                       </div>
                     )}
 
-                  <div className='d-flex gap-2'>
+                  <div className='d-flex gap-2 align-items-start'>
                     <div>
                       <Input
                         type='file'
@@ -909,7 +909,7 @@ const SupportTicketComments: React.FC = () => {
                   </div>
                 )}
 
-                <div className='d-flex gap-2 align-items-center'>
+                <div className='d-flex gap-2 align-items-start'>
                   <div>
                     <Input
                       type='file'
@@ -927,6 +927,7 @@ const SupportTicketComments: React.FC = () => {
                   <Button
                     color='primary'
                     type='submit'
+                    size='sm'
                     disabled={
                       isLocked || isCommentLoading || !newComment.trim()
                     }
