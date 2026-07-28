@@ -17,6 +17,7 @@ import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import {
+  FaDownload,
   FaEdit,
   FaFileAlt,
   FaPaperPlane,
@@ -75,6 +76,11 @@ const SupportTicketComments: React.FC = () => {
   );
   const [deleteReplyModalOpen, setDeleteReplyModalOpen] = useState(false);
   const [replyToDelete, setReplyToDelete] = useState<string | null>(null);
+
+  // Tracks file identifiers (alias) currently being downloaded, to show per-file loading state
+  const [downloadingFiles, setDownloadingFiles] = useState<Set<string>>(
+    new Set(),
+  );
 
   const isLocked =
     session?.user?.role !== 'SUPER_ADMIN' && ticketDetails?.status === 'CLOSED';
@@ -323,6 +329,42 @@ const SupportTicketComments: React.FC = () => {
   const getFileNameFromUrl = (url: string) =>
     url.split('/').pop() || 'Unknown file';
 
+  // Downloads the file directly instead of navigating to it / opening a new tab.
+  // fileKey uniquely identifies the file (its alias) so we can track its own loading state.
+  const handleDownloadFile = async (
+    url: string,
+    filename: string,
+    fileKey: string,
+  ) => {
+    if (downloadingFiles.has(fileKey)) return; // already downloading
+
+    setDownloadingFiles((prev) => new Set(prev).add(fileKey));
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to download file:', error);
+      toast.error('Failed to download file');
+    } finally {
+      setDownloadingFiles((prev) => {
+        const next = new Set(prev);
+        next.delete(fileKey);
+        return next;
+      });
+    }
+  };
+
   // ─── Render reply ─────────────────────────────────────────────────────────────
 
   const renderReply = (reply: SupportTicketCommentReply, depth: number = 0) => (
@@ -421,19 +463,39 @@ const SupportTicketComments: React.FC = () => {
 
               {reply.files && reply.files.length > 0 && (
                 <div className='mb-2'>
-                  {reply.files.map((file) => (
-                    <a
-                      key={file.alias}
-                      href={file.file}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
-                      style={{ fontSize: '0.875rem' }}
-                    >
-                      <FaFileAlt className='text-primary' />
-                      <span>{getFileNameFromUrl(file.file)}</span>
-                    </a>
-                  ))}
+                  {reply.files.map((file) => {
+                    const isDownloading = downloadingFiles.has(file.alias);
+                    return (
+                      <a
+                        key={file.alias}
+                        href={file.file}
+                        download={getFileNameFromUrl(file.file)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (isDownloading) return;
+                          handleDownloadFile(
+                            file.file,
+                            getFileNameFromUrl(file.file),
+                            file.alias,
+                          );
+                        }}
+                        className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
+                        style={{
+                          fontSize: '0.875rem',
+                          cursor: isDownloading ? 'default' : 'pointer',
+                          opacity: isDownloading ? 0.7 : 1,
+                        }}
+                      >
+                        <FaFileAlt className='text-primary' />
+                        <span>{getFileNameFromUrl(file.file)}</span>
+                        {isDownloading ? (
+                          <FaSpinner className='fa-spin text-primary' />
+                        ) : (
+                          <FaDownload className='text-primary' />
+                        )}
+                      </a>
+                    );
+                  })}
                 </div>
               )}
 
@@ -517,19 +579,39 @@ const SupportTicketComments: React.FC = () => {
 
             {comment.files && comment.files.length > 0 && (
               <div className='mb-3'>
-                {comment.files.map((file) => (
-                  <a
-                    key={file.alias}
-                    href={file.file}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
-                    style={{ fontSize: '0.875rem' }}
-                  >
-                    <FaFileAlt className='text-primary' />
-                    <span>{getFileNameFromUrl(file.file)}</span>
-                  </a>
-                ))}
+                {comment.files.map((file) => {
+                  const isDownloading = downloadingFiles.has(file.alias);
+                  return (
+                    <a
+                      key={file.alias}
+                      href={file.file}
+                      download={getFileNameFromUrl(file.file)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (isDownloading) return;
+                        handleDownloadFile(
+                          file.file,
+                          getFileNameFromUrl(file.file),
+                          file.alias,
+                        );
+                      }}
+                      className='d-inline-flex align-items-center gap-2 text-decoration-none border rounded px-3 py-2 me-2 mb-2 bg-white'
+                      style={{
+                        fontSize: '0.875rem',
+                        cursor: isDownloading ? 'default' : 'pointer',
+                        opacity: isDownloading ? 0.7 : 1,
+                      }}
+                    >
+                      <FaFileAlt className='text-primary' />
+                      <span>{getFileNameFromUrl(file.file)}</span>
+                      {isDownloading ? (
+                        <FaSpinner className='fa-spin text-primary' />
+                      ) : (
+                        <FaDownload className='text-primary' />
+                      )}
+                    </a>
+                  );
+                })}
               </div>
             )}
 
