@@ -33,12 +33,13 @@ import Link from 'next/link';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   FaCheck,
+  FaCheckCircle,
   FaChevronDown,
   FaInfoCircle,
   FaRegQuestionCircle,
   FaSearch,
 } from 'react-icons/fa';
-import { TbCirclePlus } from 'react-icons/tb';
+import { TbCirclePlus, TbCopy } from 'react-icons/tb';
 import { toast } from 'react-toastify';
 import {
   Badge,
@@ -79,7 +80,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const [expandedTickets, setExpandedTickets] = useState<Set<string>>(
     new Set(),
   );
-
+  const [copiedTicketId, setCopiedTicketId] = useState<string | number | null>(
+    null,
+  );
   const [filterIcon, setFilterIcon] = useState(false);
 
   const defaultFilters: SupportTicketFilters = {
@@ -274,6 +277,38 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
       next.has(ticketAlias) ? next.delete(ticketAlias) : next.add(ticketAlias);
       return next;
     });
+  };
+
+  // copy ticket id state
+  const handleCopyTicketId = (ticketId: string | number) => {
+    if (!ticketId) return;
+    const text = String(ticketId);
+
+    const onSuccess = () => {
+      setCopiedTicketId(ticketId);
+      setTimeout(() => setCopiedTicketId(null), 2000);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(onSuccess)
+        .catch((err) => {
+          console.error('Failed to copy ticket id:', err);
+        });
+    } else {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        onSuccess();
+      } catch (err) {
+        console.error('Fallback copy failed:', err);
+      }
+      document.body.removeChild(textarea);
+    }
   };
 
   return (
@@ -681,16 +716,38 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       <React.Fragment key={ticket.alias}>
                         <tr key={ticket.alias} className='text-center'>
                           <td className='text-truncate'>
-                            <Link
-                              href={getSupportTicketUrl(
-                                ticket.alias,
-                                session?.user?.role as string,
-                                session?.user?.is_network,
+                            <div className='d-flex justify-content-center align-items-center gap-2'>
+                              <Link
+                                href={getSupportTicketUrl(
+                                  ticket.alias,
+                                  session?.user?.role as string,
+                                  session?.user?.is_network,
+                                )}
+                                className='text_decoration_hover'
+                              >
+                                {ticket.ticket_id}
+                              </Link>
+                              {userRole === 'SUPER_ADMIN' && (
+                                <span
+                                  role='button'
+                                  style={{ cursor: 'pointer' }}
+                                  onClick={() =>
+                                    handleCopyTicketId(ticket.ticket_id)
+                                  }
+                                  title={
+                                    copiedTicketId === ticket.ticket_id
+                                      ? 'Copied'
+                                      : 'Copy Ticket ID'
+                                  }
+                                >
+                                  {copiedTicketId === ticket.ticket_id ? (
+                                    <FaCheckCircle className='text-success' />
+                                  ) : (
+                                    <TbCopy className='text-primary' />
+                                  )}
+                                </span>
                               )}
-                              className='text_decoration_hover'
-                            >
-                              {ticket.ticket_id}
-                            </Link>
+                            </div>
                           </td>
                           <td>
                             <Badge
