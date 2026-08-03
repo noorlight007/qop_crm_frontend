@@ -52,7 +52,6 @@ export interface ApplicantProps {
   owner_monthly_payment: string;
   lender: string;
   mortgage_start_date: string;
-  mortgage_type: string;
   current_interest_rate: string;
   remaining_term: number;
   repayment_type: string;

@@ -250,7 +250,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     owner_monthly_payment: '',
     lender: '',
     mortgage_start_date: '',
-    mortgage_type: '',
     current_interest_rate: '',
     remaining_term: 0,
     repayment_type: '',
@@ -2081,44 +2080,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )}
                       </FormGroup>
                     </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for='mortgage_type'>Mortgage Type</Label>
-                        <Input
-                          id='mortgage_type'
-                          type='select'
-                          value={formValues.mortgage_type || ''}
-                          onChange={(e) =>
-                            handleInputChange('mortgage_type', e.target.value)
-                          }
-                        >
-                          <option value=''>Select...</option>
-                          <option value='SECURED_LOAN'>
-                            Secured Loan (Applicant Commitments)
-                          </option>
-                          <option value='SECOND_HOME'>
-                            Second Home (Applicant Commitments)
-                          </option>
-                          <option value='HOLIDAY_HOME'>
-                            Holiday Home (Applicant Commitments)
-                          </option>
-                          <option value='BUY_TO_LET'>
-                            Buy to Let (Applicant Mortgage Details)
-                          </option>
-                          <option value='HOLIDAY_LET'>
-                            Holiday Let (Applicant Mortgage Details)
-                          </option>
-                          <option value='COMMERCIAL_INVESTMENT'>
-                            Commercial Investment (Applicant Mortgage Details)
-                          </option>
-                        </Input>
-                        {getFieldError('mortgage_type') && (
-                          <div className='text-danger small'>
-                            {getFieldError('mortgage_type')}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
+
                     <Col md={6}>
                       <FormGroup>
                         <Label for='repayment_type'>Repayment Type</Label>
@@ -3207,4 +3169,4 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   );
 };
 
-export default ApplicantsDetailsTabContent;
+export default ApplicantsDetailsTabContent
