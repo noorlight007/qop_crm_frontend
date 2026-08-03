@@ -2081,7 +2081,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )}
                       </FormGroup>
                     </Col>
-                    <Col md={6}>
+                    {/* <Col md={6}>
                       <FormGroup>
                         <Label for='mortgage_type'>Mortgage Type</Label>
                         <Input
@@ -2118,7 +2118,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           </div>
                         )}
                       </FormGroup>
-                    </Col>
+                    </Col> */}
                     <Col md={6}>
                       <FormGroup>
                         <Label for='repayment_type'>Repayment Type</Label>
