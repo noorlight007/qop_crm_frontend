@@ -1,16 +1,17 @@
-import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
+import { LeadSourceChoices } from '@/Data/Cases/LoanDetailsData';
+import { useAppDispatch, useAppSelector } from '@/Redux/Hooks';
+import { basicTabIndicator } from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice';
 import {
   useGetInsuranceOverviewQuery,
   useUpdateInsuranceOverviewMutation,
-} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+} from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi';
+import { useGetSingleCaseQuery } from '@/Redux/Reducers/Common/Cases/CasesApi';
+import { getNextTabNav } from '@/utils/Helper/nextTabUtils';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Button,
   Col,
@@ -24,12 +25,12 @@ import {
   Row,
   TabContent,
   TabPane,
-} from "reactstrap";
-import PolicyTab from "./PolicyTab/PolicyTab";
+} from 'reactstrap';
+import PolicyTab from './PolicyTab/PolicyTab';
 
 const InsuranceOverviewContent: React.FC = () => {
   const { casealias } = useParams();
-  const [activeMainTab, setActiveMainTab] = useState<string>("overview");
+  const [activeMainTab, setActiveMainTab] = useState<string>('overview');
 
   const { data: insuranceOverviewData, isLoading } =
     useGetInsuranceOverviewQuery({ case_alias: casealias });
@@ -82,7 +83,7 @@ const InsuranceOverviewContent: React.FC = () => {
       formState?.id;
 
     if (!insurance_overview_alias) {
-      toast.error("Unable to determine insurance overview identifier");
+      toast.error('Unable to determine insurance overview identifier');
       return;
     }
 
@@ -100,28 +101,28 @@ const InsuranceOverviewContent: React.FC = () => {
         payload: editablePayload,
       }).unwrap();
       setErrors({});
-      toast.success("Insurance overview updated successfully");
+      toast.success('Insurance overview updated successfully');
     } catch (err) {
       // parse API validation errors and set per-field messages
       const parsed: Record<string, string> = {};
-      const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, "").trim();
+      const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, '').trim();
       const data: any = (err && (err as any).data) || err;
 
-      if (data?.errors && typeof data.errors === "object") {
+      if (data?.errors && typeof data.errors === 'object') {
         Object.keys(data.errors).forEach((k) => {
           const v = data.errors[k];
           if (Array.isArray(v)) parsed[k] = sanitize(String(v[0]));
           else parsed[k] = sanitize(String(v));
         });
-      } else if (data?.message && typeof data.message === "string") {
+      } else if (data?.message && typeof data.message === 'string') {
         parsed.non_field_error = sanitize(data.message);
-      } else if (typeof data === "string") {
+      } else if (typeof data === 'string') {
         parsed.non_field_error = sanitize(data);
       }
 
       const flattened: Record<string, string> = {};
       Object.keys(parsed).forEach((k) => {
-        const base = k.split(".")[0];
+        const base = k.split('.')[0];
         if (!flattened[base]) flattened[base] = parsed[k];
       });
 
@@ -129,9 +130,9 @@ const InsuranceOverviewContent: React.FC = () => {
       const firstMsg =
         Object.values(flattened)[0] ||
         parsed.non_field_error ||
-        "Failed to update insurance overview";
+        'Failed to update insurance overview';
       toast.error(firstMsg);
-      console.error("Failed to update insurance overview", err);
+      console.error('Failed to update insurance overview', err);
     }
   };
 
@@ -144,39 +145,39 @@ const InsuranceOverviewContent: React.FC = () => {
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
     } else {
-      toast.warning("This is the last tab.");
+      toast.warning('This is the last tab.');
     }
   };
 
   if (isLoading || !formState) {
     return (
-      <div className="p-2">
+      <div className='p-2'>
         <LoadingGrow />
       </div>
     );
   }
 
-  const isApplicant = session?.user?.role === "APPLICANT";
+  const isApplicant = session?.user?.role === 'APPLICANT';
   const isEditable = caseData?.is_editable !== false;
   const isLocked = isApplicant && !isEditable;
 
   return (
-    <div className="p-2">
-      <Nav pills className="justify-content-center nav-primary">
+    <div className='p-2'>
+      <Nav pills className='justify-content-center nav-primary'>
         <NavItem>
           <NavLink
-            className={activeMainTab === "overview" ? "active" : ""}
-            onClick={() => setActiveMainTab("overview")}
-            style={{ cursor: "pointer" }}
+            className={activeMainTab === 'overview' ? 'active' : ''}
+            onClick={() => setActiveMainTab('overview')}
+            style={{ cursor: 'pointer' }}
           >
             Overview
           </NavLink>
         </NavItem>
         <NavItem>
           <NavLink
-            className={activeMainTab === "policies" ? "active" : ""}
-            onClick={() => setActiveMainTab("policies")}
-            style={{ cursor: "pointer" }}
+            className={activeMainTab === 'policies' ? 'active' : ''}
+            onClick={() => setActiveMainTab('policies')}
+            style={{ cursor: 'pointer' }}
           >
             Policies
           </NavLink>
@@ -184,36 +185,36 @@ const InsuranceOverviewContent: React.FC = () => {
       </Nav>
 
       <TabContent activeTab={activeMainTab}>
-        <TabPane tabId="overview">
-          <div style={{ position: "relative" }}>
+        <TabPane tabId='overview'>
+          <div style={{ position: 'relative' }}>
             {isLocked && (
               <div
                 style={{
-                  position: "absolute",
+                  position: 'absolute',
                   inset: 0,
                   zIndex: 10,
-                  cursor: "not-allowed",
-                  backgroundColor: "rgba(0,0,0,0.0001)",
+                  cursor: 'not-allowed',
+                  backgroundColor: 'rgba(0,0,0,0.0001)',
                 }}
-                title="This case is not editable"
+                title='This case is not editable'
               />
             )}
             <div
               style={{
                 opacity: isLocked ? 0.45 : 1,
-                pointerEvents: isLocked ? "none" : "auto",
-                transition: "opacity 0.2s ease",
-                userSelect: isLocked ? "none" : "auto",
+                pointerEvents: isLocked ? 'none' : 'auto',
+                transition: 'opacity 0.2s ease',
+                userSelect: isLocked ? 'none' : 'auto',
               }}
             >
-              <Form onSubmit={handleSubmit} className="mt-3">
+              <Form onSubmit={handleSubmit} className='mt-3'>
                 <Row>
                   <Col sm={12} md={4}>
                     <FormGroup>
                       <Label>Applicant</Label>
                       <Input
-                        value={formState?.applicant ?? ""}
-                        className="bg-light-dark"
+                        value={formState?.applicant ?? ''}
+                        className='bg-light-dark'
                         readOnly
                       />
                     </FormGroup>
@@ -227,8 +228,8 @@ const InsuranceOverviewContent: React.FC = () => {
                         <FormGroup>
                           <Label>{`Joint Applicant ${idx + 1}`}</Label>
                           <Input
-                            value={ju ?? ""}
-                            className="bg-light-dark"
+                            value={ju ?? ''}
+                            className='bg-light-dark'
                             readOnly
                           />
                         </FormGroup>
@@ -239,7 +240,7 @@ const InsuranceOverviewContent: React.FC = () => {
                       <FormGroup>
                         <Label>Joint Applicants</Label>
                         <Input
-                          value={formState?.joint_users[0] ?? ""}
+                          value={formState?.joint_users[0] ?? ''}
                           readOnly
                         />
                       </FormGroup>
@@ -247,23 +248,23 @@ const InsuranceOverviewContent: React.FC = () => {
                   )}
                 </Row>
 
-                <Row className="mt-2">
+                <Row className='mt-2'>
                   <Col sm={12} md={4}>
                     <FormGroup>
                       <Label>Introduction Type</Label>
                       <Input
-                        value={formState?.introduction_type ?? ""}
-                        type="select"
+                        value={formState?.introduction_type ?? ''}
+                        type='select'
                         onChange={(e) =>
-                          handleChange("introduction_type", e.target.value)
+                          handleChange('introduction_type', e.target.value)
                         }
                       >
-                        <option value="">Select...</option>
-                        <option value="DIRECT">Direct</option>
-                        <option value="RDI">RDI</option>
+                        <option value=''>Select...</option>
+                        <option value='DIRECT'>Direct</option>
+                        <option value='RDI'>RDI</option>
                       </Input>
                       {errors.introduction_type && (
-                        <div className="text-danger">
+                        <div className='text-danger'>
                           {errors.introduction_type}
                         </div>
                       )}
@@ -273,18 +274,18 @@ const InsuranceOverviewContent: React.FC = () => {
                     <FormGroup>
                       <Label>Advise Level</Label>
                       <Input
-                        value={formState?.advise_level ?? ""}
-                        type="select"
+                        value={formState?.advise_level ?? ''}
+                        type='select'
                         onChange={(e) =>
-                          handleChange("advise_level", e.target.value)
+                          handleChange('advise_level', e.target.value)
                         }
                       >
-                        <option value="">Select...</option>
-                        <option value="ADVISING">Advising</option>
-                        <option value="EXECUTION_ONLY">Execution Only</option>
+                        <option value=''>Select...</option>
+                        <option value='ADVISING'>Advising</option>
+                        <option value='EXECUTION_ONLY'>Execution Only</option>
                       </Input>
                       {errors.advise_level && (
-                        <div className="text-danger">{errors.advise_level}</div>
+                        <div className='text-danger'>{errors.advise_level}</div>
                       )}
                     </FormGroup>
                   </Col>
@@ -292,37 +293,32 @@ const InsuranceOverviewContent: React.FC = () => {
                     <FormGroup>
                       <Label>Lead Source</Label>
                       <Input
-                        value={formState?.lead_source ?? ""}
-                        type="select"
+                        value={formState?.lead_source ?? ''}
+                        type='select'
                         onChange={(e) =>
-                          handleChange("lead_source", e.target.value)
+                          handleChange('lead_source', e.target.value)
                         }
                       >
-                        <option value="">Select...</option>
-                        <option value="INTERNAL">Internal</option>
-                        <option value="EXTERNAL">External</option>
-                        <option value="FACEBOOK">Facebook</option>
-                        <option value="WEBSITE">Website</option>
-                        <option value="ESTATE_AGENTS">Estate Agents</option>
-                        <option value="TV3">TV3</option>
-                        <option value="FAMILY">Family</option>
-                        <option value="FRIENDS">Friends</option>
-                        <option value="REFERRALS">Referrals</option>
+                        {LeadSourceChoices.map((choice) => (
+                          <option key={choice.value} value={choice.value}>
+                            {choice.label}
+                          </option>
+                        ))}
                       </Input>
                       {errors.lead_source && (
-                        <div className="text-danger">{errors.lead_source}</div>
+                        <div className='text-danger'>{errors.lead_source}</div>
                       )}
                     </FormGroup>
                   </Col>
                 </Row>
 
-                <Row className="mt-2">
+                <Row className='mt-2'>
                   <Col sm={12} md={4}>
                     <FormGroup>
                       <Label>Total Final Premium</Label>
                       <Input
                         value={formState?.total_final_premium ?? 0}
-                        className="bg-light-dark"
+                        className='bg-light-dark'
                         readOnly
                       />
                     </FormGroup>
@@ -332,7 +328,7 @@ const InsuranceOverviewContent: React.FC = () => {
                       <Label>Total Premium Quoted</Label>
                       <Input
                         value={formState?.total_premium_quoted ?? 0}
-                        className="bg-light-dark"
+                        className='bg-light-dark'
                         readOnly
                       />
                     </FormGroup>
@@ -342,38 +338,38 @@ const InsuranceOverviewContent: React.FC = () => {
                       <Label>Net Case Value</Label>
                       <Input
                         value={formState?.net_case_value ?? 0}
-                        className="bg-light-dark"
+                        className='bg-light-dark'
                         readOnly
                       />
                     </FormGroup>
                   </Col>
                 </Row>
 
-                <Row className="mt-2">
+                <Row className='mt-2'>
                   <Col sm={12}>
                     <FormGroup>
                       <Label>Summary</Label>
                       <Input
-                        type="textarea"
-                        value={formState?.summary ?? ""}
+                        type='textarea'
+                        value={formState?.summary ?? ''}
                         onChange={(e) =>
-                          handleChange("summary", e.target.value)
+                          handleChange('summary', e.target.value)
                         }
                       />
                       {errors.summary && (
-                        <div className="text-danger">{errors.summary}</div>
+                        <div className='text-danger'>{errors.summary}</div>
                       )}
                     </FormGroup>
                   </Col>
                 </Row>
-                <div className="d-flex justify-content-end mt-3 gap-2">
-                  <Button color="primary" type="submit">
-                    {isUpdating ? "Saving..." : "Save Changes"}
+                <div className='d-flex justify-content-end mt-3 gap-2'>
+                  <Button color='primary' type='submit'>
+                    {isUpdating ? 'Saving...' : 'Save Changes'}
                   </Button>
-                  {session?.user?.role !== "APPLICANT" && (
+                  {session?.user?.role !== 'APPLICANT' && (
                     <Button
-                      type="submit"
-                      color="secondary"
+                      type='submit'
+                      color='secondary'
                       onClick={async (e) => {
                         e.preventDefault();
                         // if (
@@ -387,7 +383,7 @@ const InsuranceOverviewContent: React.FC = () => {
                           handleNextTab();
                         } catch (err) {
                           console.error(
-                            "Failed to save and navigate to next tab:",
+                            'Failed to save and navigate to next tab:',
                             err,
                           );
                         }
@@ -396,8 +392,8 @@ const InsuranceOverviewContent: React.FC = () => {
                       disabled={isUpdating}
                     >
                       {overview?.updated_by !== null
-                        ? "Go To Next"
-                        : "Save & Next"}
+                        ? 'Go To Next'
+                        : 'Save & Next'}
                     </Button>
                   )}
                 </div>
@@ -406,7 +402,7 @@ const InsuranceOverviewContent: React.FC = () => {
           </div>
         </TabPane>
 
-        <TabPane tabId="policies">
+        <TabPane tabId='policies'>
           <PolicyTab insuranceOverviewAlias={overview?.alias} />
         </TabPane>
       </TabContent>
