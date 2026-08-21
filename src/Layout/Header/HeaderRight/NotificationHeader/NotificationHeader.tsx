@@ -12,13 +12,7 @@ import { getNotificationTargetUrl } from '@/utils/notificationRedirect';
 import type { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-} from 'reactstrap';
+import { Badge, Button } from 'reactstrap';
 
 const isNotification = (value: unknown): value is Notification =>
   typeof value === 'object' &&
@@ -41,6 +35,18 @@ const readList = (data: unknown): Notification[] => {
   }
 
   return [];
+};
+
+// NEW: pull the server-side total out of the paginated response
+// (falls back gracefully if the API ever returns a bare array)
+const readCount = (data: unknown): number => {
+  if (Array.isArray(data)) return data.length;
+
+  if (typeof data !== 'object' || data === null) return 0;
+
+  const source = data as Record<string, unknown>;
+  const count = source.count ?? source.total ?? source.total_count;
+  return typeof count === 'number' ? count : 0;
 };
 
 const readUnreadCount = (data: unknown): number => {
@@ -86,19 +92,135 @@ const isFallbackNotification = (item: Notification) => item.id < 0;
 
 const NOTIFICATIONS_LIMIT = 4;
 
+// Builds a compact page list with ellipses, e.g. [1, '…', 4, 5, 6, '…', 12]
+type PageToken = number | 'ellipsis-start' | 'ellipsis-end';
+
+const buildPageTokens = (
+  currentPage: number,
+  totalPages: number,
+): PageToken[] => {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  const tokens: PageToken[] = [1];
+
+  if (currentPage > 3) tokens.push('ellipsis-start');
+
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(totalPages - 1, currentPage + 1);
+  for (let page = start; page <= end; page += 1) {
+    tokens.push(page);
+  }
+
+  if (currentPage < totalPages - 2) tokens.push('ellipsis-end');
+
+  tokens.push(totalPages);
+
+  return tokens;
+};
+
+const PaginationBar = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) => {
+  if (totalPages <= 1) return null;
+
+  const tokens = buildPageTokens(currentPage, totalPages);
+
+  const navBtnStyle: React.CSSProperties = {
+    width: 26,
+    height: 26,
+    padding: 0,
+    fontSize: 13,
+    lineHeight: 1,
+  };
+
+  return (
+    <div className='d-flex align-items-center justify-content-between px-3 py-2 border-top bg-light-subtle'>
+      <span className='text-muted' style={{ fontSize: 12 }}>
+        Page {currentPage} of {totalPages}
+      </span>
+      <div className='d-flex align-items-center gap-1'>
+        <button
+          type='button'
+          className='btn btn-sm bg-light-primary  btn-light-dark border-0 rounded-circle d-flex align-items-center justify-content-center'
+          style={navBtnStyle}
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+          aria-label='Previous page'
+        >
+          ‹
+        </button>
+
+        {tokens.map((token, idx) =>
+          token === 'ellipsis-start' || token === 'ellipsis-end' ? (
+            <span
+              key={`${token}-${idx}`}
+              className='text-muted d-flex align-items-center justify-content-center'
+              style={{ width: 26, height: 26, fontSize: 12 }}
+            >
+              …
+            </span>
+          ) : (
+            <button
+              key={token}
+              type='button'
+              className={`btn btn-sm rounded-circle d-flex align-items-center justify-content-center ${
+                token === currentPage
+                  ? 'btn-primary text-white'
+                  : 'btn-light-dark border-0 text-dark'
+              }`}
+              style={{
+                ...navBtnStyle,
+                fontWeight: token === currentPage ? 600 : 400,
+              }}
+              onClick={() => onPageChange(token)}
+              aria-current={token === currentPage ? 'page' : undefined}
+            >
+              {token}
+            </button>
+          ),
+        )}
+
+        <button
+          type='button'
+          className='btn btn-sm btn-light-dark bg-light-primary border-0 rounded-circle d-flex align-items-center justify-content-center'
+          style={navBtnStyle}
+          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+          aria-label='Next page'
+        >
+          ›
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const NotificationHeader = () => {
   const [show, setShow] = useState(false);
   const [items, setItems] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0); // NEW
   const [sessionData, setSessionData] = useState<Session | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const wrapperRef = useRef<HTMLLIElement>(null);
 
+  // CHANGED: pass currentPage so RTK Query refetches per page automatically
   const { data: notificationsData, refetch: refetchNotifications } =
-    useGetNotificationsQuery(undefined, {
-      refetchOnFocus: true,
-      refetchOnReconnect: true,
-    });
+    useGetNotificationsQuery(
+      { page: currentPage, limit: NOTIFICATIONS_LIMIT },
+      {
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+      },
+    );
 
   const { data: unreadData, refetch: refetchUnreadCount } =
     useGetUnreadNotificationsCountQuery(undefined, {
@@ -135,12 +257,15 @@ const NotificationHeader = () => {
 
   useEffect(() => {
     setItems(readList(notificationsData));
+    setTotalCount(readCount(notificationsData)); // NEW
   }, [notificationsData]);
 
   useEffect(() => {
     setUnreadCount(readUnreadCount(unreadData));
   }, [unreadData]);
 
+  // CHANGED: only reset the page when the dropdown opens; the actual
+  // refetch now happens automatically because currentPage is a query arg
   useEffect(() => {
     if (!show) {
       setCurrentPage(1);
@@ -149,7 +274,8 @@ const NotificationHeader = () => {
 
     void refetchNotifications();
     void refetchUnreadCount();
-  }, [show, refetchNotifications, refetchUnreadCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -246,11 +372,17 @@ const NotificationHeader = () => {
             }
 
             if (incoming.length > 0) {
-              setItems((prev) => {
-                const incomingIds = new Set(incoming.map((i) => i.id));
-                const rest = prev.filter((i) => !incomingIds.has(i.id));
-                return [...incoming, ...rest].slice(0, 30);
-              });
+              // Only splice sockets pushes into page 1's view; a full
+              // re-sync for other pages happens next time they're opened.
+              if (currentPage === 1) {
+                setItems((prev) => {
+                  const incomingIds = new Set(incoming.map((i) => i.id));
+                  const rest = prev.filter((i) => !incomingIds.has(i.id));
+                  return [...incoming, ...rest].slice(0, NOTIFICATIONS_LIMIT);
+                });
+              }
+
+              setTotalCount((prev) => prev + incoming.length); // NEW
 
               if (!hasUnreadFromPayload) {
                 setUnreadCount((prev) => prev + incoming.length);
@@ -313,6 +445,7 @@ const NotificationHeader = () => {
       }
       socket?.close();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // close dropdown when clicking outside or pressing Escape
@@ -354,15 +487,21 @@ const NotificationHeader = () => {
     created_at: `${item.date} ${item.time}`,
   }));
 
-  const notificationsToShow = items.length > 0 ? items : fallbackItems;
-  const totalPages = Math.max(
-    1,
-    Math.ceil(notificationsToShow.length / NOTIFICATIONS_LIMIT),
-  );
-  const visibleNotifications = notificationsToShow.slice(
-    (currentPage - 1) * NOTIFICATIONS_LIMIT,
-    currentPage * NOTIFICATIONS_LIMIT,
-  );
+  // CHANGED: no local pagination anymore — `items` is already the current
+  // page's data from the API. Fallback still applies when there's nothing.
+  const usingFallback = items.length === 0 && totalCount === 0;
+  const visibleNotifications = usingFallback ? fallbackItems : items;
+  const totalPages = usingFallback
+    ? Math.max(1, Math.ceil(fallbackItems.length / NOTIFICATIONS_LIMIT))
+    : Math.max(1, Math.ceil(totalCount / NOTIFICATIONS_LIMIT));
+
+  // Fallback items still need local slicing since they never came from the API
+  const pagedFallback = usingFallback
+    ? fallbackItems.slice(
+        (currentPage - 1) * NOTIFICATIONS_LIMIT,
+        currentPage * NOTIFICATIONS_LIMIT,
+      )
+    : visibleNotifications;
 
   const handleMakeAllRead = async () => {
     try {
@@ -389,6 +528,10 @@ const NotificationHeader = () => {
       // Do not block navigation on read sync failure.
       console.warn(`Failed to mark notification ${item.id} as read`);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(Math.min(Math.max(page, 1), totalPages));
   };
 
   return (
@@ -424,7 +567,7 @@ const NotificationHeader = () => {
           </Button>
         </div>
         <ul className='activity-timeline'>
-          {visibleNotifications.map((item) => {
+          {pagedFallback.map((item) => {
             const { date, time } = (() => {
               const input = item.created_at || new Date().toISOString();
               return { date: formatDate(input), time: formatTime(input) };
@@ -445,11 +588,14 @@ const NotificationHeader = () => {
                     <span>{time}</span>
                   </h6>
                   <h5>{item.notification_type || ''}</h5>
-                  <p>
-                    {isDeleted
-                      ? 'This notification related content has been deleted.'
-                      : item.message}
-                  </p>
+
+                  {isDeleted ? (
+                    <p className='text-danger'>
+                      This notification related content has been deleted.
+                    </p>
+                  ) : (
+                    <p>{item.message || ''}</p>
+                  )}
                 </div>
               </>
             );
@@ -494,87 +640,12 @@ const NotificationHeader = () => {
             );
           })}
         </ul>
-        {totalPages > 1 && (
-          <Pagination className='d-flex justify-content-end p-2'>
-            <PaginationItem disabled={currentPage === 1}>
-              <PaginationLink first onClick={() => setCurrentPage(1)} />
-            </PaginationItem>
-            <PaginationItem disabled={currentPage === 1}>
-              <PaginationLink
-                previous
-                onClick={() => setCurrentPage(currentPage - 1)}
-              />
-            </PaginationItem>
 
-            {totalPages <= 7 ? (
-              Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (pageNumber) => (
-                  <PaginationItem
-                    key={pageNumber}
-                    active={pageNumber === currentPage}
-                  >
-                    <PaginationLink onClick={() => setCurrentPage(pageNumber)}>
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>
-                ),
-              )
-            ) : (
-              <>
-                <PaginationItem active={currentPage === 1}>
-                  <PaginationLink onClick={() => setCurrentPage(1)}>
-                    1
-                  </PaginationLink>
-                </PaginationItem>
-
-                {currentPage > 3 && (
-                  <PaginationItem disabled>
-                    <PaginationLink>...</PaginationLink>
-                  </PaginationItem>
-                )}
-
-                {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-                  .filter(
-                    (pageNumber) => pageNumber > 1 && pageNumber < totalPages,
-                  )
-                  .map((pageNumber) => (
-                    <PaginationItem
-                      key={pageNumber}
-                      active={pageNumber === currentPage}
-                    >
-                      <PaginationLink
-                        onClick={() => setCurrentPage(pageNumber)}
-                      >
-                        {pageNumber}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-
-                {currentPage < totalPages - 2 && (
-                  <PaginationItem disabled>
-                    <PaginationLink>...</PaginationLink>
-                  </PaginationItem>
-                )}
-
-                <PaginationItem active={currentPage === totalPages}>
-                  <PaginationLink onClick={() => setCurrentPage(totalPages)}>
-                    {totalPages}
-                  </PaginationLink>
-                </PaginationItem>
-              </>
-            )}
-
-            <PaginationItem disabled={currentPage === totalPages}>
-              <PaginationLink
-                next
-                onClick={() => setCurrentPage(currentPage + 1)}
-              />
-            </PaginationItem>
-            <PaginationItem disabled={currentPage === totalPages}>
-              <PaginationLink last onClick={() => setCurrentPage(totalPages)} />
-            </PaginationItem>
-          </Pagination>
-        )}
+        <PaginationBar
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
     </li>
   );
