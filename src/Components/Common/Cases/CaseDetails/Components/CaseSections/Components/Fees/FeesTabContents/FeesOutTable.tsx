@@ -1,14 +1,19 @@
-import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useGetFeesOutDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
-import getCurrencySign from "@/utils/currency";
-import { formatDate } from "@/utils/dateAndTimeFormatter";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button, Col, Row, Table } from "reactstrap";
-import AddFeeOutModal from "./FeesModals/AddFeeOutModal";
-import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
-import EditFeeOutModal from "./FeesModals/EditFeeOutModal";
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
+import {
+  useDownloadInvoiceMutation,
+  useGetFeesOutDetailsQuery,
+} from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi';
+import getCurrencySign from '@/utils/currency';
+import { formatDate } from '@/utils/dateAndTimeFormatter';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { FaDownload, FaEdit, FaTrash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import { Button, Col, Row, Table } from 'reactstrap';
+import AddFeeOutModal from './FeesModals/AddFeeOutModal';
+import DeleteFeeModal from './FeesModals/DeleteFeeModal';
+import EditFeeOutModal from './FeesModals/EditFeeOutModal';
 
 const FeeOutTable = () => {
   const { data: session } = useSession();
@@ -23,21 +28,52 @@ const FeeOutTable = () => {
     page,
   });
 
+  const [downloadInvoice] = useDownloadInvoiceMutation();
+  const [downloadingAlias, setDownloadingAlias] = useState<string | null>(null);
+
+  const handleInvoiceDownload = async (fee: any) => {
+    if (!fee?.alias) {
+      toast.error('Unable to download invoice: fee not found.');
+      return;
+    }
+
+    setDownloadingAlias(fee.alias);
+    try {
+      const blob = await downloadInvoice({
+        case_alias: casealias,
+        fee_alias: fee.alias,
+      }).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fee-invoice.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error('Failed to download invoice. Please try again.');
+    } finally {
+      setDownloadingAlias(null);
+    }
+  };
+
   useEffect(() => {
     const results = feesOutDetails?.results ?? [];
     if (results.length > 0) {
       const formattedFees = results.map((fee: any, index: number) => ({
-        alias: fee.alias || "",
+        alias: fee.alias || '',
         index: index,
-        feeInFeeOutId: fee.case?.alias || "",
-        caseType: fee.case?.case_category || "",
-        propertyName: "List_Fees_Out",
-        paymentLink: "",
-        fee: fee.amount || "",
-        feeType: fee.fee_out_type || "",
-        method: fee.method || "",
-        notes: fee.notes || "",
-        feeDate: fee.date_paid_out || "",
+        caseId: fee.case?.name || '',
+        feeInFeeOutId: fee.case?.alias || '',
+        caseType: fee.case?.case_category || '',
+        propertyName: 'List_Fees_Out',
+        paymentLink: '',
+        fee: fee.amount || '',
+        feeType: fee.fee_out_type || '',
+        method: fee.method || '',
+        notes: fee.notes || '',
+        feeDate: fee.date_paid_out || '',
       }));
       setFeesOut(formattedFees);
     } else {
@@ -53,24 +89,24 @@ const FeeOutTable = () => {
     pageSize > 0 ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
 
   const feeTypes = [
-    { title: "Procuration Fee", value: "PROCURATION_FEE" },
+    { title: 'Procuration Fee', value: 'PROCURATION_FEE' },
     {
-      title: "Broker Fee",
-      value: "BROKER_FEE",
+      title: 'Broker Fee',
+      value: 'BROKER_FEE',
     },
     {
-      title: "Other",
-      value: "OTHER",
+      title: 'Other',
+      value: 'OTHER',
     },
   ];
 
   const methods = [
-    { title: "Credit / Debit Card", value: "CREDIT_DEBIT_CARD" },
-    { title: "Bacs", value: "BACS" },
-    { title: "Cheque", value: "CHEQUE" },
-    { title: "Cash", value: "CASH" },
-    { title: "Online", value: "ONLINE" },
-    { title: "Other", value: "OTHER" },
+    { title: 'Credit / Debit Card', value: 'CREDIT_DEBIT_CARD' },
+    { title: 'Bacs', value: 'BACS' },
+    { title: 'Cheque', value: 'CHEQUE' },
+    { title: 'Cash', value: 'CASH' },
+    { title: 'Online', value: 'ONLINE' },
+    { title: 'Other', value: 'OTHER' },
   ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,46 +139,46 @@ const FeeOutTable = () => {
     );
   return (
     <>
-      <Row className="mb-3">
-        <Col sm={12} className="d-flex justify-content-end align-items-center">
+      <Row className='mb-3'>
+        <Col sm={12} className='d-flex justify-content-end align-items-center'>
           <Button
-            color="primary"
-            className="addFee d-flex align-items-center gap-2"
+            color='primary'
+            className='addFee d-flex align-items-center gap-2'
             onClick={toggleModal}
-            disabled={session?.user?.role === "APPLICANT"}
+            disabled={session?.user?.role === 'APPLICANT'}
           >
-            <i className="fa-solid fa-circle-plus"></i>
+            <i className='fa-solid fa-circle-plus'></i>
             Add New Fee Out
           </Button>
         </Col>
       </Row>
 
       <Row>
-        <Col sm={12} className="form-group" id="FeeOut">
-          <div className="table-responsive shadow-sm rounded">
-            <Table hover bordered className="mb-0">
-              <thead className="bg-light">
+        <Col sm={12} className='form-group' id='FeeOut'>
+          <div className='table-responsive shadow-sm rounded'>
+            <Table hover bordered className='mb-0'>
+              <thead className='bg-light'>
                 <tr>
-                  <th className="text-center" style={{ width: "5%" }}>
+                  <th className='text-center' style={{ width: '5%' }}>
                     #
                   </th>
-                  <th className="text-center" style={{ width: "20%" }}>
+                  <th className='text-center' style={{ width: '20%' }}>
                     Amount
                   </th>
-                  <th className="text-center" style={{ width: "15%" }}>
+                  <th className='text-center' style={{ width: '15%' }}>
                     Fee Type
                   </th>
-                  <th className="text-center" style={{ width: "15%" }}>
+                  <th className='text-center' style={{ width: '15%' }}>
                     Method
                   </th>
-                  <th className="text-center" style={{ width: "15%" }}>
+                  <th className='text-center' style={{ width: '15%' }}>
                     Date Paid Out
                   </th>
-                  <th className="text-center" style={{ width: "25%" }}>
+                  <th className='text-center' style={{ width: '25%' }}>
                     Notes
                   </th>
 
-                  <th className="text-center" style={{ width: "5%" }}>
+                  <th className='text-center' style={{ width: '5%' }}>
                     Actions
                   </th>
                 </tr>
@@ -150,7 +186,7 @@ const FeeOutTable = () => {
               <tbody>
                 {feesOut.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-4">
+                    <td colSpan={7} className='text-center py-4'>
                       No fees available
                     </td>
                   </tr>
@@ -158,50 +194,64 @@ const FeeOutTable = () => {
                   feesOut.map((feeOut, index) => (
                     <tr
                       key={feeOut.alias || index}
-                      className="feeTableRow feeRowOut"
+                      className='feeTableRow feeRowOut'
                     >
-                      <td className="text-center align-middle">
-                        <span className="fw-bold">{index + 1}</span>
+                      <td className='text-center align-middle'>
+                        <span className='fw-bold'>{index + 1}</span>
                       </td>
-                      <td className="text-center align-middle">
+                      <td className='text-center align-middle'>
                         {getCurrencySign()}
-                        {feeOut.fee || "0.00"}
+                        {feeOut.fee || '0.00'}
                       </td>
-                      <td className="text-center align-middle">
+                      <td className='text-center align-middle'>
                         {feeTypes.find((type) => type.value === feeOut.feeType)
-                          ?.title || "-"}
+                          ?.title || '-'}
                       </td>
-                      <td className="text-center align-middle">
+                      <td className='text-center align-middle'>
                         {methods.find(
                           (method) => method.value === feeOut.method,
-                        )?.title || "-"}
+                        )?.title || '-'}
                       </td>
-                      <td className="text-center align-middle">
-                        {formatDate(feeOut.feeDate) || "-"}
-                      </td>{" "}
-                      <td className="text-center align-middle">
-                        {feeOut.notes || "-"}
+                      <td className='text-center align-middle'>
+                        {formatDate(feeOut.feeDate) || '-'}
+                      </td>{' '}
+                      <td className='text-center align-middle'>
+                        {feeOut.notes || '-'}
                       </td>
-                      <td className="text-center align-middle">
-                        <div className="d-flex justify-content-center gap-2">
+                      <td className='text-center align-middle'>
+                        <div className='d-flex justify-content-center gap-2'>
                           <Button
-                            color="primary"
-                            size="sm"
+                            color='secondary'
+                            title='Download Invoice'
+                            size='sm'
                             outline
-                            disabled={session?.user?.role === "APPLICANT"}
+                            disabled={session?.user?.role === 'APPLICANT'}
+                            onClick={() => handleInvoiceDownload(feeOut)}
+                          >
+                            {downloadingAlias === feeOut.alias ? (
+                              <span className='spinner-border spinner-border-sm'></span>
+                            ) : (
+                              <FaDownload />
+                            )}
+                          </Button>
+                          <Button
+                            color='primary'
+                            size='sm'
+                            outline
+                            disabled={session?.user?.role === 'APPLICANT'}
                             onClick={() => handleFeeEdit(feeOut)}
                           >
-                            <i className="fa fa-edit"></i>
-                          </Button>{" "}
+                            <FaEdit />
+                          </Button>
                           <Button
-                            color="danger"
-                            size="sm"
+                            color='danger'
+                            size='sm'
                             outline
-                            className="removeFee"
-                             disabled={session?.user?.role === "APPLICANT"}
+                            className='removeFee'
+                            disabled={session?.user?.role === 'APPLICANT'}
                             onClick={() => handleFeeDelete(feeOut)}
                           >
-                            <i className="fa fa-trash"></i>
+                            <FaTrash />
                           </Button>
                         </div>
                       </td>
@@ -214,33 +264,33 @@ const FeeOutTable = () => {
         </Col>
       </Row>
 
-      <Row className="mt-3">
+      <Row className='mt-3'>
         <Col
           sm={12}
-          className="d-flex justify-content-between align-items-center"
+          className='d-flex justify-content-between align-items-center'
         >
           <div>
             Page {page} of {totalPages} (Total {totalCount})
           </div>
           <div>
             <Button
-              color="secondary"
-              size="sm"
+              color='secondary'
+              size='sm'
               outline
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || isLoading}
             >
-              <i className="fa fa-chevron-left"></i> Prev
+              <i className='fa fa-chevron-left'></i> Prev
             </Button>
             <Button
-              color="secondary"
-              size="sm"
+              color='secondary'
+              size='sm'
               outline
-              className="ms-2"
+              className='ms-2'
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages || isLoading}
             >
-              Next <i className="fa fa-chevron-right"></i>
+              Next <i className='fa fa-chevron-right'></i>
             </Button>
           </div>
         </Col>
