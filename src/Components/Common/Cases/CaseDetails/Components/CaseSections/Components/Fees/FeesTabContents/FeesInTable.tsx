@@ -1,14 +1,19 @@
-import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useGetFeesInDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
-import getCurrencySign from "@/utils/currency";
-import { formatDate } from "@/utils/dateAndTimeFormatter";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button, Col, Row, Table } from "reactstrap";
-import AddFeeInModal from "./FeesModals/AddFeeInModal";
-import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
-import EditFeeInModal from "./FeesModals/EditFeeInModal";
+import LoadingGrow from '@/CommonComponent/LoadingGrow/LoadingGrow';
+import {
+  useDownloadInvoiceMutation,
+  useGetFeesInDetailsQuery,
+} from '@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi';
+import getCurrencySign from '@/utils/currency';
+import { formatDate } from '@/utils/dateAndTimeFormatter';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { FaDownload, FaEdit, FaTrash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import { Button, Col, Row, Table } from 'reactstrap';
+import AddFeeInModal from './FeesModals/AddFeeInModal';
+import DeleteFeeModal from './FeesModals/DeleteFeeModal';
+import EditFeeInModal from './FeesModals/EditFeeInModal';
 
 const FeeInTable = () => {
   const { data: session } = useSession();
@@ -16,28 +21,59 @@ const FeeInTable = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedFee, setSelectedFee] = useState<any | null>(null);
+  const [feesIn, setFeesIn] = useState<any[]>([]);
 
   const [page, setPage] = useState<number>(1);
   const { data: feesInDetails, isLoading } = useGetFeesInDetailsQuery({
     case_alias: casealias,
     page,
   });
+  const [downloadInvoice] = useDownloadInvoiceMutation();
+  const [downloadingAlias, setDownloadingAlias] = useState<string | null>(null);
+
+  const handleInvoiceDownload = async (fee: any) => {
+    if (!fee?.alias) {
+      toast.error('Unable to download invoice: fee not found.');
+      return;
+    }
+
+    setDownloadingAlias(fee.alias);
+    try {
+      const blob = await downloadInvoice({
+        case_alias: casealias,
+        fee_alias: fee.alias,
+      }).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fee-invoice.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error('Failed to download invoice. Please try again.');
+    } finally {
+      setDownloadingAlias(null);
+    }
+  };
 
   useEffect(() => {
     const results = feesInDetails?.results ?? [];
     if (results.length > 0) {
       const formattedFees = results.map((fee: any, index: number) => ({
-        alias: fee.alias || "",
+        alias: fee.alias || '',
         index: index,
-        feeInFeeOutId: fee.case?.alias || "",
-        caseType: fee.case?.case_category || "",
-        propertyName: "List_Fees_In",
-        paymentLink: "",
-        fee: fee.amount || "",
-        feeType: fee.fee_in_type || "",
-        method: fee.method || "",
-        notes: fee.notes || "",
-        feeDate: fee.date_received || "",
+        caseId: fee.case?.name || '',
+        feeInFeeOutId: fee.case?.alias || '',
+        caseType: fee.case?.case_category || '',
+        propertyName: 'List_Fees_In',
+        paymentLink: '',
+        fee: fee.amount || '',
+        feeType: fee.fee_in_type || '',
+        method: fee.method || '',
+        notes: fee.notes || '',
+        feeDate: fee.date_received || '',
       }));
       setFeesIn(formattedFees);
     } else {
@@ -45,28 +81,26 @@ const FeeInTable = () => {
     }
   }, [feesInDetails]);
 
-  const [feesIn, setFeesIn] = useState<any[]>([]);
-
   const totalCount = feesInDetails?.count ?? 0;
   const pageSize = feesInDetails?.results?.length ?? feesIn.length ?? 0;
   const totalPages =
     pageSize > 0 ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
 
   const feeTypes = [
-    { title: "Broker/Commitment Fee", value: "BROKER_COMMITMENT_FEE" },
-    { title: "Procuration Fee", value: "PROCURATION_FEE" },
-    { title: "Mortgage OfferFee", value: "MORTGAGE_OFFER_FEE" },
-    { title: "BrokerFee", value: "BROKER_FEE" },
-    { title: "Other", value: "OTHER" },
+    { title: 'Broker/Commitment Fee', value: 'BROKER_COMMITMENT_FEE' },
+    { title: 'Procuration Fee', value: 'PROCURATION_FEE' },
+    { title: 'Mortgage OfferFee', value: 'MORTGAGE_OFFER_FEE' },
+    { title: 'BrokerFee', value: 'BROKER_FEE' },
+    { title: 'Other', value: 'OTHER' },
   ];
 
   const methods = [
-    { title: "Credit / Debit Card", value: "CREDIT_DEBIT_CARD" },
-    { title: "Bacs", value: "BACS" },
-    { title: "Cheque", value: "CHEQUE" },
-    { title: "Cash", value: "CASH" },
-    { title: "Online", value: "ONLINE" },
-    { title: "Other", value: "OTHER" },
+    { title: 'Credit / Debit Card', value: 'CREDIT_DEBIT_CARD' },
+    { title: 'Bacs', value: 'BACS' },
+    { title: 'Cheque', value: 'CHEQUE' },
+    { title: 'Cash', value: 'CASH' },
+    { title: 'Online', value: 'ONLINE' },
+    { title: 'Other', value: 'OTHER' },
   ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,45 +137,45 @@ const FeeInTable = () => {
 
   return (
     <>
-      <Row className="mb-3">
-        <Col sm={12} className="d-flex justify-content-end align-items-center">
+      <Row className='mb-3'>
+        <Col sm={12} className='d-flex justify-content-end align-items-center'>
           <Button
-            color="primary"
-            className="addFee d-flex align-items-center gap-2"
+            color='primary'
+            className='addFee d-flex align-items-center gap-2'
             onClick={toggleModal}
-            disabled={session?.user?.role === "APPLICANT"}
+            disabled={session?.user?.role === 'APPLICANT'}
           >
-            <i className="fa-solid fa-circle-plus"></i>
+            <i className='fa-solid fa-circle-plus'></i>
             Add New Fee In
           </Button>
         </Col>
       </Row>
 
       <Row>
-        <Col sm={12} className="form-group" id="FeeIn">
-          <div className="table-responsive shadow-sm rounded">
-            <Table hover bordered className="mb-0">
-              <thead className="bg-light">
+        <Col sm={12} className='form-group' id='FeeIn'>
+          <div className='table-responsive shadow-sm rounded'>
+            <Table hover bordered className='mb-0'>
+              <thead className='bg-light'>
                 <tr>
-                  <th className="text-center" style={{ width: "5%" }}>
+                  <th className='text-center' style={{ width: '5%' }}>
                     #
                   </th>
-                  <th className="text-center" style={{ width: "20%" }}>
+                  <th className='text-center' style={{ width: '20%' }}>
                     Amount
                   </th>
-                  <th className="text-center" style={{ width: "15%" }}>
+                  <th className='text-center' style={{ width: '15%' }}>
                     Fee Type
                   </th>
-                  <th className="text-center" style={{ width: "15%" }}>
+                  <th className='text-center' style={{ width: '15%' }}>
                     Method
                   </th>
-                  <th className="text-center" style={{ width: "15%" }}>
+                  <th className='text-center' style={{ width: '15%' }}>
                     Date Received
-                  </th>{" "}
-                  <th className="text-center" style={{ width: "25%" }}>
+                  </th>{' '}
+                  <th className='text-center' style={{ width: '25%' }}>
                     Notes
                   </th>
-                  <th className="text-center" style={{ width: "5%" }}>
+                  <th className='text-center' style={{ width: '5%' }}>
                     Actions
                   </th>
                 </tr>
@@ -149,7 +183,7 @@ const FeeInTable = () => {
               <tbody>
                 {feesIn.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-4">
+                    <td colSpan={7} className='text-center py-4'>
                       No fees available
                     </td>
                   </tr>
@@ -157,49 +191,65 @@ const FeeInTable = () => {
                   feesIn.map((feeIn, index) => (
                     <tr
                       key={feeIn.alias || index}
-                      className="feeTableRow feeRowIn"
+                      className='feeTableRow feeRowIn'
                     >
-                      <td className="text-center align-middle">
-                        <span className="fw-bold">{index + 1}</span>
+                      <td className='text-center align-middle'>
+                        <span className='fw-bold'>{index + 1}</span>
                       </td>
-                      <td className="text-center align-middle">
+                      <td className='text-center align-middle'>
                         {getCurrencySign()}
-                        {feeIn.fee || "0.00"}
+                        {feeIn.fee || '0.00'}
                       </td>
-                      <td className="text-center align-middle">
+                      <td className='text-center align-middle'>
                         {feeTypes.find((type) => type.value === feeIn.feeType)
-                          ?.title || "-"}
+                          ?.title || '-'}
                       </td>
-                      <td className="text-center align-middle">
+                      <td className='text-center align-middle'>
                         {methods.find((method) => method.value === feeIn.method)
-                          ?.title || "-"}
+                          ?.title || '-'}
                       </td>
-                      <td className="text-center align-middle">
-                        {formatDate(feeIn.feeDate) || "-"}
+                      <td className='text-center align-middle'>
+                        {formatDate(feeIn.feeDate) || '-'}
                       </td>
-                      <td className="text-center align-middle">
-                        {feeIn.notes || "-"}
+                      <td className='text-center align-middle'>
+                        {feeIn.notes || '-'}
                       </td>
-                      <td className="text-center align-middle">
-                        <div className="d-flex justify-content-center align-items-center gap-2">
+                      <td className='text-center align-middle'>
+                        <div className='d-flex justify-content-center align-items-center gap-2'>
                           <Button
-                            color="primary"
-                            size="sm"
+                            color='secondary'
+                            title='Download Invoice'
+                            size='sm'
                             outline
-                            disabled={session?.user?.role === "APPLICANT"}
-                            onClick={() => handleFeeEdit(feeIn)}
+                            disabled={session?.user?.role === 'APPLICANT'}
+                            onClick={() => handleInvoiceDownload(feeIn)}
                           >
-                            <i className="fa fa-edit"></i>
+                            {downloadingAlias === feeIn.alias ? (
+                              <span className='spinner-border spinner-border-sm'></span>
+                            ) : (
+                              <FaDownload />
+                            )}
                           </Button>
                           <Button
-                            color="danger"
-                            size="sm"
+                            color='primary'
+                            title='Edit Fee'
+                            size='sm'
                             outline
-                            className="removeFee"
-                            disabled={session?.user?.role === "APPLICANT"}
+                            disabled={session?.user?.role === 'APPLICANT'}
+                            onClick={() => handleFeeEdit(feeIn)}
+                          >
+                            <FaEdit />
+                          </Button>
+                          <Button
+                            color='danger'
+                            title='Delete Fee'
+                            size='sm'
+                            outline
+                            className='removeFee'
+                            disabled={session?.user?.role === 'APPLICANT'}
                             onClick={() => handleFeeDelete(feeIn)}
                           >
-                            <i className="fa fa-trash"></i>
+                            <FaTrash />
                           </Button>
                         </div>
                       </td>
@@ -212,33 +262,33 @@ const FeeInTable = () => {
         </Col>
       </Row>
 
-      <Row className="mt-3">
+      <Row className='mt-3'>
         <Col
           sm={12}
-          className="d-flex justify-content-between align-items-center"
+          className='d-flex justify-content-between align-items-center'
         >
           <div>
             Page {page} of {totalPages} (Total {totalCount})
           </div>
           <div>
             <Button
-              color="secondary"
-              size="sm"
+              color='secondary'
+              size='sm'
               outline
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || isLoading}
             >
-              <i className="fa fa-chevron-left"></i> Prev
+              <i className='fa fa-chevron-left'></i> Prev
             </Button>
             <Button
-              color="secondary"
-              size="sm"
+              color='secondary'
+              size='sm'
               outline
-              className="ms-2"
+              className='ms-2'
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages || isLoading}
             >
-              Next <i className="fa fa-chevron-right"></i>
+              Next <i className='fa fa-chevron-right'></i>
             </Button>
           </div>
         </Col>

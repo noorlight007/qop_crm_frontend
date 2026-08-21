@@ -1,63 +1,70 @@
-import { baseApi } from "@/Redux/Api/BaseApi";
+import { baseApi } from '@/Redux/Api/BaseApi';
 
 export const FeesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getFeesInDetails: builder.query({
       query: ({ case_alias, page }) => ({
         url: `/cases/${case_alias}/fees/in/?page=${page ?? 1}`,
-        method: "GET",
+        method: 'GET',
       }),
-      providesTags: ["Fees"],
+      providesTags: ['Fees'],
     }),
     getFeesOutDetails: builder.query({
       query: ({ case_alias, page }) => ({
         url: `/cases/${case_alias}/fees/out/?page=${page ?? 1}`,
-        method: "GET",
+        method: 'GET',
       }),
-      providesTags: ["Fees"],
+      providesTags: ['Fees'],
     }),
     addFeesInDetails: builder.mutation({
       query: ({ case_alias, feesInDetails }) => ({
         url: `/cases/${case_alias}/fees/in/`,
-        method: "POST",
+        method: 'POST',
         body: feesInDetails,
       }),
-      invalidatesTags: ["Fees"],
+      invalidatesTags: ['Fees'],
     }),
     addFeesOutDetails: builder.mutation({
       query: ({ case_alias, feesOutDetails }) => ({
         url: `/cases/${case_alias}/fees/out/`,
-        method: "POST",
+        method: 'POST',
         body: feesOutDetails,
       }),
-      invalidatesTags: ["Fees"],
+      invalidatesTags: ['Fees'],
     }),
     editFeesInOut: builder.mutation({
       query: ({ case_alias, fee_alias, feeDetails }) => ({
         url: `/cases/${case_alias}/fees/${fee_alias}/`,
-        method: "PATCH",
+        method: 'PATCH',
         body: feeDetails,
       }),
-      invalidatesTags: ["Fees"],
+      invalidatesTags: ['Fees'],
     }),
     deleteFeesInOut: builder.mutation({
       query: ({ case_alias, fee_alias }) => ({
         url: `/cases/${case_alias}/fees/${fee_alias}/`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
-      invalidatesTags: ["Fees"],
+      invalidatesTags: ['Fees'],
     }),
     calculateFees: builder.query({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/fees/`,
-        method: "GET",
+        method: 'GET',
       }),
-      providesTags: ["Fees"],
+      providesTags: ['Fees'],
     }),
     downloadFeesSummary: builder.mutation({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/fees/pdf/`,
-        method: "GET",
+        method: 'GET',
+        responseHandler: (response) => response.blob(),
+      }),
+    }),
+    downloadInvoice: builder.mutation({
+      query: ({ case_alias, fee_alias }) => ({
+        url: `/cases/${case_alias}/fees/${fee_alias}/invoice/`,
+        method: 'GET',
         responseHandler: (response) => response.blob(),
       }),
     }),
@@ -73,4 +80,5 @@ export const {
   useDeleteFeesInOutMutation,
   useCalculateFeesQuery,
   useDownloadFeesSummaryMutation,
+  useDownloadInvoiceMutation,
 } = FeesApi;
