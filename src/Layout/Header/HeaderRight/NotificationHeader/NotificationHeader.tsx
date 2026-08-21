@@ -6,102 +6,29 @@ import {
   useMakeAllNotificationsReadMutation,
   useReadNotificationMutation,
 } from '@/Redux/Reducers/Common/Notification/NotificationApi';
-import { UINotification } from '@/Types/Common/Notification/NotificationType';
+import { Notification } from '@/Types/Common/Notification/NotificationType';
 import { formatDate, formatTime } from '@/utils/dateAndTimeFormatter';
 import { getNotificationTargetUrl } from '@/utils/notificationRedirect';
 import type { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
-import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Badge, Button } from 'reactstrap';
+import {
+  Badge,
+  Button,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+} from 'reactstrap';
 
-const toSafeDateTime = (input?: string) => {
-  const safeInput = input ?? new Date().toISOString();
+const isNotification = (value: unknown): value is Notification =>
+  typeof value === 'object' &&
+  value !== null &&
+  'id' in value &&
+  'message' in value;
 
-  return {
-    date: formatDate(safeInput),
-    time: formatTime(safeInput),
-  };
-};
-
-const normalizeNotification = (
-  item: Record<string, unknown>,
-  fallbackKey: string,
-): UINotification => {
-  const createdAt =
-    (item.created_at as string | undefined) ||
-    (item.createdAt as string | undefined) ||
-    (item.timestamp as string | undefined) ||
-    (item.date as string | undefined);
-
-  const { date, time } = toSafeDateTime(createdAt);
-  const payloadData =
-    typeof item.data === 'object' && item.data !== null
-      ? (item.data as Record<string, unknown>)
-      : null;
-
-  const isUnread =
-    item.is_read === false || item.read === false || item.unread === true;
-
-  const eventTimePart =
-    typeof item.timestamp === 'string'
-      ? item.timestamp
-      : typeof item.created_at === 'string'
-        ? item.created_at
-        : typeof item.createdAt === 'string'
-          ? item.createdAt
-          : '';
-  const eventMessagePart =
-    typeof item.message === 'string'
-      ? item.message
-      : typeof item.body === 'string'
-        ? item.body
-        : '';
-
-  const eventKeySource =
-    (item.notification_id as string | undefined) ||
-    (item.uuid as string | undefined) ||
-    (item.id as string | undefined);
-
-  const derivedEventId =
-    eventKeySource && (eventTimePart || eventMessagePart)
-      ? `${eventKeySource}-${eventTimePart}-${eventMessagePart}`
-      : undefined;
-
-  return {
-    id: String(
-      item.id ??
-        item.uuid ??
-        item.notification_id ??
-        derivedEventId ??
-        fallbackKey,
-    ),
-    date,
-    time,
-    dotColor: isUnread ? 'warning' : 'primary',
-    fontColor: isUnread ? 'warning' : 'primary',
-    notification_type: String(
-      item.title ??
-        item.notification_type ??
-        payloadData?.subject ??
-        item.sender_name ??
-        'Notification',
-    ),
-    message: String(item.message ?? item.body ?? item.description ?? ''),
-    is_read: item.is_read === true,
-    dataType:
-      typeof payloadData?.type === 'string' ? payloadData.type : undefined,
-    dataAlias:
-      typeof payloadData?.alias === 'string' ? payloadData.alias : undefined,
-  };
-};
-
-const readList = (data: unknown): Record<string, unknown>[] => {
+const readList = (data: unknown): Notification[] => {
   if (Array.isArray(data)) {
-    return data.filter(
-      (item): item is Record<string, unknown> =>
-        typeof item === 'object' && item !== null,
-    );
+    return data.filter(isNotification);
   }
 
   if (typeof data === 'object' && data !== null) {
@@ -109,10 +36,7 @@ const readList = (data: unknown): Record<string, unknown>[] => {
     const candidate = source.results ?? source.notifications ?? source.data;
 
     if (Array.isArray(candidate)) {
-      return candidate.filter(
-        (item): item is Record<string, unknown> =>
-          typeof item === 'object' && item !== null,
-      );
+      return candidate.filter(isNotification);
     }
   }
 
@@ -157,12 +81,17 @@ const socketUrlsFromApiBase = (baseUrl: string, token: string) => {
   return unique;
 };
 
+// Negative ids mark client-side fallback notifications that never sync to the API.
+const isFallbackNotification = (item: Notification) => item.id < 0;
+
+const NOTIFICATIONS_LIMIT = 4;
+
 const NotificationHeader = () => {
   const [show, setShow] = useState(false);
-  const [items, setItems] = useState<UINotification[]>([]);
+  const [items, setItems] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(4);
   const [sessionData, setSessionData] = useState<Session | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const wrapperRef = useRef<HTMLLIElement>(null);
 
   const { data: notificationsData, refetch: refetchNotifications } =
@@ -205,12 +134,7 @@ const NotificationHeader = () => {
   }, []);
 
   useEffect(() => {
-    const list = readList(notificationsData);
-    setItems(
-      list.map((item, idx) =>
-        normalizeNotification(item, `api-${idx}-${Date.now()}`),
-      ),
-    );
+    setItems(readList(notificationsData));
   }, [notificationsData]);
 
   useEffect(() => {
@@ -219,7 +143,7 @@ const NotificationHeader = () => {
 
   useEffect(() => {
     if (!show) {
-      setVisibleCount(4);
+      setCurrentPage(1);
       return;
     }
 
@@ -296,7 +220,7 @@ const NotificationHeader = () => {
         socket.onmessage = (event) => {
           try {
             const payload = JSON.parse(event.data) as unknown;
-            let incoming: Record<string, unknown>[] = [];
+            let incoming: Notification[] = [];
             let hasUnreadFromPayload = false;
 
             if (
@@ -306,8 +230,8 @@ const NotificationHeader = () => {
             ) {
               const source = payload as Record<string, unknown>;
               const notification = source.notification;
-              if (typeof notification === 'object' && notification !== null) {
-                incoming = [notification as Record<string, unknown>];
+              if (isNotification(notification)) {
+                incoming = [notification];
               }
 
               if (typeof source.unread_count === 'number') {
@@ -316,28 +240,20 @@ const NotificationHeader = () => {
               }
             } else {
               incoming = readList(payload);
-              if (
-                incoming.length === 0 &&
-                typeof payload === 'object' &&
-                payload !== null
-              ) {
-                incoming = [payload as Record<string, unknown>];
+              if (incoming.length === 0 && isNotification(payload)) {
+                incoming = [payload];
               }
             }
 
             if (incoming.length > 0) {
-              const mapped = incoming.map((item, index) =>
-                normalizeNotification(item, `ws-${Date.now()}-${index}`),
-              );
-
               setItems((prev) => {
-                const incomingIds = new Set(mapped.map((i) => i.id));
+                const incomingIds = new Set(incoming.map((i) => i.id));
                 const rest = prev.filter((i) => !incomingIds.has(i.id));
-                return [...mapped, ...rest].slice(0, 30);
+                return [...incoming, ...rest].slice(0, 30);
               });
 
               if (!hasUnreadFromPayload) {
-                setUnreadCount((prev) => prev + mapped.length);
+                setUnreadCount((prev) => prev + incoming.length);
               }
             }
           } catch (error) {
@@ -427,34 +343,32 @@ const NotificationHeader = () => {
       document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [show]);
-  const fallbackItems: UINotification[] = notificationData.map(
-    (item, index) => ({
-      id: `fallback-${index}`,
-      date: item.date,
-      time: item.time,
-      dotColor: item.dotColor === 'secondary' ? 'warning' : 'primary',
-      fontColor: item.fontColor === 'secondary' ? 'warning' : 'primary',
-      message: item.message,
-      is_read: false,
-    }),
-  );
+
+  const fallbackItems: Notification[] = notificationData.map((item, index) => ({
+    id: -(index + 1),
+    notification_type: '',
+    message: item.message,
+    data: { type: '', alias: '', is_deleted: false },
+    is_read: false,
+    read_at: null,
+    created_at: `${item.date} ${item.time}`,
+  }));
 
   const notificationsToShow = items.length > 0 ? items : fallbackItems;
-  const visibleNotifications = notificationsToShow.slice(0, visibleCount);
-  const hasMoreNotifications = notificationsToShow.length > visibleCount;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(notificationsToShow.length / NOTIFICATIONS_LIMIT),
+  );
+  const visibleNotifications = notificationsToShow.slice(
+    (currentPage - 1) * NOTIFICATIONS_LIMIT,
+    currentPage * NOTIFICATIONS_LIMIT,
+  );
 
   const handleMakeAllRead = async () => {
     try {
       await makeAllNotificationsRead(undefined).unwrap();
       setUnreadCount(0);
-      setItems((prev) =>
-        prev.map((item) => ({
-          ...item,
-          is_read: true,
-          dotColor: 'primary',
-          fontColor: 'primary',
-        })),
-      );
+      setItems((prev) => prev.map((item) => ({ ...item, is_read: true })));
       void refetchNotifications();
       void refetchUnreadCount();
     } catch {
@@ -463,8 +377,8 @@ const NotificationHeader = () => {
     }
   };
 
-  const handleReadNotification = async (item: UINotification) => {
-    if (item.id.startsWith('fallback-') || item.is_read) return;
+  const handleReadNotification = async (item: Notification) => {
+    if (isFallbackNotification(item) || item.is_read) return;
 
     try {
       await readNotification({
@@ -510,65 +424,156 @@ const NotificationHeader = () => {
           </Button>
         </div>
         <ul className='activity-timeline'>
-          {visibleNotifications.map((item) => (
-            <li className='d-flex align-items-start' key={item.id}>
-              <a
-                href={getNotificationTargetUrl(item, sessionData)}
-                className='d-flex align-items-start text-decoration-none text-reset w-100'
-                onClick={() => {
-                  setShow(false);
+          {visibleNotifications.map((item) => {
+            const { date, time } = (() => {
+              const input = item.created_at || new Date().toISOString();
+              return { date: formatDate(input), time: formatTime(input) };
+            })();
+            const colorVariant = item.is_read ? 'primary' : 'warning';
+            const isDeleted = item.data?.is_deleted === true;
 
-                  if (!item.id.startsWith('fallback-') && !item.is_read) {
-                    setUnreadCount((prev) => Math.max(0, prev - 1));
-                  }
-
-                  setItems((prev) =>
-                    prev.map((n) =>
-                      n.id === item.id
-                        ? {
-                            ...n,
-                            is_read: true,
-                            dotColor: 'primary',
-                            fontColor: 'primary',
-                          }
-                        : n,
-                    ),
-                  );
-
-                  void handleReadNotification(item);
-                  void refetchNotifications();
-                  void refetchUnreadCount();
-                }}
-              >
+            const content = (
+              <>
                 <div className='activity-line' />
-                <div className={`activity-dot-${item.dotColor}`} />
+                <div className={`activity-dot-${colorVariant}`} />
                 <div className='flex-grow-1'>
                   <h6
-                    className={`f-w-600 font-${item.fontColor} text-${item.fontColor}`}
+                    className={`f-w-600 font-${colorVariant} text-${colorVariant}`}
                   >
-                    {item.date}
+                    {date}
                     {','}
-                    <span>{item.time}</span>
+                    <span>{time}</span>
                   </h6>
                   <h5>{item.notification_type || ''}</h5>
-                  <p>{item.message}</p>
+                  <p>
+                    {isDeleted
+                      ? 'This notification related content has been deleted.'
+                      : item.message}
+                  </p>
                 </div>
-              </a>
-            </li>
-          ))}
+              </>
+            );
+
+            // Deleted notifications render without a redirect link.
+            if (isDeleted) {
+              return (
+                <li className='d-flex align-items-start' key={item.id}>
+                  <div className='d-flex align-items-start text-reset w-100'>
+                    {content}
+                  </div>
+                </li>
+              );
+            }
+
+            return (
+              <li className='d-flex align-items-start' key={item.id}>
+                <a
+                  href={getNotificationTargetUrl(item.data, sessionData)}
+                  className='d-flex align-items-start text-decoration-none text-reset w-100'
+                  onClick={() => {
+                    setShow(false);
+
+                    if (!isFallbackNotification(item) && !item.is_read) {
+                      setUnreadCount((prev) => Math.max(0, prev - 1));
+                    }
+
+                    setItems((prev) =>
+                      prev.map((n) =>
+                        n.id === item.id ? { ...n, is_read: true } : n,
+                      ),
+                    );
+
+                    void handleReadNotification(item);
+                    void refetchNotifications();
+                    void refetchUnreadCount();
+                  }}
+                >
+                  {content}
+                </a>
+              </li>
+            );
+          })}
         </ul>
-        {hasMoreNotifications && (
-          <div className='text-center p-2 border-top'>
-            <Link
-              href='/notifications'
-              className='btn btn-outline-primary btn-sm'
-              onClick={() => {
-                setShow(false);
-              }}
-            >
-              Show More
-            </Link>
-          </div>
+        {totalPages > 1 && (
+          <Pagination className='d-flex justify-content-end p-2'>
+            <PaginationItem disabled={currentPage === 1}>
+              <PaginationLink first onClick={() => setCurrentPage(1)} />
+            </PaginationItem>
+            <PaginationItem disabled={currentPage === 1}>
+              <PaginationLink
+                previous
+                onClick={() => setCurrentPage(currentPage - 1)}
+              />
+            </PaginationItem>
+
+            {totalPages <= 7 ? (
+              Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNumber) => (
+                  <PaginationItem
+                    key={pageNumber}
+                    active={pageNumber === currentPage}
+                  >
+                    <PaginationLink onClick={() => setCurrentPage(pageNumber)}>
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )
+            ) : (
+              <>
+                <PaginationItem active={currentPage === 1}>
+                  <PaginationLink onClick={() => setCurrentPage(1)}>
+                    1
+                  </PaginationLink>
+                </PaginationItem>
+
+                {currentPage > 3 && (
+                  <PaginationItem disabled>
+                    <PaginationLink>...</PaginationLink>
+                  </PaginationItem>
+                )}
+
+                {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                  .filter(
+                    (pageNumber) => pageNumber > 1 && pageNumber < totalPages,
+                  )
+                  .map((pageNumber) => (
+                    <PaginationItem
+                      key={pageNumber}
+                      active={pageNumber === currentPage}
+                    >
+                      <PaginationLink
+                        onClick={() => setCurrentPage(pageNumber)}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                {currentPage < totalPages - 2 && (
+                  <PaginationItem disabled>
+                    <PaginationLink>...</PaginationLink>
+                  </PaginationItem>
+                )}
+
+                <PaginationItem active={currentPage === totalPages}>
+                  <PaginationLink onClick={() => setCurrentPage(totalPages)}>
+                    {totalPages}
+                  </PaginationLink>
+                </PaginationItem>
+              </>
+            )}
+
+            <PaginationItem disabled={currentPage === totalPages}>
+              <PaginationLink
+                next
+                onClick={() => setCurrentPage(currentPage + 1)}
+              />
+            </PaginationItem>
+            <PaginationItem disabled={currentPage === totalPages}>
+              <PaginationLink last onClick={() => setCurrentPage(totalPages)} />
+            </PaginationItem>
+          </Pagination>
         )}
       </div>
     </li>
