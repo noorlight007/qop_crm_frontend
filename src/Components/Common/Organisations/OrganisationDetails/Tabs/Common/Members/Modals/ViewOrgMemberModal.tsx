@@ -1,62 +1,75 @@
-import { ViewOrgMemberModalProps } from "@/Types/Common/Organisations/OrgMembersTypes";
-import formatChoiceFieldValue from "@/utils/formatters";
-import Image from "next/image";
-import React from "react";
-import { Mail, Phone, User } from "react-feather";
-import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { useGetOrgMemberDetailsQuery } from '@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgMembersApi';
+import { ViewOrgMemberModalProps } from '@/Types/Common/Organisations/OrgMembersTypes';
+import formatChoiceFieldValue from '@/utils/formatters';
+import Image from 'next/image';
+import React from 'react';
+import { Mail, Phone, User } from 'react-feather';
+import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
 
 const ViewOrgMemberModal: React.FC<ViewOrgMemberModalProps> = ({
   isOpen,
   toggle,
   role,
   selectedMember,
+  organisationslug,
 }) => {
+  const { data: memberDetails, isLoading: isMemberDetailsLoading } =
+    useGetOrgMemberDetailsQuery(
+      {
+        organisationslug: organisationslug || '',
+        memberAlias: selectedMember?.alias || '',
+      },
+      {
+        skip: !organisationslug || !selectedMember?.alias,
+      },
+    );
+
   const headerTitle =
-    role === "ADMIN"
-      ? "Admin Information"
-      : role === "INTRODUCER"
-        ? "Introducer Information"
-        : role === "ADVISER"
-          ? "Adviser Information"
-          : "User Information";
+    role === 'ADMIN'
+      ? 'Admin Information'
+      : role === 'INTRODUCER'
+        ? 'Introducer Information'
+        : role === 'ADVISER'
+          ? 'Adviser Information'
+          : 'User Information';
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
-      <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">{headerTitle}</span>
+    <Modal isOpen={isOpen} toggle={toggle} size='lg' centered>
+      <ModalHeader toggle={toggle} className='bg-gradient border-0'>
+        <span className='fs-5 fw-bold text-primary'>{headerTitle}</span>
       </ModalHeader>
-      <ModalBody className="p-0">
+      <ModalBody className='p-0'>
         {/* Profile Section */}
-        <div className="bg-light p-4 text-center border-bottom">
-          <div className="mb-3">
-            {selectedMember?.profile_image ? (
+        <div className='bg-light p-4 text-center border-bottom'>
+          <div className='mb-3'>
+            {memberDetails?.profile_image ? (
               <Image
-                src={selectedMember.profile_image as string}
-                alt="Profile"
+                src={memberDetails.profile_image as string}
+                alt='Profile'
                 width={120}
                 height={120}
-                className="rounded-circle shadow-sm"
-                style={{ border: "3px solid #fff" }}
+                className='rounded-circle shadow-sm'
+                style={{ border: '3px solid #fff' }}
               />
             ) : (
               <div
-                className="rounded-circle bg-white d-flex align-items-center justify-content-center shadow-sm mx-auto"
-                style={{ width: "120px", height: "120px" }}
+                className='rounded-circle bg-white d-flex align-items-center justify-content-center shadow-sm mx-auto'
+                style={{ width: '120px', height: '120px' }}
               >
-                <User size={60} className="text-primary" />
+                <User size={60} className='text-primary' />
               </div>
             )}
           </div>
-          <h4 className="mb-1 text-dark fw-bold">{selectedMember?.name}</h4>
+          <h4 className='mb-1 text-dark fw-bold'>{memberDetails?.name}</h4>
 
-          <div className="d-flex justify-content-center gap-2">
+          <div className='d-flex justify-content-center gap-2'>
             <p>
-              {selectedMember?.is_active ? (
-                <Badge pill className="px-3 py-2 bg-light-success">
+              {memberDetails?.is_active ? (
+                <Badge pill className='px-3 py-2 bg-light-success'>
                   ✓ Approved
                 </Badge>
               ) : (
-                <Badge pill className="px-3 py-2 bg-light-danger">
+                <Badge pill className='px-3 py-2 bg-light-danger'>
                   ⏳ Pending
                 </Badge>
               )}
@@ -64,43 +77,43 @@ const ViewOrgMemberModal: React.FC<ViewOrgMemberModalProps> = ({
           </div>
         </div>
 
-        <div className="p-4">
+        <div className='p-4'>
           {/* Contact Information */}
-          <div className="mb-4">
+          <div className='mb-4'>
             <h6
-              className="text-uppercase fw-bold text-primary mb-3"
-              style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+              className='text-uppercase fw-bold text-primary mb-3'
+              style={{ fontSize: '11px', letterSpacing: '0.5px' }}
             >
               Contact Information
             </h6>
             <Row>
-              <Col md="6" className="mb-3">
-                <div className="d-flex align-items-start">
-                  <Mail size={18} className="text-primary mt-1 me-2" />
+              <Col md='6' className='mb-3'>
+                <div className='d-flex align-items-start'>
+                  <Mail size={18} className='text-primary mt-1 me-2' />
                   <div>
-                    <small className="text-muted d-block">Email</small>
-                    <p className="m-0 text-dark">
-                      {selectedMember?.email ? (
-                        selectedMember.email
+                    <small className='text-muted d-block'>Email</small>
+                    <p className='m-0 text-dark'>
+                      {memberDetails?.email ? (
+                        memberDetails.email
                       ) : (
-                        <small className="text-muted">Not Available</small>
+                        <small className='text-muted'>Not Available</small>
                       )}
                     </p>
                   </div>
                 </div>
               </Col>
-              <Col md="6" className="mb-3">
-                <div className="d-flex align-items-start">
-                  <Phone size={18} className="text-primary mt-1 me-2" />
+              <Col md='6' className='mb-3'>
+                <div className='d-flex align-items-start'>
+                  <Phone size={18} className='text-primary mt-1 me-2' />
                   <div>
-                    <small className="text-muted d-block">Phone</small>
-                    <p className="m-0 text-dark">
-                      {selectedMember?.phone ? (
-                        <span className="text-decoration-none text-primary">
-                          {selectedMember.phone}
+                    <small className='text-muted d-block'>Phone</small>
+                    <p className='m-0 text-dark'>
+                      {memberDetails?.phone ? (
+                        <span className='text-decoration-none text-primary'>
+                          {memberDetails.phone}
                         </span>
                       ) : (
-                        <small className="text-muted">Not Available</small>
+                        <small className='text-muted'>Not Available</small>
                       )}
                     </p>
                   </div>
@@ -109,43 +122,43 @@ const ViewOrgMemberModal: React.FC<ViewOrgMemberModalProps> = ({
             </Row>
           </div>
 
-          <hr className="my-3" />
+          <hr className='my-3' />
 
           {/* Personal Details */}
-          <div className="mb-4">
+          <div className='mb-4'>
             <h6
-              className="text-uppercase fw-bold text-primary mb-3"
-              style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+              className='text-uppercase fw-bold text-primary mb-3'
+              style={{ fontSize: '11px', letterSpacing: '0.5px' }}
             >
               Personal Details
             </h6>
             <Row>
-              {role === "INTRODUCER" && (
+              {role === 'INTRODUCER' && (
                 <>
-                  <Col md="4" className="mb-3">
+                  <Col md='4' className='mb-3'>
                     <div>
-                      <small className="text-muted d-block fw-500">
+                      <small className='text-muted d-block fw-500'>
                         Company Name
                       </small>
-                      <p className="m-0 text-dark fw-500">
-                        {selectedMember?.company_name ? (
-                          selectedMember.company_name
+                      <p className='m-0 text-dark fw-500'>
+                        {memberDetails?.company_name ? (
+                          memberDetails.company_name
                         ) : (
-                          <small className="text-muted">Not Available</small>
+                          <small className='text-muted'>Not Available</small>
                         )}
                       </p>
                     </div>
                   </Col>
-                  <Col md="4" className="mb-3">
+                  <Col md='4' className='mb-3'>
                     <div>
-                      <small className="text-muted d-block fw-500">
+                      <small className='text-muted d-block fw-500'>
                         Company Address
                       </small>
-                      <p className="m-0 text-dark fw-500">
-                        {selectedMember?.company_address ? (
-                          selectedMember.company_address
+                      <p className='m-0 text-dark fw-500'>
+                        {memberDetails?.company_address ? (
+                          memberDetails.company_address
                         ) : (
-                          <small className="text-muted">Not Available</small>
+                          <small className='text-muted'>Not Available</small>
                         )}
                       </p>
                     </div>
@@ -153,16 +166,16 @@ const ViewOrgMemberModal: React.FC<ViewOrgMemberModalProps> = ({
                 </>
               )}
 
-              <Col md={role === "INTRODUCER" ? "4" : "6"} className="mb-3">
+              <Col md={role === 'INTRODUCER' ? '4' : '6'} className='mb-3'>
                 <div>
-                  <small className="text-muted d-block fw-500">
+                  <small className='text-muted d-block fw-500'>
                     Joining Date
                   </small>
-                  <p className="m-0 text-dark fw-500">
-                    {selectedMember?.joining_date ? (
-                      selectedMember.joining_date
+                  <p className='m-0 text-dark fw-500'>
+                    {memberDetails?.joining_date ? (
+                      memberDetails.joining_date
                     ) : (
-                      <small className="text-muted">Not Available</small>
+                      <small className='text-muted'>Not Available</small>
                     )}
                   </p>
                 </div>
@@ -170,39 +183,55 @@ const ViewOrgMemberModal: React.FC<ViewOrgMemberModalProps> = ({
             </Row>
           </div>
 
-          <hr className="my-3" />
+          <div>
+            <h6
+              className='text-uppercase fw-bold text-primary mb-3'
+              style={{ fontSize: '11px', letterSpacing: '0.5px' }}
+            >
+              Note
+            </h6>
+            <p className='m-0 text-dark'>
+              {memberDetails?.note ? (
+                memberDetails.note
+              ) : (
+                <small className='text-muted'>No notes available</small>
+              )}
+            </p>
+          </div>
+
+          <hr className='my-3' />
 
           {/* Metadata */}
           <div>
             <h6
-              className="text-uppercase fw-bold text-primary mb-3"
-              style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+              className='text-uppercase fw-bold text-primary mb-3'
+              style={{ fontSize: '11px', letterSpacing: '0.5px' }}
             >
               Additional Information
             </h6>
-            {selectedMember?.created_by ? (
-              <div className="mb-3 p-3 bg-light rounded">
-                <small className="text-muted d-block fw-500 mb-2">
+            {memberDetails?.created_by ? (
+              <div className='mb-3 p-3 bg-light rounded'>
+                <small className='text-muted d-block fw-500 mb-2'>
                   Created By
                 </small>
-                <p className="m-0 text-dark">
-                  <strong>{selectedMember.created_by.name}</strong>
+                <p className='m-0 text-dark'>
+                  <strong>{memberDetails.created_by.name}</strong>
                 </p>
-                <small className="text-muted">
-                  {selectedMember.created_by.email
-                    ? formatChoiceFieldValue(selectedMember.created_by.email)
-                    : ""}
+                <small className='text-muted'>
+                  {memberDetails.created_by.email
+                    ? formatChoiceFieldValue(memberDetails.created_by.email)
+                    : ''}
                 </small>
               </div>
             ) : (
               <div
-                className="mb-3 p-3 bg-light rounded border-left"
-                style={{ borderLeft: "3px solid #ffc107" }}
+                className='mb-3 p-3 bg-light rounded border-left'
+                style={{ borderLeft: '3px solid #ffc107' }}
               >
-                <small className="text-muted d-block fw-500 mb-2">
+                <small className='text-muted d-block fw-500 mb-2'>
                   Created By
                 </small>
-                <p className="m-0 text-muted fst-italic">
+                <p className='m-0 text-muted fst-italic'>
                   No creator information available
                 </p>
               </div>

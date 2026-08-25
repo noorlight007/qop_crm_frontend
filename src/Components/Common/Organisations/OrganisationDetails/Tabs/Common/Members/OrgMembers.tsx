@@ -673,6 +673,7 @@ const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
         toggle={toggleModal}
         role={role}
         selectedMember={selectedMember}
+        organisationslug={organisationslug}
       />
 
       <UpdateOrgMemberModal

@@ -10,7 +10,13 @@ export const OrgMembersApi = baseApi.injectEndpoints({
       }),
       providesTags: ['OrgMembers'],
     }),
-
+    getOrgMemberDetails: builder.query({
+      query: ({ organisationslug, memberAlias }) => ({
+        url: `/api/organisations/${organisationslug}/members/${memberAlias}/`,
+        method: 'GET',
+      }),
+      providesTags: ['OrgMembers'],
+    }),
     updateOrgMember: builder.mutation({
       query: ({ organisationslug, memberAlias, payload }) => ({
         url: `/api/organisations/${organisationslug}/members/${memberAlias}/`,
@@ -32,6 +38,7 @@ export const OrgMembersApi = baseApi.injectEndpoints({
 
 export const {
   useGetOrgMembersQuery,
+  useGetOrgMemberDetailsQuery,
   useUpdateOrgMemberMutation,
   useDeleteOrgMemberMutation,
 } = OrgMembersApi;

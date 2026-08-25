@@ -263,7 +263,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
                 <Input
                   id='joining_date'
                   name='joining_date'
-                  type='text'
+                  type='date'
                   value={(formData as any)?.joining_date ?? ''}
                   onChange={handleChange}
                 />
@@ -299,7 +299,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
                 </Col>
               </>
             )}
-            <Col sm='12'>
+            {/* <Col sm='12'>
               <FormGroup>
                 <Label for='note'>Note</Label>
                 <Input
@@ -311,7 +311,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
                   onChange={handleChange}
                 />
               </FormGroup>
-            </Col>
+            </Col> */}
           </Row>
         </ModalBody>
 

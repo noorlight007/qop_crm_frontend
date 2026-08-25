@@ -647,6 +647,7 @@ const NetworkMembers: React.FC<NetworkMemberProps> = ({ role }) => {
         toggle={toggleModal}
         role={role}
         selectedMember={selectedMember}
+        networkslug={networkslug}
       />
 
       <UpdateNetworkMemberModal
