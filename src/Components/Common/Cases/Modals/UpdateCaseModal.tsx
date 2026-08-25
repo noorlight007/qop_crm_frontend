@@ -149,6 +149,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
 
             {(session?.user?.role === 'DIRECTOR' ||
               session?.user?.role === 'ADVISER' ||
+              session?.user?.role === 'ADMIN' ||
               session?.user?.role === 'COMPLIANCE') && (
               <FormGroup>
                 <Label for='adviser'>Assign Adviser</Label>

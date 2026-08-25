@@ -7,7 +7,7 @@ import {
 } from '@/Types/Common/Organisations/OrgMembersTypes';
 import formatChoiceFieldValue from '@/utils/formatters';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   Button,
@@ -31,6 +31,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
   selectedMember,
 }) => {
   const [formData, setFormData] = useState<OrgMemberType>({
+    alias: '',
     title: '',
     first_name: '',
     middle_name: '',
@@ -50,6 +51,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
 
   useEffect(() => {
     setFormData({
+      alias: (selectedMember as any)?.alias ?? '',
       title: (selectedMember as any)?.title ?? '',
       first_name: (selectedMember as any)?.first_name ?? '',
       middle_name: (selectedMember as any)?.middle_name ?? '',
@@ -63,6 +65,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
       company_address: (selectedMember as any)?.company_address ?? '',
     });
     setOriginalData({
+      alias: (selectedMember as any)?.alias ?? '',
       title: (selectedMember as any)?.title ?? '',
       first_name: (selectedMember as any)?.first_name ?? '',
       middle_name: (selectedMember as any)?.middle_name ?? '',
@@ -77,19 +80,6 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
     });
     setIsModified(false);
   }, [selectedMember]);
-
-  const title = useMemo(() => {
-    switch (role) {
-      case 'ADMIN':
-        return 'Admin';
-      case 'INTRODUCER':
-        return 'Introducer';
-      case 'ADVISER':
-        return 'Adviser';
-      default:
-        return 'User';
-    }
-  }, [role]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -273,7 +263,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
                 <Input
                   id='joining_date'
                   name='joining_date'
-                  type='text'
+                  type='date'
                   value={(formData as any)?.joining_date ?? ''}
                   onChange={handleChange}
                 />
@@ -309,7 +299,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
                 </Col>
               </>
             )}
-            <Col sm='12'>
+            {/* <Col sm='12'>
               <FormGroup>
                 <Label for='note'>Note</Label>
                 <Input
@@ -321,7 +311,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
                   onChange={handleChange}
                 />
               </FormGroup>
-            </Col>
+            </Col> */}
           </Row>
         </ModalBody>
 

@@ -283,7 +283,7 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
               </FormGroup>
             </Col>
 
-            <Col sm='12'>
+            {/* <Col sm='12'>
               <FormGroup>
                 <Label for='note'>Note</Label>
                 <Input
@@ -295,7 +295,7 @@ const UpdateNetworkMemberModal: React.FC<UpdateNetworkMemberModalProps> = ({
                   onChange={handleChange}
                 />
               </FormGroup>
-            </Col>
+            </Col> */}
           </Row>
         </ModalBody>
 

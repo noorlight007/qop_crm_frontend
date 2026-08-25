@@ -1,37 +1,44 @@
-import { baseApi } from "@/Redux/Api/BaseApi";
+import { baseApi } from '@/Redux/Api/BaseApi';
 
 export const OrgMembersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrgMembers: builder.query({
       query: ({ organisationslug, params }) => ({
         url: `/api/organisations/${organisationslug}/members/`,
-        method: "GET",
+        method: 'GET',
         params: params,
       }),
-      providesTags: ["OrgMembers"],
+      providesTags: ['OrgMembers'],
     }),
-
+    getOrgMemberDetails: builder.query({
+      query: ({ organisationslug, memberAlias }) => ({
+        url: `/api/organisations/${organisationslug}/members/${memberAlias}/`,
+        method: 'GET',
+      }),
+      providesTags: ['OrgMembers'],
+    }),
     updateOrgMember: builder.mutation({
       query: ({ organisationslug, memberAlias, payload }) => ({
         url: `/api/organisations/${organisationslug}/members/${memberAlias}/`,
-        method: "PATCH",
+        method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ["OrgMembers"],
+      invalidatesTags: ['OrgMembers'],
     }),
 
     deleteOrgMember: builder.mutation({
       query: ({ organisationslug, memberAlias }) => ({
         url: `/api/organisations/${organisationslug}/members/${memberAlias}/`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
-      invalidatesTags: ["OrgMembers"],
+      invalidatesTags: ['OrgMembers'],
     }),
   }),
 });
 
 export const {
   useGetOrgMembersQuery,
+  useGetOrgMemberDetailsQuery,
   useUpdateOrgMemberMutation,
   useDeleteOrgMemberMutation,
 } = OrgMembersApi;

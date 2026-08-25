@@ -1,4 +1,4 @@
-export type NetworkMemberRole = "COMPLIANCE" | "ADVISER";
+export type NetworkMemberRole = 'COMPLIANCE' | 'ADVISER';
 
 export type NetworkMemberProps = {
   role: NetworkMemberRole;
@@ -29,6 +29,7 @@ export type ViewNetworkMemberModalProps = {
   toggle: () => void;
   role: NetworkMemberRole;
   selectedMember: Partial<NetworkMemberType>;
+  networkslug: string;
 };
 
 export type UpdateNetworkMemberModalProps = {

@@ -31,6 +31,7 @@ export type ViewOrgMemberModalProps = {
   toggle: () => void;
   role: OrgMemberRole;
   selectedMember: Partial<OrgMemberType>;
+  organisationslug: string;
 };
 
 export type UpdateOrgMemberModalProps = {
