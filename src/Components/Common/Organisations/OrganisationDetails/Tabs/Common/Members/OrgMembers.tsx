@@ -9,7 +9,6 @@ import {
   OrgMemberType,
 } from '@/Types/Common/Organisations/OrgMembersTypes';
 import { formatDateAndTime } from '@/utils/dateAndTimeFormatter';
-import formatChoiceFieldValue from '@/utils/formatters';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -169,7 +168,7 @@ const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
     try {
       await updateOrgMembers({
         organisationslug,
-        user_alias: userAlias,
+        memberAlias: userAlias,
         payload: { is_active: newStatus },
       }).unwrap();
 
@@ -411,7 +410,7 @@ const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
                             >
                               (
                               {item.created_by?.email
-                                ? formatChoiceFieldValue(item.created_by?.email)
+                                ? item.created_by?.email
                                 : 'Not Found'}
                               )
                             </p>
