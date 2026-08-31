@@ -649,19 +649,10 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             userSelect: isLocked ? 'none' : 'auto',
           }}
         >
-          <div className='d-flex justify-content-between align-items-center mb-3'>
-            <h4 className='text-primary pb-0 fs-4 mb-4 mt-2'>
-              Employment Details
-            </h4>
-            <Button
-              color='success'
-              className='border-success d-flex align-items-center gap-1'
-              onClick={() => setAddEmploymentModalOpen(true)}
-            >
-              <FaPlusCircle />
-              Add Another Income
-            </Button>
-          </div>
+          <h4 className='text-primary pb-0 fs-4 mb-4 mt-2'>
+            Employment Details
+          </h4>
+
           <form ref={formRef} id='employment-form' onSubmit={handleSaveClick}>
             <Row className='d-flex justify-content-center align-items-center'>
               <Col md={6}>
@@ -2529,7 +2520,15 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               </Col>
             </Row>
             <Row>
-              <Col className='d-flex justify-content-end pt-3'>
+              <Col className='d-flex justify-content-between pt-3'>
+                <Button
+                  color='success'
+                  className='border-success d-flex align-items-center gap-1'
+                  onClick={() => setAddEmploymentModalOpen(true)}
+                >
+                  <FaPlusCircle />
+                  Add Another Income
+                </Button>
                 <div className=' d-flex justify-content-end gap-2'>
                   <>
                     <Button
