@@ -649,7 +649,7 @@ const SupportTicketDetails: React.FC = () => {
                     </Button>
                   )}
                 </CardHeader>
-                <CardBody style={{ height: "200px", overflowY: "auto" }}>
+                <CardBody style={{ height: "400px", overflowY: "auto" }}>
                   {isEditingMessage ? (
                     <>
                       <Input
@@ -705,7 +705,7 @@ const SupportTicketDetails: React.FC = () => {
                       Attachments({ticketDetails.files.length})
                     </h5>
                   </CardHeader>
-                  <CardBody style={{ height: "200px", overflowY: "auto" }}>
+                  <CardBody style={{ height: "400px", overflowY: "auto" }}>
                     <Row>
                       {ticketDetails.files.map((file: any, idx: number) => {
                         const fileName =
