@@ -648,8 +648,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
               <Table hover responsive>
                 <thead className='thead-light'>
                   <tr className='text-center'>
-                    <th>Ticket ID</th>
-                    <th>Ticket Type</th>
+                    <th>Ticket ID</th>{' '}
                     <th>
                       Status{' '}
                       <FaRegQuestionCircle
@@ -689,6 +688,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </UncontrolledPopover>
                       </>
                     </th>
+                    <th>Ticket Type</th>
                     <th>Priority</th>
                     <th>Files</th>
                     {session?.user?.role === 'SUPER_ADMIN' && (
@@ -749,17 +749,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                               )}
                             </div>
                           </td>
-                          <td>
-                            <Badge
-                              color={
-                                ticketTypeColorMap[
-                                  ticket?.ticket_type as TicketType
-                                ] ?? 'dark'
-                              }
-                            >
-                              {formatChoiceFieldValue(ticket.ticket_type)}
-                            </Badge>
-                          </td>
+
                           <td>
                             {ticket.status ? (
                               userRole === 'SUPER_ADMIN' ? (
@@ -861,7 +851,17 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                               <small className='text-muted'>Not Found</small>
                             )}
                           </td>
-
+                          <td>
+                            <Badge
+                              color={
+                                ticketTypeColorMap[
+                                  ticket?.ticket_type as TicketType
+                                ] ?? 'dark'
+                              }
+                            >
+                              {formatChoiceFieldValue(ticket.ticket_type)}
+                            </Badge>
+                          </td>
                           <td>
                             <span>
                               {ticket.priority ? (
