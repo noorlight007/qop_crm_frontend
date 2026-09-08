@@ -50,7 +50,10 @@ const PaginationBar = ({
   };
 
   return (
-    <div className='d-flex align-items-center justify-content-between px-3 py-2 border-top bg-light-subtle'>
+    <div
+      className='d-flex align-items-center justify-content-between px-3 py-2'
+      style={{ borderTop: '1px solid var(--border-color)' }}
+    >
       <span
         className='text-muted'
         style={{ fontSize: 12, whiteSpace: 'nowrap' }}
@@ -60,7 +63,7 @@ const PaginationBar = ({
       <div className='d-flex align-items-center gap-1'>
         <button
           type='button'
-          className='btn btn-sm bg-light-primary  btn-light-dark border-0 rounded-circle d-flex align-items-center justify-content-center'
+          className='btn btn-sm btn-light-dark border-0 rounded-circle d-flex align-items-center justify-content-center'
           style={navBtnStyle}
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
@@ -101,7 +104,7 @@ const PaginationBar = ({
 
         <button
           type='button'
-          className='btn btn-sm btn-light-dark bg-light-primary border-0 rounded-circle d-flex align-items-center justify-content-center'
+          className='btn btn-sm btn-light-dark border-0 rounded-circle d-flex align-items-center justify-content-center'
           style={navBtnStyle}
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
