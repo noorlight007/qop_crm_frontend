@@ -8,6 +8,14 @@ git pull origin prod
 echo "Building new image (current containers keep serving)..."
 docker compose build
 
+# Remove the container from the previous single-service Compose configuration.
+# It owns port 5000 and must be removed before frontend_a can start.
+legacy_container=$(docker ps -aq --filter name='^/frontend$')
+if [ -n "$legacy_container" ]; then
+  echo "Removing legacy frontend container..."
+  docker rm -f "$legacy_container"
+fi
+
 # Restart one container at a time so the other keeps serving traffic
 for svc in frontend_a frontend_b; do
   container="qop_$svc"
