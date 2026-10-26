@@ -1,9 +1,18 @@
-import { useDeleteNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { DeleteNetworkModalProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
-import { useRouter } from "next/navigation";
+import { useDeleteNetworkMutation } from '@/Redux/Reducers/SuperAdmin/Networks/NetworksApi';
+import { DeleteNetworkModalProps } from '@/Types/SuperAdmin/Networks/NetworkTypes';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { toast } from "react-toastify";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { toast } from 'react-toastify';
+import {
+  Button,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from 'reactstrap';
 
 const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
   isOpen,
@@ -13,41 +22,51 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
   const router = useRouter();
   // rtk hooks
   const [deleteNetwork, { isLoading }] = useDeleteNetworkMutation();
+  const [confirmText, setConfirmText] = useState('');
+
+  const networkName = networkInfo?.network?.name ?? '';
+  const isConfirmed = networkName !== '' && confirmText.trim() === networkName;
+
+  // reset confirmation input whenever the modal opens/closes
+  useEffect(() => {
+    setConfirmText('');
+  }, [isOpen]);
 
   const handleDelete = async () => {
+    if (!isConfirmed) return;
     try {
       const network_slug = networkInfo?.network?.slug;
       const response = await deleteNetwork({ network_slug });
       toggle();
       if (response.data === null) {
-        toast.success("Network deleted successfully!");
+        toast.success('Network deleted successfully!');
       } else {
-        toast.error("Failed to delete network.");
+        toast.error('Failed to delete network.');
       }
       router.back();
     } catch (error) {
-      console.error("Failed to delete network", error);
-      toast.error("Failed to delete network. Please try again.");
+      console.error('Failed to delete network', error);
+      toast.error('Failed to delete network. Please try again.');
     }
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-danger">Confirm Deletion</h3>
+        <h3 className='text-danger'>Confirm Deletion</h3>
       </ModalHeader>
       <ModalBody>
         <p>
-          Are you sure you want to delete{" "}
-          <strong className="text-danger">{networkInfo?.network?.name}</strong>{" "}
+          Are you sure you want to delete{' '}
+          <strong className='text-danger'>{networkInfo?.network?.name}</strong>{' '}
           network?
         </p>
 
-        <div className="border border-danger rounded p-3 bg-light">
-          <p className="mb-2 fw-semibold text-danger">
+        <div className='border border-danger rounded p-3 bg-light'>
+          <p className='mb-2 fw-semibold text-danger'>
             This action is irreversible.
           </p>
-          <small className="text-muted">
+          <small className='text-muted'>
             Deleting this network will permanently remove all associated data,
             including organisations, cases, leads, clients, advisers, admins,
             joint applicants, appearance preferences, settings, profile
@@ -55,13 +74,40 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
             restored.
           </small>
         </div>
+
+        <div className='mt-3'>
+          <Label for='confirm-network-name' className='mb-1'>
+            Type <strong className='text-danger'>{networkName}</strong> to
+            confirm
+          </Label>
+          <Input
+            id='confirm-network-name'
+            type='text'
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            onPaste={(e) => e.preventDefault()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && isConfirmed && !isLoading)
+                handleDelete();
+            }}
+            placeholder={networkName}
+            autoComplete='off'
+            disabled={isLoading}
+            invalid={confirmText !== '' && !isConfirmed}
+            valid={isConfirmed}
+          />
+        </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggle} disabled={isLoading}>
+        <Button color='secondary' onClick={toggle} disabled={isLoading}>
           Cancel
         </Button>
-        <Button color="danger" onClick={handleDelete} disabled={isLoading}>
-          {isLoading ? "Deleting..." : "Delete"}
+        <Button
+          color='danger'
+          onClick={handleDelete}
+          disabled={isLoading || !isConfirmed}
+        >
+          {isLoading ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

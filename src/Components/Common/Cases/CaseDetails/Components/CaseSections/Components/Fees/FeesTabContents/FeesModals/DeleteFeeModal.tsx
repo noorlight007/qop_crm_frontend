@@ -42,6 +42,17 @@ const DeleteFeeModal: React.FC<DeleteFeeModalProps> = ({
           </b>{" "}
           fee?
         </p>
+
+        <div className="border border-danger rounded p-3 bg-light mb-3">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this fee will permanently remove it from this case. This
+            data cannot be restored.
+          </small>
+        </div>
+
         <div className="d-flex justify-content-end gap-2">
           <Button color="primary" onClick={toggle} disabled={isLoading}>
             Cancel

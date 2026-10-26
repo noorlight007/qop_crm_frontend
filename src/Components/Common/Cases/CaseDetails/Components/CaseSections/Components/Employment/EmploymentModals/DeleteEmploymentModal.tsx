@@ -101,7 +101,18 @@ const DeleteEmploymentModal: React.FC<Props> = ({
         <h3 className="text-danger">Confirm Delete</h3>
       </ModalHeader>
       <ModalBody>
-        Are you sure you want to delete this employment record?
+        <p>Are you sure you want to delete this employment record?</p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this employment record will permanently remove its
+            employer and income details from the applicant&apos;s record. This
+            data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={toggle} disabled={isLoading}>

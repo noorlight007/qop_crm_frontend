@@ -37,13 +37,27 @@ const DeleteInsurancePolicyModal: React.FC<DeleteInsurancePolicyModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered>
-      <ModalHeader toggle={toggle}>Delete Insurance Policy</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <h3 className="text-danger">Delete Insurance Policy</h3>
+      </ModalHeader>
       <ModalBody>
         <p>
           Are you sure you want to delete{" "}
-          <strong>{policyType || "this insurance policy"}</strong>?
+          <strong className="text-danger">
+            {policyType || "this insurance policy"}
+          </strong>
+          ?
         </p>
-        <p className="text-muted mb-0">This action cannot be undone.</p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this policy will permanently remove it and its cover
+            details from this case. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={toggle} disabled={isLoading}>

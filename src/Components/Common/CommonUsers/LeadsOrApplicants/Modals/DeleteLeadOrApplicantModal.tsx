@@ -40,9 +40,23 @@ const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrApplicantModalProps> = ({
         <h3 className="text-danger">Delete {title}</h3>
       </ModalHeader>
       <ModalBody>
-        Are you sure you want to delete the {title.toLowerCase()}{" "}
-        <strong className="text-danger">{selectedLeadOrApplicant?.name}</strong>
-        ? This action cannot be undone.
+        <p>
+          Are you sure you want to delete the {title.toLowerCase()}{" "}
+          <strong className="text-danger">
+            {selectedLeadOrApplicant?.name}
+          </strong>
+          ?
+        </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this {title.toLowerCase()} will permanently remove their
+            profile and all associated records. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={handleDelete}>

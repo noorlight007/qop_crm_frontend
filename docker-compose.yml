@@ -1,15 +1,26 @@
+x-frontend: &frontend
+  build:
+    context: .
+    dockerfile: dockerfile
+  image: qop-crm-frontend:latest
+  restart: unless-stopped
+  env_file:
+    - .env.production
+  healthcheck:
+    test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5000"]
+    interval: 5s
+    timeout: 3s
+    retries: 10
+
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-    container_name: frontend
-
-    restart: unless-stopped
-
+  frontend_a:
+    <<: *frontend
+    container_name: qop_frontend_a
     ports:
       - "5000:5000"
 
-    env_file:
-      - .env.production
+  frontend_b:
+    <<: *frontend
+    container_name: qop_frontend_b
+    ports:
+      - "5001:5000"

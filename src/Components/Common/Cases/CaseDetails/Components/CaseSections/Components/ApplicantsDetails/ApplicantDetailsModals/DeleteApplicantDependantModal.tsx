@@ -49,10 +49,17 @@ const DeleteApplicantDependantModal: React.FC<Props> = ({
         <h3 className="text-danger">Delete Dependant</h3>
       </ModalHeader>
       <ModalBody>
-        <p>
-          Are you sure you want to delete this dependant? This action cannot be
-          undone.
-        </p>
+        <p>Are you sure you want to delete this dependant?</p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this dependant will permanently remove their details from
+            the applicant&apos;s record. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={onClose} disabled={isLoading}>

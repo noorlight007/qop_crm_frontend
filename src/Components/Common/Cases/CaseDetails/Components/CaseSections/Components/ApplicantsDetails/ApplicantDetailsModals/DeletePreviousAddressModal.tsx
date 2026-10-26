@@ -43,14 +43,21 @@ const DeletePreviousAddressModal: React.FC<DeletePreviousAddressModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered size="md">
-      <ModalHeader toggle={toggle} className="text-danger">
-        Confirm Deletion
+      <ModalHeader toggle={toggle}>
+        <h3 className="text-danger">Confirm Deletion</h3>
       </ModalHeader>
       <ModalBody>
-        <p className="text-center">
-          Are you sure you want to delete this previous address? This action
-          cannot be undone.
-        </p>
+        <p>Are you sure you want to delete this previous address?</p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this address will permanently remove it from the
+            applicant&apos;s address history. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter className="justify-content-center">
         <Button color="secondary" onClick={toggle}>

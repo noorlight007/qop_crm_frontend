@@ -45,14 +45,24 @@ const DeleteCreditCommitmentModal: React.FC<
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Credit Commitment</span>
+        <h3 className="text-danger">Delete Credit Commitment</h3>
       </ModalHeader>
       <ModalBody>
         <p>
           Are you sure you want to delete this credit{" "}
           <strong className="text-danger">{creditCommitmentName}</strong>{" "}
-          commitment? This action cannot be undone.
+          commitment?
         </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this commitment will permanently remove it from the
+            applicant&apos;s financial records. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={handleDelete} disabled={isLoading}>

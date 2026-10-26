@@ -108,9 +108,14 @@ const BatchDeleteModal: React.FC<BatchDeleteModalProps> = ({
                 ))}
               </ul>
             </div>
-            <div className="alert alert-warning mt-3">
-              <i className="fa fa-exclamation-triangle me-2"></i>
-              <strong>Warning:</strong> This action cannot be undone.
+            <div className="border border-danger rounded p-3 bg-light mt-3">
+              <p className="mb-2 fw-semibold text-danger">
+                This action is irreversible.
+              </p>
+              <small className="text-muted">
+                Deleting these documents will permanently remove the files
+                from this case. This data cannot be restored.
+              </small>
             </div>
           </>
         ) : (

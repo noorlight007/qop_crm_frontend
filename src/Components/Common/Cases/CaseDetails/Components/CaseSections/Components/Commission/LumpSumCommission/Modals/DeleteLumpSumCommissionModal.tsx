@@ -42,12 +42,23 @@ const DeleteLumpSumCommissionModal: React.FC<
         <h3 className="text-danger">Delete Lump Sum Commission</h3>
       </ModalHeader>
       <ModalBody>
-        <div>
+        <p>
           Are you sure you want to delete{" "}
           <b className="text-danger">
             {policyType ? `${formatChoiceFieldValue(policyType)} ` : "this"}
           </b>{" "}
           lump sum commission?
+        </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this commission will permanently remove the commission
+            record and its payment details from this case. This data cannot be
+            restored.
+          </small>
         </div>
       </ModalBody>
       <ModalFooter>

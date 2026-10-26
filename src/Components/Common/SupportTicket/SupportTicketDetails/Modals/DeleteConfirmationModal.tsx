@@ -5,6 +5,7 @@ interface DeleteConfirmationModalProps {
   isOpen: boolean;
   title?: string;
   message?: string;
+  description?: string;
   onConfirm: () => void;
   onCancel: () => void;
   isLoading?: boolean;
@@ -13,15 +14,27 @@ interface DeleteConfirmationModalProps {
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   isOpen,
   title = 'Delete Item',
-  message = 'Are you sure you want to delete this item? This action cannot be undone.',
+  message = 'Are you sure you want to delete this item?',
+  description = 'This item will be permanently removed. This data cannot be restored.',
   onConfirm,
   onCancel,
   isLoading = false,
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={onCancel}>
-      <ModalHeader toggle={onCancel}>{title}</ModalHeader>
-      <ModalBody>{message}</ModalBody>
+      <ModalHeader toggle={onCancel}>
+        <h3 className='text-danger'>{title}</h3>
+      </ModalHeader>
+      <ModalBody>
+        <p>{message}</p>
+
+        <div className='border border-danger rounded p-3 bg-light'>
+          <p className='mb-2 fw-semibold text-danger'>
+            This action is irreversible.
+          </p>
+          <small className='text-muted'>{description}</small>
+        </div>
+      </ModalBody>
       <ModalFooter>
         <Button color='secondary' onClick={onCancel} disabled={isLoading}>
           Cancel
