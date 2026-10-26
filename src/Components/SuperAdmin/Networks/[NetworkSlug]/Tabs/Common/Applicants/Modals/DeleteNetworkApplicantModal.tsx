@@ -54,12 +54,30 @@ const DeleteNetworkApplicantModal: React.FC<
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        Delete {role === "APPLICANT" ? "Applicant" : "Lead"}
+        <h3 className="text-danger">
+          Delete {role === "APPLICANT" ? "Applicant" : "Lead"}
+        </h3>
       </ModalHeader>
       <ModalBody>
-        Are you sure you want to delete the{" "}
-        {role === "APPLICANT" ? "applicant" : "lead"} "
-        {applicantToDelete?.name || ""}"?
+        <p>
+          Are you sure you want to delete the{" "}
+          {role === "APPLICANT" ? "applicant" : "lead"}{" "}
+          <strong className="text-danger">
+            {applicantToDelete?.name || ""}
+          </strong>
+          ?
+        </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this {role === "APPLICANT" ? "applicant" : "lead"} will
+            permanently remove their profile and all associated records. This
+            data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={toggle}>

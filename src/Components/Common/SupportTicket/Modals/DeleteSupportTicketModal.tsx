@@ -41,9 +41,18 @@ const DeleteSupportTicketModal: React.FC<DeleteSupportTicketModalProps> = ({
       <ModalHeader toggle={toggle}>
         <h3 className="text-danger">Delete Ticket</h3>
       </ModalHeader>
-      <ModalBody className="text-center">
-        Are you sure you want to delete the Support Ticket? <br />
-        This action cannot be undone.
+      <ModalBody>
+        <p>Are you sure you want to delete this support ticket?</p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this ticket will permanently remove it along with its
+            comments, replies, and attachments. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={toggle}>

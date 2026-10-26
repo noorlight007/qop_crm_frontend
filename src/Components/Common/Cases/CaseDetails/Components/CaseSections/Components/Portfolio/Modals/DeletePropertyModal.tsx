@@ -42,10 +42,27 @@ const DeletePropertyModal: React.FC<DeletePropertyModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>Delete Property</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <h3 className="text-danger">Delete Property</h3>
+      </ModalHeader>
       <ModalBody>
-        Are you sure you want to delete the property{" "}
-        <strong>{propertyLabel || propertyAlias}</strong>?
+        <p>
+          Are you sure you want to delete the property{" "}
+          <strong className="text-danger">
+            {propertyLabel || propertyAlias}
+          </strong>
+          ?
+        </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this property will permanently remove it and its details
+            from the portfolio. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={handleDelete} disabled={isLoading}>

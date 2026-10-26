@@ -965,7 +965,8 @@ const SupportTicketComments: React.FC = () => {
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
         title='Delete Comment'
-        message='Are you sure you want to delete this comment? This action cannot be undone.'
+        message='Are you sure you want to delete this comment?'
+        description='Deleting this comment will permanently remove it and its replies from this ticket. This data cannot be restored.'
         onConfirm={confirmDeleteComment}
         onCancel={() => setDeleteModalOpen(false)}
         isLoading={isDeleteLoading}
@@ -975,7 +976,8 @@ const SupportTicketComments: React.FC = () => {
       <DeleteConfirmationModal
         isOpen={deleteReplyModalOpen}
         title='Delete Reply'
-        message='Are you sure you want to delete this reply? This action cannot be undone.'
+        message='Are you sure you want to delete this reply?'
+        description='Deleting this reply will permanently remove it from this ticket. This data cannot be restored.'
         onConfirm={confirmDeleteReply}
         onCancel={() => setDeleteReplyModalOpen(false)}
         isLoading={isDeleteLoading}

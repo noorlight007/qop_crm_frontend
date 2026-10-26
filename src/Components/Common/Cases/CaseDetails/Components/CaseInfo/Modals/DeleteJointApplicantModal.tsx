@@ -51,7 +51,7 @@ const DeleteJointApplicantModal: React.FC<DeleteJointApplicantModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        <h5 className="text-danger">Delete Joint Applicant</h5>
+        <h3 className="text-danger">Delete Joint Applicant</h3>
       </ModalHeader>
       <ModalBody>
         <p>
@@ -60,8 +60,19 @@ const DeleteJointApplicantModal: React.FC<DeleteJointApplicantModalProps> = ({
             {selectedApplicant.customer?.name ||
               selectedApplicant.customer?.email}
           </strong>
-          ? This action cannot be undone.
+          ?
         </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this joint applicant will permanently remove them from
+            this case along with their personal, employment, and financial
+            details. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button

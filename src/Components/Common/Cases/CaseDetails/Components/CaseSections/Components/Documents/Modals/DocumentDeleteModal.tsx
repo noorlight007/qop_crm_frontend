@@ -40,13 +40,25 @@ const DocumentDeleteModal: React.FC<DocumentDeleteModalProps> = ({
         <h3 className="text-danger">Confirm Delete</h3>
       </ModalHeader>
       <ModalBody>
-        Are you sure you want to delete the{" "}
-        <span className="text-danger">
-          {fileData?.file_type
-            ? formatChoiceFieldValue(fileData.file_type)
-            : "-"}
-        </span>{" "}
-        file?
+        <p>
+          Are you sure you want to delete the{" "}
+          <span className="text-danger">
+            {fileData?.file_type
+              ? formatChoiceFieldValue(fileData.file_type)
+              : "-"}
+          </span>{" "}
+          file?
+        </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this file will permanently remove it from this case&apos;s
+            documents. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={handleDeleteFile} disabled={isLoading}>
